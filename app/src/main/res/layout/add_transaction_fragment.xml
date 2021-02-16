@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <import type="android.view.View" />
+        <variable
+            name="addTransactionViewModel"
+            type="com.example.organizer.ui.money.addTransaction.AddTransactionViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ui.money.addTransaction.AddTransaction">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@{addTransactionViewModel.transactionType == 1? @color/IncomeColor: addTransactionViewModel.transactionType == 0 ? @color/TransferColor: @color/ExpenseColor}">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toTopOf="@+id/frameLayout"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    app:layout_constraintTop_toTopOf="parent">
+                    <Button
+                        android:id="@+id/button3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/ExpenseColor"
+                        android:text="Expense"
+                        android:layout_weight="1"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold"
+                        android:onClick="@{() -> addTransactionViewModel.selectExpenseType()}"/>
+                    <Button
+                        android:id="@+id/button4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@color/TransferColor"
+                        android:text="Transfer"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold"
+                        android:onClick="@{() -> addTransactionViewModel.selectTransferType()}" />
+
+                    <Button
+                        android:id="@+id/button5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@color/IncomeColor"
+                        android:text="Income"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold"
+                        android:onClick="@{() -> addTransactionViewModel.selectIncomeType()}" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/amount"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColorHint="@color/whiteText"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="97dp"
+                        android:hint="Amount"
+                        android:inputType="numberDecimal"
+                        android:maxLength="10"
+                        android:text="@={addTransactionViewModel.amount}"
+                        android:textColor="@color/whiteText"
+                        android:textSize="35dp"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/fromAccount"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColorHint="@color/whiteText"
+                    app:helperText="Current balance: 2600 BDT"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintTop_toBottomOf="@+id/amount"
+                    android:visibility="@{addTransactionViewModel.showFromAccount ? View.VISIBLE: View.GONE}">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/fromAccountInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        android:hint="From account"
+                        android:text="@{addTransactionViewModel.fromAccount.accountName}"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/toAccount"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColorHint="@color/whiteText"
+                    app:helperText="Current balance: 2600 BDT"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintTop_toBottomOf="@+id/fromAccount"
+                    android:visibility="@{addTransactionViewModel.showToAccount ? View.VISIBLE: View.GONE}">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/toAccountInput"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        android:hint="To account"
+                        android:text="@{addTransactionViewModel.toAccount.accountName}"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/details"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColorHint="@color/whiteText"
+                    app:layout_constraintTop_toBottomOf="@+id/toAccount">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Details"
+                        android:inputType="textMultiLine"
+                        android:text="@={addTransactionViewModel.details}"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/whiteText"
+                app:layout_constraintBottom_toTopOf="@+id/button"
+                tools:layout_editor_absoluteX="3dp" />
+
+            <Button
+                android:id="@+id/button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:attr/selectableItemBackground"
+                android:text="Create"
+                android:textColor="@color/whiteText"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
+</layout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@id/nav_money">
+
+    <fragment
+        android:id="@+id/nav_money"
+        android:name="com.example.organizer.ui.money.MoneyFragment"
+        android:label="@string/menu_money"
+        tools:layout="@layout/fragment_money" >
+        <argument
+            android:name="fromCreate"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+        <action
+            android:id="@+id/action_nav_money_to_editAccount"
+            app:destination="@id/editAccount" />
+    </fragment>
+    <fragment
+        android:id="@+id/editAccount"
+        android:name="com.example.organizer.ui.money.editAccount.EditAccount"
+        android:label="Edit Account"
+        tools:layout="@layout/edit_account_fragment" >
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true"/>
+        <action
+            android:id="@+id/action_editAccount_to_nav_money"
+            app:popUpTo="@id/nav_money"
+            app:popUpToInclusive="true"
+            app:destination="@id/nav_money" />
+        <action
+            android:id="@+id/action_editAccount_to_addTransaction"
+            app:destination="@id/addTransaction" />
+    </fragment>
+    <fragment
+        android:id="@+id/addTransaction"
+        android:name="com.example.organizer.ui.money.addTransaction.AddTransaction"
+        android:label="AddTransaction">
+        <argument
+            android:name="transactionType"
+            app:argType="integer"
+            android:defaultValue="0"
+            />
+        <argument
+            android:name="sourceAccountId"
+            app:argType="string"
+            app:nullable="true"
+            />
+        <action
+            android:id="@+id/action_addTransaction_to_selectAccount"
+            app:destination="@id/selectAccount" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectAccount"
+        android:name="com.example.organizer.ui.money.selectAccount.SelectAccount"
+        android:label="select_account_fragment"
+        tools:layout="@layout/select_account_fragment" />
+
+</navigation>

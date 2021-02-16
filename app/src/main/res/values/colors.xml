@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#2E7D32</color>
+    <color name="colorPrimaryDark">#1B5E20</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="whiteText">#fff</color>
+    <color name="OrangeBCWhiteTC">#FF6D00</color>
+    <color name="TealBCWhiteTC">#00796B</color>
+    <color name="LightBlueBCWhiteTC">#0091EA</color>
+    <color name="BlueBCWhiteTC">#2962FF</color>
+    <color name="BlackText">#000</color>
+    <color name="ExpenseColor">#F44336</color>
+    <color name="TransferColor">#2196F3</color>
+    <color name="IncomeColor">#43A047</color>
+</resources>

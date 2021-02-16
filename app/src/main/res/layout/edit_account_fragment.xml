@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.money.editAccount.EditAccount">
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="editAccountViewModel"
+            type="com.example.organizer.ui.money.editAccount.EditAccountViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toTopOf="@+id/doneButton"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/AccountName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@={editAccountViewModel.accountName}"
+                    android:hint="Account Name"
+                    android:maxLength="50" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/Amount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Amount"
+                    android:text="@={editAccountViewModel.amount}"
+                    android:inputType="numberDecimal"
+                    android:maxLength="10" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <androidx.appcompat.widget.AppCompatSpinner
+                android:id="@+id/background_color_spinner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adapter="@{editAccountViewModel.adapter}"
+                android:selectedItemPosition="@={editAccountViewModel.backgroundColorIndex}"
+            />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/button3"
+                    android:layout_width="156dp"
+                    android:layout_height="49dp"
+                    android:background="@color/TransferColor"
+                    android:onClick="@{() -> editAccountViewModel.addTransaction()}"
+                    android:text="+ Transaction"
+                    android:visibility="@{editAccountViewModel.creating ? View.GONE: View.VISIBLE}"
+                    app:layout_constraintEnd_toStartOf="@+id/button2"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:layout_editor_absoluteY="77dp" />
+
+                <Button
+                    android:id="@+id/button2"
+                    android:layout_width="156dp"
+                    android:layout_height="49dp"
+                    android:background="@android:color/holo_red_light"
+                    android:onClick="@{() -> editAccountViewModel.delete()}"
+                    android:text="Delete"
+                    android:visibility="@{editAccountViewModel.creating ? View.GONE: View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/button3"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/doneButton"
+            android:layout_width="406dp"
+            android:layout_height="50dp"
+            android:background="@color/colorPrimary"
+            android:clickable="true"
+            android:onClick="@{() -> editAccountViewModel.save()}"
+            android:text="Save"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
