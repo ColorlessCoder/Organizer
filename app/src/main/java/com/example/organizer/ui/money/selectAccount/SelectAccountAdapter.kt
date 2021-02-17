@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.entity.Account
+import com.example.organizer.ui.Utils.ShpaeUtil
 
 class SelectAccountAdapter(
     private val accounts: List<Account>,
@@ -23,16 +24,10 @@ class SelectAccountAdapter(
         val accountBalance: TextView = view.findViewById(R.id.accountBalance)
         val accountCellContent: View = view.findViewById(R.id.accountCellContent)
         val accountCellContainer: View = view.findViewById(R.id.accountCellContainer)
-        init {
-            accountCellContainer.setPadding(10,5, 10, 0)
-            accountCellContent.setPadding(50,10, 50, 10)
-            accountLabel.textSize = 16.0F
-            accountBalance.textSize = 11.0F
-        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.account_cell, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.account_cell_for_list, parent, false)
         return ViewHolder(view)
     }
 
@@ -44,7 +39,7 @@ class SelectAccountAdapter(
         val account = accounts.get(position)
         holder.accountLabel.text = account.accountName
         holder.accountBalance.text = account.balance.toString()
-        holder.accountCellContent.setBackgroundColor(account.backgroundColor)
+        holder.accountCellContent.background = ShpaeUtil.getRoundCornerShape(15.toFloat(),  account.backgroundColor, null)
         holder.itemView.setOnClickListener {
             viewModel.selectedAccount = account
             parentView.findNavController().popBackStack()
