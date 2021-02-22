@@ -36,6 +36,9 @@
         <action
             android:id="@+id/action_editAccount_to_addTransaction"
             app:destination="@id/addTransaction" />
+        <action
+            android:id="@+id/action_editAccount_to_viewTransaction"
+            app:destination="@id/viewTransaction" />
     </fragment>
     <fragment
         android:id="@+id/addTransaction"
@@ -59,6 +62,23 @@
         android:id="@+id/selectAccount"
         android:name="com.example.organizer.ui.money.selectAccount.SelectAccount"
         android:label="select_account_fragment"
-        tools:layout="@layout/select_account_fragment" />
+        tools:layout="@layout/select_account_fragment">
+        <argument
+            android:name="ignoreAccountId"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/viewTransaction"
+        android:name="com.example.organizer.ui.money.viewTransaction.ViewTransaction"
+        android:label="view_transaction_fragment"
+        tools:layout="@layout/view_transaction_fragment" >
+        <argument
+            android:name="sourceAccountId"
+            app:argType="string"
+            app:nullable="true"
+            />
+    </fragment>
 
 </navigation>

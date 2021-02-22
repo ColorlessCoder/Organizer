@@ -70,6 +70,12 @@ class EditAccount : Fragment() {
                 viewModel.navigateToAddTransaction.value = false;
             }
         })
+        viewModel.navigateToViewTransaction.observe(this, Observer { navigateToTransactions ->
+            if (navigateToTransactions) {
+                this.navigateToViewTransactions()
+                viewModel.navigateToViewTransaction.value = false;
+            }
+        })
         return view
     }
 
@@ -88,7 +94,7 @@ class EditAccount : Fragment() {
     }
 
     private fun navigateBackToAccounts(view: View) {
-        var action =
+        val action =
             EditAccountDirections.actionEditAccountToNavMoney()
         action.fromCreate = true
         view.findNavController().navigate(action)
@@ -96,7 +102,13 @@ class EditAccount : Fragment() {
 
     private fun navigateToAddTransactions() {
         if (args.id != null) {
-            var action = EditAccountDirections.actionEditAccountToAddTransaction(args.id)
+            val action = EditAccountDirections.actionEditAccountToAddTransaction(args.id)
+            view?.findNavController()?.navigate(action)
+        }
+    }
+    private fun navigateToViewTransactions() {
+        if (args.id != null) {
+            val action = EditAccountDirections.actionEditAccountToViewTransaction(args.id)
             view?.findNavController()?.navigate(action)
         }
     }

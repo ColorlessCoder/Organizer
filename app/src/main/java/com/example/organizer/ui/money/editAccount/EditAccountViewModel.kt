@@ -21,6 +21,7 @@ class EditAccountViewModel() : ViewModel() {
     val navigateBack = MutableLiveData<Boolean>()
     var isCreating = MutableLiveData<Boolean>()
     var navigateToAddTransaction = MutableLiveData<Boolean>()
+    var navigateToViewTransaction = MutableLiveData<Boolean>()
     lateinit var adapter: ColorSpinnerAdapter;
     lateinit var accountDAO: AccountDAO
     init {
@@ -28,6 +29,10 @@ class EditAccountViewModel() : ViewModel() {
         id.value = UUID.randomUUID().toString()
         navigateBack.value = false
         isCreating.value = true
+    }
+
+    fun historyClicked() {
+        navigateToViewTransaction.value = true
     }
 
     fun delete() {

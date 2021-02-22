@@ -23,7 +23,6 @@ class SelectAccountAdapter(
         val accountLabel: TextView = view.findViewById(R.id.accountLabel)
         val accountBalance: TextView = view.findViewById(R.id.accountBalance)
         val accountCellContent: View = view.findViewById(R.id.accountCellContent)
-        val accountCellContainer: View = view.findViewById(R.id.accountCellContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

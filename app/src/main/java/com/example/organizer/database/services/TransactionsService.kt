@@ -17,7 +17,7 @@ class TransactionsService(private val transactionDAO: TransactionDAO) {
         if(transactionType == TransactionType.TRANSFER && (transaction.fromAccount == null || transaction.toAccount == null)) {
             throw Exception("Both To account and From account need to be defined for Transfer")
         }
-        transactionDAO.insert(transaction)
+        transactionDAO.insertAndUpdateAccount(transaction)
     }
 
     suspend fun delete(id: String) =  transactionDAO.deleteById(id)

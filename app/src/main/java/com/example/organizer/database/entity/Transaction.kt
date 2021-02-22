@@ -14,5 +14,5 @@ data class Transaction(
     @ColumnInfo(name = "scheduled_transaction_id", typeAffinity = ColumnInfo.TEXT) var scheduledTransactionId: String?,
     @ColumnInfo(name = "transaction_category_id", typeAffinity = ColumnInfo.TEXT) var transactionCategoryId: String?,
     @ColumnInfo(name = "details", typeAffinity = ColumnInfo.TEXT) var details: String?,
-    @ColumnInfo(name = "transacted_at", typeAffinity = ColumnInfo.INTEGER) var transactedAt: Int
+    @ColumnInfo(name = "transacted_at", typeAffinity = ColumnInfo.INTEGER) var transactedAt: Long
 )
