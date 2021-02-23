@@ -3,10 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group android:id="@+id/MainMenu" android:checkableBehavior="single">
         <item
             android:id="@+id/nav_money"
             android:icon="@drawable/ic_attach_money_green_24dp"
             android:title="@string/menu_money" />
     </group>
+    <item android:id="@+id/backupMenu" android:title="Backup">
+        <menu>
+            <item
+            android:id="@+id/nav_database_backup"
+            android:icon="@drawable/ic_baseline_storage_24"
+            android:title="@string/database"
+            />
+        </menu>
+    </item>
 </menu>
