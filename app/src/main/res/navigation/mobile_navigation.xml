@@ -18,6 +18,9 @@
         <action
             android:id="@+id/action_nav_money_to_editAccount"
             app:destination="@id/editAccount" />
+        <action
+            android:id="@+id/action_nav_money_to_transactionCategory"
+            app:destination="@id/transactionCategory" />
     </fragment>
     <fragment
         android:id="@+id/editAccount"
@@ -84,6 +87,39 @@
         android:id="@+id/nav_database_backup"
         android:name="com.example.organizer.ui.backup.database.DatabaseBackup"
         android:label="@string/database_backup"
-        tools:layout="@layout/database_backup_fragment" />
+        tools:layout="@layout/database_backup_fragment" >
+        <action
+            android:id="@+id/action_nav_database_backup_to_fileChooser"
+            app:destination="@id/fileChooser" />
+    </fragment>
+    <fragment
+        android:id="@+id/fileChooser"
+        android:name="com.example.organizer.ui.Utils.fileChooser.FileChooser"
+        android:label="Choose file"
+        tools:layout="@layout/file_chooser_fragment" />
+    <fragment
+        android:id="@+id/transactionCategory"
+        android:name="com.example.organizer.ui.money.transactionCategory.TransactionCategory"
+        android:label="transaction_category_fragment"
+        tools:layout="@layout/transaction_category_fragment" >
+        <argument
+            android:name="selectCategory"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+        <argument
+            android:name="transactionType"
+            app:argType="string"
+            app:nullable="true"
+            />
+        <action
+            android:id="@+id/action_transactionCategory_to_selectTransactionType"
+            app:destination="@id/selectTransactionType" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectTransactionType"
+        android:name="com.example.organizer.ui.money.selectTransactionType.SelectTransactionType"
+        android:label="Select Transaction Type"
+        tools:layout="@layout/select_transaction_type_fragment" />
 
 </navigation>

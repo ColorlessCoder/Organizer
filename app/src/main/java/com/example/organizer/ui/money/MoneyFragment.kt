@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 
 import com.example.organizer.R
@@ -43,7 +44,12 @@ class MoneyFragment : Fragment() {
                     activity,
                     view
                 )
-        })
+        });
+        view.findViewById<View>(R.id.category_card)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory(null)
+                findNavController().navigate(action)
+            }
     }
 
 }
