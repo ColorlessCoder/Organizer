@@ -53,6 +53,8 @@ class EditCategory : Fragment() {
                 .getCategory(args.id!!)
                 .observe(this, Observer {
                     viewModel.category = it
+                    viewModel.categoryName.value = viewModel.category!!.categoryName
+                    viewModel.showDelete.value = true
                 })
         } else {
             viewModel.category = null

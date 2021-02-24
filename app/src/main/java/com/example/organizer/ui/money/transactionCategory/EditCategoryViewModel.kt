@@ -18,9 +18,23 @@ class EditCategoryViewModel : ViewModel() {
     val categoryName = MutableLiveData<String>()
     val transactionType = MutableLiveData<TransactionType>()
     var category:Category? = null
+    val showDelete = MutableLiveData<Boolean>()
 
     lateinit var categoryDAO: CategoryDAO;
     lateinit var view: View;
+
+    init {
+        showDelete.value = false
+    }
+
+    fun delete() {
+        if(category != null) {
+            viewModelScope.launch {
+                categoryDAO.delete(category!!)
+                view.findNavController().popBackStack()
+            }
+        }
+    }
 
     fun save() {
         if(!categoryName.value.isNullOrEmpty()) {

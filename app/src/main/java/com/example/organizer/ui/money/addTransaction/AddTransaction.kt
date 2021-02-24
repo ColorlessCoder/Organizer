@@ -18,6 +18,7 @@ import com.example.organizer.database.services.TransactionsService
 import com.example.organizer.databinding.AddTransactionFragmentBinding
 import com.example.organizer.databinding.EditAccountFragmentBinding
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
+import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
 import kotlinx.android.synthetic.main.add_transaction_fragment.*
 
 class AddTransaction : Fragment() {
@@ -28,6 +29,7 @@ class AddTransaction : Fragment() {
 
     private lateinit var viewModel: AddTransactionViewModel
     private lateinit var selectAccountViewModel: SelectAccountViewModel
+    private lateinit var selectCategoryViewModel: SelectCategoryViewModel
     val args: AddTransactionArgs by navArgs()
 
     override fun onCreateView(
@@ -48,6 +50,8 @@ class AddTransaction : Fragment() {
         viewModel.transactionService = TransactionsService(dbInstance.transactionDao())
         selectAccountViewModel =
             ViewModelProviders.of(requireActivity()).get(SelectAccountViewModel::class.java)
+        selectCategoryViewModel =
+            ViewModelProviders.of(requireActivity()).get(SelectCategoryViewModel::class.java)
         binding.addTransactionViewModel = viewModel
         binding.lifecycleOwner = this
         if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.FROM_ACCOUNT) {
@@ -57,6 +61,10 @@ class AddTransaction : Fragment() {
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.TO_ACCOUNT) {
             if (selectAccountViewModel.selectedAccount != null) {
                 viewModel.toAccount.value = selectAccountViewModel.selectedAccount
+            }
+        } else if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.CATEGORY) {
+            if (selectCategoryViewModel.category != null) {
+                viewModel.category.value = selectCategoryViewModel.category
             }
         }
         if(viewModel.selectedAccount.value == null && args.sourceAccountId != null) {
@@ -93,6 +101,15 @@ class AddTransaction : Fragment() {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 AddTransactionViewModel.Companion.FIELDS.TO_ACCOUNT
             val action = AddTransactionDirections.actionAddTransactionToSelectAccount()
+            view.findNavController().navigate(action)
+        }
+        val categoryView = view.findViewById<View>(R.id.category_input)
+        categoryView.setOnClickListener {
+            viewModel.fieldPendingToSetAfterNavigateBack =
+                AddTransactionViewModel.Companion.FIELDS.CATEGORY
+            val action = AddTransactionDirections.actionAddTransactionToTransactionCategory()
+            action.transactionType = viewModel.transactionType.value!!
+            action.selectCategory = true
             view.findNavController().navigate(action)
         }
     }

@@ -3,6 +3,7 @@ package com.example.organizer.database.relation
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.example.organizer.database.entity.Account
+import com.example.organizer.database.entity.Category
 import com.example.organizer.database.entity.Transaction
 
 data class TransactionDetails (
@@ -20,5 +21,12 @@ data class TransactionDetails (
         entityColumn = "id",
         projection = ["account_name"]
     )
-    val toAccountName: String?
+    val toAccountName: String?,
+    @Relation(
+        parentColumn = "transaction_category_id",
+        entity = Category::class,
+        entityColumn = "id",
+        projection = ["category_name"]
+    )
+    val categoryName: String?
 )

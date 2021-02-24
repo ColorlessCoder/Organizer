@@ -9,6 +9,7 @@ import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.Enums.TransactionType
 import com.example.organizer.database.dao.TransactionDAO
 import com.example.organizer.database.entity.Account
+import com.example.organizer.database.entity.Category
 import com.example.organizer.database.entity.Transaction
 import com.example.organizer.database.services.TransactionsService
 import kotlinx.coroutines.launch
@@ -21,6 +22,7 @@ class AddTransactionViewModel : ViewModel() {
     val details = MutableLiveData<String>()
     val fromAccount = MutableLiveData<Account>()
     val toAccount = MutableLiveData<Account>()
+    val category = MutableLiveData<Category>()
     var backgroundColor = MutableLiveData<Int>()
     val showFromAccount = MutableLiveData<Boolean>()
     val showToAccount = MutableLiveData<Boolean>()
@@ -32,7 +34,7 @@ class AddTransactionViewModel : ViewModel() {
 
     companion object {
         enum class FIELDS {
-            FROM_ACCOUNT, TO_ACCOUNT, NONE
+            FROM_ACCOUNT, TO_ACCOUNT, CATEGORY, NONE
         }
     }
 
@@ -42,15 +44,21 @@ class AddTransactionViewModel : ViewModel() {
     }
 
     fun selectTransferType() {
-        selectTransactionType(TransactionType.TRANSFER.typeCode)
+        if(transactionType.value!! != TransactionType.TRANSFER.typeCode) {
+            selectTransactionType(TransactionType.TRANSFER.typeCode)
+        }
     }
 
     fun selectIncomeType() {
-        selectTransactionType(TransactionType.INCOME.typeCode)
+        if(transactionType.value!! != TransactionType.INCOME.typeCode) {
+            selectTransactionType(TransactionType.INCOME.typeCode)
+        }
     }
 
     fun selectExpenseType() {
-        selectTransactionType(TransactionType.EXPENSE.typeCode)
+        if(transactionType.value!! != TransactionType.EXPENSE.typeCode) {
+            selectTransactionType(TransactionType.EXPENSE.typeCode)
+        }
     }
 
     fun setNavigateBack() {
@@ -75,7 +83,7 @@ class AddTransactionViewModel : ViewModel() {
                     if (fromAccount.value == null) null else fromAccount.value!!.id,
                     if (toAccount.value == null) null else toAccount.value!!.id,
                     null,
-                    null,
+                    if (category.value == null) null else category.value!!.id,
                     details.value,
                     Date().time
                 )
@@ -92,6 +100,7 @@ class AddTransactionViewModel : ViewModel() {
     fun selectTransactionType(type: Int) {
         println(type)
         transactionType.value = type
+        category.value = null
         if (TransactionType.TRANSFER.typeCode == type) {
             backgroundColor.value = R.color.TransferColor
             showFromAccount.value = true

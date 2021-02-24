@@ -1,6 +1,7 @@
 package com.example.organizer.ui.money.transactionCategory
 
 import android.content.Context
+import android.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -11,7 +12,6 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
-import androidx.navigation.NavArgs
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -20,6 +20,7 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.Enums.TransactionType
 import com.example.organizer.database.entity.Category
+import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 
 class TransactionCategory : Fragment() {
@@ -31,6 +32,7 @@ class TransactionCategory : Fragment() {
     val args: TransactionCategoryArgs by navArgs()
     private lateinit var viewModel: TransactionCategoryViewModel
     private lateinit var selectCategoryViewModel: SelectCategoryViewModel
+    private lateinit var selectTransactionTypeViewModel: SelectTransactionTypeViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -66,28 +68,39 @@ class TransactionCategory : Fragment() {
         viewModel = ViewModelProvider(this).get(TransactionCategoryViewModel::class.java)
         selectCategoryViewModel = ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
         selectCategoryViewModel.category = null
-        val typeViewModel = ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
-        if(viewModel.navigatedToSet == TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE) {
-            viewModel.transactionType.value = typeViewModel.transactionType
+        selectTransactionTypeViewModel = ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
+        if(viewModel.navigatedToSet == TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE
+            && selectTransactionTypeViewModel.transactionType != null) {
+            viewModel.transactionType.value = selectTransactionTypeViewModel.transactionType
         }
-        println(typeViewModel.transactionType)
+        println(selectTransactionTypeViewModel.transactionType)
         setCategoryListForType(view)
         viewModel.transactionType.observe(this, Observer {
             setCategoryListForType(view)
         })
         val button = view.findViewById<Button>(R.id.transaction_type_button);
         updateTransactionTypeView(button);
-        button.setOnClickListener {
-            viewModel.navigatedToSet = TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE
-            val action = TransactionCategoryDirections.actionTransactionCategoryToSelectTransactionType()
-            findNavController().navigate(action)
-        }
-        view.findViewById<View>(R.id.create_button)
-            .setOnClickListener {
-                val action = TransactionCategoryDirections.actionTransactionCategoryToEditCategory(null)
-                action.transactionType = viewModel.transactionType.value!!.typeCode
+
+        if(args.selectCategory) {
+            viewModel.transactionType.value = TransactionType.from(args.transactionType)
+            view.findViewById<View>(R.id.card_filter).visibility = View.GONE
+            view.findViewById<View>(R.id.create_button).visibility = View.GONE
+        } else {
+            button.setOnClickListener {
+                viewModel.navigatedToSet =
+                    TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE
+                val action =
+                    TransactionCategoryDirections.actionTransactionCategoryToSelectTransactionType()
                 findNavController().navigate(action)
             }
+            view.findViewById<View>(R.id.create_button)
+                .setOnClickListener {
+                    val action =
+                        TransactionCategoryDirections.actionTransactionCategoryToEditCategory(null)
+                    action.transactionType = viewModel.transactionType.value!!.typeCode
+                    findNavController().navigate(action)
+                }
+        }
     }
 
 }
@@ -117,7 +130,9 @@ class CategoryListAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val category = categories.get(position)
+        val type = TransactionType.from(category.transactionType)
         holder.label.text = category.categoryName
+        holder.itemView.background = ShpaeUtil.getRoundCornerShape(15.toFloat(),  Color.WHITE, ContextCompat.getColor(context, type.color))
         holder.itemView.setOnClickListener {
             if(selectCategory) {
                 viewModel.category = category

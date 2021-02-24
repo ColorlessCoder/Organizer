@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="editCategoryViewModel"
             type="com.example.organizer.ui.money.transactionCategory.EditCategoryViewModel" />
@@ -16,6 +17,7 @@
 
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +31,21 @@
                 android:maxLength="50"
                 android:text="@={editCategoryViewModel.categoryName}" />
         </com.google.android.material.textfield.TextInputLayout>
+
+        <Button
+            android:id="@+id/delete_category"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DELETE"
+            android:textColor="@color/whiteText"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:background="@color/ExpenseColor"
+            android:visibility="@{editCategoryViewModel.showDelete ? View.VISIBLE: View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+            android:onClick="@{() -> editCategoryViewModel.delete()}" />
 
         <Button
             android:id="@+id/button7"

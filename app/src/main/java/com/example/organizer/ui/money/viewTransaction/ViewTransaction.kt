@@ -69,6 +69,7 @@ class ViewTransaction : Fragment() {
             val fromAccount: TextView = view.findViewById(R.id.from_account)
             val toAccount: TextView = view.findViewById(R.id.to_account)
             val transactionDate: TextView = view.findViewById(R.id.transaction_date)
+            val categoryName: TextView = view.findViewById(R.id.category_name)
         }
         override fun onCreateViewHolder(
             parent: ViewGroup,
@@ -91,6 +92,12 @@ class ViewTransaction : Fragment() {
             holder.transactionAmount.text = StringUtils.doubleToString(transactionDetails.transaction.amount)
             holder.fromAccount.text = transactionDetails.fromAccountName
             holder.toAccount.text = transactionDetails.toAccountName
+            if(transactionDetails.categoryName == null) {
+                holder.categoryName.visibility = View.GONE
+            } else {
+                holder.categoryName.text = transactionDetails.categoryName
+                holder.categoryName.background = ShpaeUtil.getRoundCornerShape(15.toFloat(),  Color.WHITE, ContextCompat.getColor(view.context, transactionType.color))
+            }
             holder.transactionDate.text = DateUtils.dateToString(Date(transactionDetails.transaction.transactedAt));
         }
 

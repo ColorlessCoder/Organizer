@@ -96,7 +96,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColorHint="@color/whiteText"
-                    app:helperText="Current balance: 2600 BDT"
+                    app:helperText="@{`Current balance: ` + addTransactionViewModel.fromAccount.balance + `BDT`}"
                     app:helperTextEnabled="true"
                     app:layout_constraintTop_toBottomOf="@+id/amount"
                     android:visibility="@{addTransactionViewModel.showFromAccount ? View.VISIBLE: View.GONE}">
@@ -120,7 +120,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColorHint="@color/whiteText"
-                    app:helperText="Current balance: 2600 BDT"
+                    app:helperText="@{`Current balance: ` + addTransactionViewModel.toAccount.balance + `BDT`}"
                     app:helperTextEnabled="true"
                     app:layout_constraintTop_toBottomOf="@+id/fromAccount"
                     android:visibility="@{addTransactionViewModel.showToAccount ? View.VISIBLE: View.GONE}">
@@ -138,13 +138,35 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/category"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:textColorHint="@color/whiteText"
+                    app:helperTextEnabled="true"
+                    app:layout_constraintTop_toBottomOf="@+id/toAccount">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/category_input"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:editable="false"
+                        android:hint="Category"
+                        android:text="@{addTransactionViewModel.category.categoryName}"
+                        android:textColor="@color/whiteText"
+                        android:textStyle="bold" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/details"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColorHint="@color/whiteText"
-                    app:layout_constraintTop_toBottomOf="@+id/toAccount">
+                    app:layout_constraintTop_toBottomOf="@+id/category">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
