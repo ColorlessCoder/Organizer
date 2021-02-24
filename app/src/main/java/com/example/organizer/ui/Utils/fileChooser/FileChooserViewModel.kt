@@ -11,7 +11,7 @@ class FileChooserViewModel : ViewModel() {
     var selectedDirectory: File? = null
     val selectedPath = MutableLiveData<File>()
     init {
-        currentDirectory.value = File(Environment.getExternalStorageState())
-        selectedPath.value = File(Environment.getExternalStorageState())
+        currentDirectory.value = Environment.getExternalStorageDirectory()
+        selectedPath.value = Environment.getExternalStorageDirectory()
     }
 }

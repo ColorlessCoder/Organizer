@@ -51,20 +51,36 @@ class TransactionCategory : Fragment() {
         })
     }
 
+    private fun updateTransactionTypeView(button: Button) {
+        button.text = viewModel.transactionType.value!!.name
+        button.setBackgroundColor(ContextCompat.getColor(requireContext(), viewModel.transactionType.value!!.color))
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(TransactionCategoryViewModel::class.java)
+        val typeViewModel = ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
+        if(viewModel.navigatedToSet == TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE) {
+            viewModel.transactionType.value = typeViewModel.transactionType
+        }
+        println(typeViewModel.transactionType)
         setCategoryListForType(view)
         viewModel.transactionType.observe(this, Observer {
             setCategoryListForType(view)
         })
         val button = view.findViewById<Button>(R.id.transaction_type_button);
-        button.text = viewModel.transactionType.value!!.name
-        button.setBackgroundColor(ContextCompat.getColor(requireContext(), viewModel.transactionType.value!!.color))
+        updateTransactionTypeView(button);
         button.setOnClickListener {
+            viewModel.navigatedToSet = TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE
             val action = TransactionCategoryDirections.actionTransactionCategoryToSelectTransactionType()
             findNavController().navigate(action)
         }
+        view.findViewById<View>(R.id.create_button)
+            .setOnClickListener {
+                val action = TransactionCategoryDirections.actionTransactionCategoryToEditCategory(null)
+                action.transactionType = viewModel.transactionType.value!!.typeCode
+                findNavController().navigate(action)
+            }
     }
 
 }

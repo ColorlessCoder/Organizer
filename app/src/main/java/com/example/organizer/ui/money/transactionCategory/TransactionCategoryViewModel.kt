@@ -8,8 +8,12 @@ import com.example.organizer.database.entity.Category
 
 class TransactionCategoryViewModel : ViewModel() {
     val transactionType = MutableLiveData<TransactionType>()
-    val categories = MutableLiveData<List<Category>>()
+    var navigatedToSet = NAVIGATED_TO_SET.NONE
     init {
         transactionType.value = TransactionType.TRANSFER
+    }
+    enum class NAVIGATED_TO_SET {
+        NONE,
+        TRANSACTION_TYPE
     }
 }

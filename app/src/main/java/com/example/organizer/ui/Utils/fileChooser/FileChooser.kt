@@ -2,6 +2,7 @@ package com.example.organizer.ui.Utils.fileChooser
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -32,11 +33,10 @@ class FileChooser : Fragment() {
         println(path)
         val result = mutableListOf<File>()
         if(path.exists()) {
-            val dirs = path.listFiles(FileFilter {
+            path.listFiles(FileFilter {
                 it != null && it.canRead()
-            })
-            dirs.forEach {
-                if(it != null) {
+            })?.forEach {
+                if (it != null) {
                     result.add(it)
                 }
             }
@@ -52,9 +52,18 @@ class FileChooser : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        println("filechooser view created")
         viewModel = ViewModelProvider(this.requireActivity())
             .get(FileChooserViewModel::class.java)
         updateList(view)
+        view.findViewById<View>(R.id.root_button)
+            .setOnClickListener {
+                viewModel.selectedPath.value = Environment.getRootDirectory()
+            }
+        view.findViewById<View>(R.id.external_button)
+            .setOnClickListener {
+                viewModel.selectedPath.value = Environment.getExternalStorageDirectory()
+            }
         viewModel.selectedPath.observe(this, Observer {
             if(it != null && it.isDirectory) {
                 viewModel.currentDirectory.value = it

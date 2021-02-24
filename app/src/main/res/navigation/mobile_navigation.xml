@@ -115,11 +115,28 @@
         <action
             android:id="@+id/action_transactionCategory_to_selectTransactionType"
             app:destination="@id/selectTransactionType" />
+        <action
+            android:id="@+id/action_transactionCategory_to_editCategory"
+            app:destination="@id/editCategory" />
     </fragment>
     <fragment
         android:id="@+id/selectTransactionType"
         android:name="com.example.organizer.ui.money.selectTransactionType.SelectTransactionType"
         android:label="Select Transaction Type"
         tools:layout="@layout/select_transaction_type_fragment" />
+    <fragment
+        android:id="@+id/editCategory"
+        android:name="com.example.organizer.ui.money.transactionCategory.EditCategory"
+        android:label="EditCategory" >
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="transactionType"
+            app:argType="integer"
+            android:defaultValue="0"/>
+
+    </fragment>
 
 </navigation>
