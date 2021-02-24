@@ -11,8 +11,10 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
+import androidx.navigation.NavArgs
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
@@ -26,7 +28,9 @@ class TransactionCategory : Fragment() {
         fun newInstance() = TransactionCategory()
     }
 
+    val args: TransactionCategoryArgs by navArgs()
     private lateinit var viewModel: TransactionCategoryViewModel
+    private lateinit var selectCategoryViewModel: SelectCategoryViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -39,8 +43,9 @@ class TransactionCategory : Fragment() {
         view.findViewById<RecyclerView>(R.id.category_list)
             .adapter = CategoryListAdapter(
             categories,
-            viewModel,
-            view
+            selectCategoryViewModel,
+            view,
+            args.selectCategory
         )
     }
 
@@ -59,6 +64,8 @@ class TransactionCategory : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(TransactionCategoryViewModel::class.java)
+        selectCategoryViewModel = ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
+        selectCategoryViewModel.category = null
         val typeViewModel = ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
         if(viewModel.navigatedToSet == TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE) {
             viewModel.transactionType.value = typeViewModel.transactionType
@@ -87,8 +94,9 @@ class TransactionCategory : Fragment() {
 
 class CategoryListAdapter(
     private val categories: List<Category>,
-    private val viewModel: TransactionCategoryViewModel,
-    private val parentView: View
+    private val viewModel: SelectCategoryViewModel,
+    private val parentView: View,
+    private val selectCategory: Boolean
 ) : RecyclerView.Adapter<CategoryListAdapter.ViewHolder>() {
     lateinit var context: Context
 
@@ -108,10 +116,17 @@ class CategoryListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val type = categories.get(position)
-        holder.label.text = type.categoryName
+        val category = categories.get(position)
+        holder.label.text = category.categoryName
         holder.itemView.setOnClickListener {
-//            parentView.findNavController().popBackStack()
+            if(selectCategory) {
+                viewModel.category = category
+                parentView.findNavController().popBackStack()
+            } else {
+                val action =
+                    TransactionCategoryDirections.actionTransactionCategoryToEditCategory(category.id)
+                parentView.findNavController().navigate(action)
+            }
         }
     }
 }

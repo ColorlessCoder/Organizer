@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.example.organizer.R
@@ -47,6 +48,15 @@ class EditCategory : Fragment() {
         }
         viewModel.categoryDAO = dbInstance.categoryDao()
         binding.lifecycleOwner = this
+        if(args.id != null) {
+            dbInstance.categoryDao()
+                .getCategory(args.id!!)
+                .observe(this, Observer {
+                    viewModel.category = it
+                })
+        } else {
+            viewModel.category = null
+        }
         return view
     }
 
