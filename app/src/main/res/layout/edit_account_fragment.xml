@@ -23,6 +23,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -36,6 +37,7 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_height="wrap_content">
 
                 <com.google.android.material.textfield.TextInputEditText
@@ -65,7 +67,7 @@
                     android:id="@+id/button3"
                     android:layout_width="156dp"
                     android:layout_height="49dp"
-                    android:background="@color/TransferColor"
+                    android:backgroundTint="@color/TransferColor"
                     android:onClick="@{() -> editAccountViewModel.addTransaction()}"
                     android:text="+ Transaction"
                     android:textColor="@color/whiteText"
@@ -80,7 +82,7 @@
                     android:id="@+id/button2"
                     android:layout_width="156dp"
                     android:layout_height="49dp"
-                    android:background="@android:color/holo_red_light"
+                    android:backgroundTint="@android:color/holo_red_light"
                     android:onClick="@{() -> editAccountViewModel.delete()}"
                     android:text="Delete"
                     android:textColor="@color/whiteText"
@@ -97,7 +99,7 @@
                     android:layout_marginTop="12dp"
                     android:text="History"
                     android:visibility="@{editAccountViewModel.creating ? View.GONE: View.VISIBLE}"
-                    android:background="@color/OrangeBCWhiteTC"
+                    android:backgroundTint="@color/OrangeBCWhiteTC"
                     android:textColor="@color/whiteText"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.498"

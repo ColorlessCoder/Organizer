@@ -4,21 +4,23 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <import type="android.view.View" />
+
         <variable
-            name="addTransactionViewModel"
-            type="com.example.organizer.ui.money.addTransaction.AddTransactionViewModel" />
+            name="editTemplateTransactionModel"
+            type="com.example.organizer.ui.money.transactionPlan.EditTemplateTransactionViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.money.addTransaction.AddTransaction">
+        tools:context=".ui.money.transactionPlan.EditTemplateTransaction">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@{addTransactionViewModel.transactionType == 1? @color/IncomeColor: addTransactionViewModel.transactionType == 0 ? @color/TransferColor: @color/ExpenseColor}">
+            android:background="@{editTemplateTransactionModel.transactionType == 1? @color/IncomeColor: editTemplateTransactionModel.transactionType == 0 ? @color/TransferColor: @color/ExpenseColor}">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"
@@ -34,26 +36,28 @@
                     android:orientation="horizontal"
                     android:weightSum="3"
                     app:layout_constraintTop_toTopOf="parent">
+
                     <Button
                         android:id="@+id/button3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:backgroundTint="@color/ExpenseColor"
-                        android:text="Expense"
                         android:layout_weight="1"
+                        android:backgroundTint="@color/ExpenseColor"
+                        android:onClick="@{() -> editTemplateTransactionModel.selectExpenseType()}"
+                        android:text="Expense"
                         android:textColor="@color/whiteText"
-                        android:textStyle="bold"
-                        android:onClick="@{() -> addTransactionViewModel.selectExpenseType()}"/>
+                        android:textStyle="bold" />
+
                     <Button
                         android:id="@+id/button4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:backgroundTint="@color/TransferColor"
+                        android:onClick="@{() -> editTemplateTransactionModel.selectTransferType()}"
                         android:text="Transfer"
                         android:textColor="@color/whiteText"
-                        android:textStyle="bold"
-                        android:onClick="@{() -> addTransactionViewModel.selectTransferType()}" />
+                        android:textStyle="bold" />
 
                     <Button
                         android:id="@+id/button5"
@@ -61,10 +65,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:backgroundTint="@color/IncomeColor"
+                        android:onClick="@{() -> editTemplateTransactionModel.selectIncomeType()}"
                         android:text="Income"
                         android:textColor="@color/whiteText"
-                        android:textStyle="bold"
-                        android:onClick="@{() -> addTransactionViewModel.selectIncomeType()}" />
+                        android:textStyle="bold" />
                 </LinearLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
@@ -82,7 +86,7 @@
                         android:hint="Amount"
                         android:inputType="numberDecimal"
                         android:maxLength="10"
-                        android:text="@={addTransactionViewModel.amount}"
+                        android:text="@={editTemplateTransactionModel.amount}"
                         android:textColor="@color/whiteText"
                         android:textSize="35dp"
                         android:textStyle="bold" />
@@ -96,10 +100,10 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColorHint="@color/whiteText"
-                    app:helperText="@{`Current balance: ` + addTransactionViewModel.fromAccount.balance + `BDT`}"
+                    android:visibility="@{editTemplateTransactionModel.showFromAccount ? View.VISIBLE: View.GONE}"
+                    app:helperText="@{`Current balance: ` + editTemplateTransactionModel.fromAccount.balance + `BDT`}"
                     app:helperTextEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/amount"
-                    android:visibility="@{addTransactionViewModel.showFromAccount ? View.VISIBLE: View.GONE}">
+                    app:layout_constraintTop_toBottomOf="@+id/amount">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/fromAccountInput"
@@ -107,7 +111,7 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:hint="From account"
-                        android:text="@{addTransactionViewModel.fromAccount.accountName}"
+                        android:text="@{editTemplateTransactionModel.fromAccount.accountName}"
                         android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
@@ -120,10 +124,10 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
                     android:textColorHint="@color/whiteText"
-                    app:helperText="@{`Current balance: ` + addTransactionViewModel.toAccount.balance + `BDT`}"
+                    android:visibility="@{editTemplateTransactionModel.showToAccount ? View.VISIBLE: View.GONE}"
+                    app:helperText="@{`Current balance: ` + editTemplateTransactionModel.toAccount.balance + `BDT`}"
                     app:helperTextEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/fromAccount"
-                    android:visibility="@{addTransactionViewModel.showToAccount ? View.VISIBLE: View.GONE}">
+                    app:layout_constraintTop_toBottomOf="@+id/fromAccount">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/toAccountInput"
@@ -131,7 +135,7 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:hint="To account"
-                        android:text="@{addTransactionViewModel.toAccount.accountName}"
+                        android:text="@{editTemplateTransactionModel.toAccount.accountName}"
                         android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
@@ -153,7 +157,7 @@
                         android:layout_height="wrap_content"
                         android:editable="false"
                         android:hint="Category"
-                        android:text="@{addTransactionViewModel.category.categoryName}"
+                        android:text="@{editTemplateTransactionModel.category.categoryName}"
                         android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
@@ -173,7 +177,7 @@
                         android:layout_height="wrap_content"
                         android:hint="Details"
                         android:inputType="textMultiLine"
-                        android:text="@={addTransactionViewModel.details}"
+                        android:text="@={editTemplateTransactionModel.details}"
                         android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
@@ -195,8 +199,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="?android:attr/selectableItemBackground"
+                android:onClick="@{() -> editTemplateTransactionModel.saveTransaction()}"
                 android:text="Create"
-                android:onClick="@{() -> addTransactionViewModel.createTransaction()}"
                 android:textColor="@color/whiteText"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

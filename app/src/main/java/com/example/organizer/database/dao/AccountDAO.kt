@@ -21,4 +21,7 @@ interface AccountDAO {
     @Query("Select * From accounts where id = :id")
     fun getAccountById(id: String): LiveData<Account>
 
+    @Query("Select * From accounts where id = :id")
+    suspend fun getById(id: String): Account
+
 }

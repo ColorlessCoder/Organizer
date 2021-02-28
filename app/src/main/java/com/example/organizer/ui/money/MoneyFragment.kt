@@ -9,6 +9,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.GridView
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 
@@ -17,6 +19,9 @@ import com.example.organizer.database.AppDatabase
 //import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.entity.Account
 import com.example.organizer.ui.Utils.ColorUtil
+import com.example.organizer.ui.money.transactionPlan.EditTemplateTransactionViewModel
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class MoneyFragment : Fragment() {
 
@@ -24,6 +29,7 @@ class MoneyFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
+    private lateinit var viewModel: MoneyFragmentViewModel
     val args: MoneyFragmentArgs by navArgs()
 
     override fun onCreateView(
@@ -35,8 +41,10 @@ class MoneyFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel = ViewModelProviders.of(this).get(MoneyFragmentViewModel::class.java)
         var accountsGrid: GridView = view.findViewById(R.id.accountsGrid);
-        val accountDAO = AppDatabase.getInstance(view.context).accountDao()
+        val database = AppDatabase.getInstance(view.context)
+        val accountDAO = database.accountDao()
         accountDAO.getAllAccounts().observe(this, Observer { accounts ->
             accountsGrid.adapter =
                 AccountGridAdapter(
@@ -50,6 +58,47 @@ class MoneyFragment : Fragment() {
                 val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory()
                 findNavController().navigate(action)
             }
+        loadTransactionPlanView(view, database)
+    }
+
+    private fun loadTransactionPlanView(view: View, database: AppDatabase) {
+        view.findViewById<View>(R.id.add_transaction_plan)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToEditTransactionPlan(null)
+                findNavController().navigate(action)
+            }
+        val gridview = view.findViewById<GridView>(R.id.transaction_plan_grid)
+        database.transactionPlanDao().getAllTransactionPlans().observe(this, Observer {
+            gridview.adapter = TransactionPlanGridAdapter(
+                it,
+                activity,
+                view,
+                viewModel
+            )
+        })
+        if(viewModel.applyTransactionPlanId.hasObservers()) {
+            viewModel.applyTransactionPlanId.removeObservers(this)
+        }
+        viewModel.applyTransactionPlanId.observe(this, Observer {
+            if(it != null) {
+                lifecycleScope.launch {
+                    try {
+                        val successfulMessage = database.transactionDao().applyTransactionPlan(database.templateTransactionDao().getAllTemplateTransactionDetailsNonLive(it))
+                        MaterialAlertDialogBuilder(view.context)
+                            .setTitle("Successfully Applied")
+                            .setMessage(successfulMessage)
+                            .show()
+                    } catch (ex: Exception) {
+                        MaterialAlertDialogBuilder(view.context)
+                            .setTitle("Problem while Applying")
+                            .setMessage(ex.message)
+                            .show()
+                    } finally {
+                        viewModel.applyTransactionPlanId.value = null
+                    }
+                }
+            }
+        })
     }
 
 }

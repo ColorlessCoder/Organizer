@@ -21,6 +21,12 @@
         <action
             android:id="@+id/action_nav_money_to_transactionCategory"
             app:destination="@id/transactionCategory" />
+        <action
+            android:id="@+id/action_nav_money_to_editTransactionPlan"
+            app:destination="@id/editTransactionPlan" />
+        <action
+            android:id="@+id/action_nav_money_to_templateTransactions"
+            app:destination="@id/templateTransactions" />
     </fragment>
     <fragment
         android:id="@+id/editAccount"
@@ -140,6 +146,52 @@
             app:argType="integer"
             android:defaultValue="0"/>
 
+    </fragment>
+    <fragment
+        android:id="@+id/editTransactionPlan"
+        android:name="com.example.organizer.ui.money.transactionPlan.EditTransactionPlan"
+        android:label="edit_transaction_plan_fragment"
+        tools:layout="@layout/edit_transaction_plan_fragment" >
+        <argument
+            android:name="id"
+            app:argType="string"
+            app:nullable="true"/>
+    </fragment>
+    <fragment
+        android:id="@+id/templateTransactions"
+        android:name="com.example.organizer.ui.money.transactionPlan.TemplateTransactions"
+        android:label="Templates"
+        tools:layout="@layout/template_transactions_fragment" >
+        <argument
+            android:name="id"
+            app:argType="string"/>
+        <action
+            android:id="@+id/action_templateTransactions_to_editTemplateTransaction"
+            app:destination="@id/editTemplateTransaction" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTemplateTransaction"
+        android:name="com.example.organizer.ui.money.transactionPlan.EditTemplateTransaction"
+        android:label="edit_template_transaction_fragment"
+        tools:layout="@layout/edit_template_transaction_fragment" >
+        <argument
+            android:name="transactionPlanId"
+            app:argType="string"
+            app:nullable="false"/>
+        <argument
+            android:name="templateTransactionId"
+            app:argType="string"
+            app:nullable="true"/>
+        <argument
+            android:name="order"
+            app:argType="integer"
+            app:nullable="false"/>
+        <action
+            android:id="@+id/action_editTemplateTransaction_to_selectAccount"
+            app:destination="@id/selectAccount" />
+        <action
+            android:id="@+id/action_editTemplateTransaction_to_transactionCategory"
+            app:destination="@id/transactionCategory" />
     </fragment>
 
 </navigation>

@@ -19,6 +19,9 @@ interface CategoryDAO {
     suspend fun delete(vararg category: Category)
 
     @Query("Select * From categories where id = :id")
+    suspend fun getById(id:String): Category
+
+    @Query("Select * From categories where id = :id")
     fun getCategory(id:String): LiveData<Category>
 
     @Query("Select * From categories where transaction_type = :type")
