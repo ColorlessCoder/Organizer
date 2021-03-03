@@ -17,6 +17,7 @@
             android:layout_height="wrap_content"
             android:textSize="15dp"
             android:textColor="@color/whiteText"
+            android:drawableRight="@drawable/ic_round_check_24"
             android:text="TextView"/>
         <TextView
             android:id="@+id/accountBalance"

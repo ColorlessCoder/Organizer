@@ -13,6 +13,7 @@
         android:paddingHorizontal="20dp"
         android:paddingVertical="5dp"
         android:textColor="@color/BlackText"
+        android:drawableRight="@drawable/ic_round_check_24"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

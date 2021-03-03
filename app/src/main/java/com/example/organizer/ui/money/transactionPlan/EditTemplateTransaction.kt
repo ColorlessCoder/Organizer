@@ -54,16 +54,16 @@ class EditTemplateTransaction : Fragment() {
         binding.editTemplateTransactionModel = viewModel
         binding.lifecycleOwner = this
         if (viewModel.fieldPendingToSetAfterNavigateBack == EditTemplateTransactionViewModel.Companion.FIELDS.FROM_ACCOUNT) {
-            if (selectAccountViewModel.selectedAccount != null) {
-                viewModel.fromAccount.value = selectAccountViewModel.selectedAccount
+            if (selectAccountViewModel.selectedRecord != null) {
+                viewModel.fromAccount.value = selectAccountViewModel.selectedRecord
             }
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == EditTemplateTransactionViewModel.Companion.FIELDS.TO_ACCOUNT) {
-            if (selectAccountViewModel.selectedAccount != null) {
-                viewModel.toAccount.value = selectAccountViewModel.selectedAccount
+            if (selectAccountViewModel.selectedRecord != null) {
+                viewModel.toAccount.value = selectAccountViewModel.selectedRecord
             }
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == EditTemplateTransactionViewModel.Companion.FIELDS.CATEGORY) {
-            if (selectCategoryViewModel.category != null) {
-                viewModel.category.value = selectCategoryViewModel.category
+            if (selectCategoryViewModel.selectedRecord != null) {
+                viewModel.category.value = selectCategoryViewModel.selectedRecord
             }
         } else {
             updateViewModelAsPerArgs(dbInstance)

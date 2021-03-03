@@ -16,10 +16,8 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.TransactionsService
 import com.example.organizer.databinding.AddTransactionFragmentBinding
-import com.example.organizer.databinding.EditAccountFragmentBinding
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
-import kotlinx.android.synthetic.main.add_transaction_fragment.*
 
 class AddTransaction : Fragment() {
 
@@ -55,16 +53,16 @@ class AddTransaction : Fragment() {
         binding.addTransactionViewModel = viewModel
         binding.lifecycleOwner = this
         if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.FROM_ACCOUNT) {
-            if (selectAccountViewModel.selectedAccount != null) {
-                viewModel.fromAccount.value = selectAccountViewModel.selectedAccount
+            if (selectAccountViewModel.selectedRecord != null) {
+                viewModel.fromAccount.value = selectAccountViewModel.selectedRecord
             }
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.TO_ACCOUNT) {
-            if (selectAccountViewModel.selectedAccount != null) {
-                viewModel.toAccount.value = selectAccountViewModel.selectedAccount
+            if (selectAccountViewModel.selectedRecord != null) {
+                viewModel.toAccount.value = selectAccountViewModel.selectedRecord
             }
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == AddTransactionViewModel.Companion.FIELDS.CATEGORY) {
-            if (selectCategoryViewModel.category != null) {
-                viewModel.category.value = selectCategoryViewModel.category
+            if (selectCategoryViewModel.selectedRecord != null) {
+                viewModel.category.value = selectCategoryViewModel.selectedRecord
             }
         }
         if(viewModel.selectedAccount.value == null && args.sourceAccountId != null) {

@@ -21,6 +21,8 @@ import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.Enums.TransactionType
 import com.example.organizer.database.entity.Category
 import com.example.organizer.ui.Utils.ShpaeUtil
+import com.example.organizer.ui.money.common.CommonSelectRecyclerListAdapter
+import com.example.organizer.ui.money.common.CommonSelectViewHolder
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 
 class TransactionCategory : Fragment() {
@@ -67,13 +69,13 @@ class TransactionCategory : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(TransactionCategoryViewModel::class.java)
         selectCategoryViewModel = ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
-        selectCategoryViewModel.category = null
+        selectCategoryViewModel.selectedRecord = null
         selectTransactionTypeViewModel = ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
         if(viewModel.navigatedToSet == TransactionCategoryViewModel.NAVIGATED_TO_SET.TRANSACTION_TYPE
-            && selectTransactionTypeViewModel.transactionType != null) {
-            viewModel.transactionType.value = selectTransactionTypeViewModel.transactionType
+            && selectTransactionTypeViewModel.selectedRecord != null) {
+            viewModel.transactionType.value = selectTransactionTypeViewModel.selectedRecord
         }
-        println(selectTransactionTypeViewModel.transactionType)
+        println(selectTransactionTypeViewModel.selectedRecord)
         setCategoryListForType(view)
         viewModel.transactionType.observe(this, Observer {
             setCategoryListForType(view)
@@ -110,11 +112,14 @@ class CategoryListAdapter(
     private val viewModel: SelectCategoryViewModel,
     private val parentView: View,
     private val selectCategory: Boolean
-) : RecyclerView.Adapter<CategoryListAdapter.ViewHolder>() {
+) : CommonSelectRecyclerListAdapter<CategoryListAdapter.ViewHolder, Category, SelectCategoryViewModel>(categories, viewModel, parentView) {
     lateinit var context: Context
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(view: View) : CommonSelectViewHolder(view) {
         val label: TextView = view.findViewById(R.id.category_label)
+        override fun getDrawableElement(): TextView {
+            return label
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -133,15 +138,14 @@ class CategoryListAdapter(
         val type = TransactionType.from(category.transactionType)
         holder.label.text = category.categoryName
         holder.itemView.background = ShpaeUtil.getRoundCornerShape(15.toFloat(),  Color.WHITE, ContextCompat.getColor(context, type.color))
-        holder.itemView.setOnClickListener {
-            if(selectCategory) {
-                viewModel.category = category
-                parentView.findNavController().popBackStack()
-            } else {
+        if(selectCategory) {
+            holder.itemView.setOnClickListener {
                 val action =
                     TransactionCategoryDirections.actionTransactionCategoryToEditCategory(category.id)
                 parentView.findNavController().navigate(action)
             }
+        } else {
+            super.onBindViewHolder(holder, position)
         }
     }
 }

@@ -91,6 +91,15 @@
             app:argType="string"
             app:nullable="true"
             />
+        <action
+            android:id="@+id/action_viewTransaction_to_selectAccount"
+            app:destination="@id/selectAccount" />
+        <action
+            android:id="@+id/action_viewTransaction_to_selectTransactionType"
+            app:destination="@id/selectTransactionType" />
+        <action
+            android:id="@+id/action_viewTransaction_to_transactionCategory"
+            app:destination="@id/transactionCategory" />
     </fragment>
     <fragment
         android:id="@+id/nav_database_backup"

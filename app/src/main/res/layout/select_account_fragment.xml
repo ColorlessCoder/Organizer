@@ -1,11 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     tools:context=".ui.money.selectAccount.SelectAccount">
 
+    <LinearLayout
+        android:id="@+id/select_button_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        tools:layout_editor_absoluteX="3dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/select_all"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Select All" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/select_none"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="50dp"
+            android:text="Select None" />
+    </LinearLayout>
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/select_account_list"
         android:layout_width="match_parent"
@@ -13,4 +38,4 @@
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         android:paddingVertical="8dp"
         />
-</FrameLayout>
+</LinearLayout>

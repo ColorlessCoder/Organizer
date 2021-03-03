@@ -1,28 +1,29 @@
 package com.example.organizer.ui.money.selectAccount
 
-import android.app.Activity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Adapter
 import android.widget.TextView
-import androidx.core.view.marginBottom
-import androidx.core.view.setPadding
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.entity.Account
 import com.example.organizer.ui.Utils.ShpaeUtil
+import com.example.organizer.ui.money.common.CommonSelectRecyclerListAdapter
+import com.example.organizer.ui.money.common.CommonSelectViewHolder
 
 class SelectAccountAdapter(
     private val accounts: List<Account>,
     private val parentView: View,
     private val viewModel: SelectAccountViewModel
-) : RecyclerView.Adapter<SelectAccountAdapter.ViewHolder>() {
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+) : CommonSelectRecyclerListAdapter<SelectAccountAdapter.ViewHolder, Account, SelectAccountViewModel>(accounts, viewModel, parentView) {
+    class ViewHolder(view: View) : CommonSelectViewHolder(view) {
         val accountLabel: TextView = view.findViewById(R.id.accountLabel)
         val accountBalance: TextView = view.findViewById(R.id.accountBalance)
         val accountCellContent: View = view.findViewById(R.id.accountCellContent)
+        override fun getDrawableElement(): TextView {
+            return accountLabel
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,9 +40,6 @@ class SelectAccountAdapter(
         holder.accountLabel.text = account.accountName
         holder.accountBalance.text = account.balance.toString()
         holder.accountCellContent.background = ShpaeUtil.getRoundCornerShape(15.toFloat(),  account.backgroundColor, null)
-        holder.itemView.setOnClickListener {
-            viewModel.selectedAccount = account
-            parentView.findNavController().popBackStack()
-        }
+        super.onBindViewHolder(holder, position)
     }
 }
