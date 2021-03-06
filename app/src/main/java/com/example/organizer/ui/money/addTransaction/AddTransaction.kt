@@ -16,6 +16,7 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.TransactionsService
 import com.example.organizer.databinding.AddTransactionFragmentBinding
+import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
 
@@ -92,6 +93,7 @@ class AddTransaction : Fragment() {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 AddTransactionViewModel.Companion.FIELDS.FROM_ACCOUNT
             val action = AddTransactionDirections.actionAddTransactionToSelectAccount()
+            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
         val toAccountView = view.findViewById<View>(R.id.toAccountInput)
@@ -99,14 +101,15 @@ class AddTransaction : Fragment() {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 AddTransactionViewModel.Companion.FIELDS.TO_ACCOUNT
             val action = AddTransactionDirections.actionAddTransactionToSelectAccount()
+            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
         val categoryView = view.findViewById<View>(R.id.category_input)
         categoryView.setOnClickListener {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 AddTransactionViewModel.Companion.FIELDS.CATEGORY
-            val action = AddTransactionDirections.actionAddTransactionToTransactionCategory()
-            action.transactionType = viewModel.transactionType.value!!
+            val action = AddTransactionDirections.actionAddTransactionToTransactionCategory((viewModel.transactionType.value?:0).toString())
+            selectCategoryViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             action.selectCategory = true
             view.findNavController().navigate(action)
         }

@@ -18,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
@@ -196,6 +197,11 @@ class ViewTransaction : Fragment() {
             false //prevents the bottom sheet from completely hiding off the screen
 
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED //initially state to fully expanded
+        val swipeRefreshLayout: SwipeRefreshLayout = contentLayout.findViewById(R.id.swiperefresh)
+        swipeRefreshLayout.setOnRefreshListener {
+            swipeRefreshLayout.isRefreshing = false
+            loadTransactions(coordinatorLayout)
+        }
 
         filterIcon.setOnClickListener { toggleFilters() }
     }
@@ -223,6 +229,7 @@ class ViewTransaction : Fragment() {
                 if (viewModel.filterTypeText.value == viewModel.ALL) null else viewModel.filterTypeValue.map { it.typeCode },
                 (viewModel.filterDays.value?:"30").toInt()
             ))
+            viewModel.previousFilterDays = viewModel.filterDays.value?:"0"
             updateTotalFields(view, transactionDetailsList)
             transactionList.adapter =
                 ViewTransactionListAdapter(
