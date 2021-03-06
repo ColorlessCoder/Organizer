@@ -27,6 +27,9 @@
         <action
             android:id="@+id/action_nav_money_to_templateTransactions"
             app:destination="@id/templateTransactions" />
+        <action
+            android:id="@+id/action_nav_money_to_viewTransaction"
+            app:destination="@id/viewTransaction" />
     </fragment>
     <fragment
         android:id="@+id/editAccount"
@@ -126,9 +129,8 @@
             android:defaultValue="false"
             />
         <argument
-            android:name="transactionType"
-            app:argType="integer"
-            android:defaultValue="0"
+            android:name="transactionTypes"
+            app:argType="string"
             />
         <action
             android:id="@+id/action_transactionCategory_to_selectTransactionType"

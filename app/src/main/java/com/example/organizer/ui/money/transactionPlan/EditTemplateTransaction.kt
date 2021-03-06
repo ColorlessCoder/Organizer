@@ -16,6 +16,7 @@ import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.databinding.EditTemplateTransactionFragmentBinding
+import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
 import kotlinx.coroutines.launch
@@ -128,6 +129,7 @@ class EditTemplateTransaction : Fragment() {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 EditTemplateTransactionViewModel.Companion.FIELDS.FROM_ACCOUNT
             val action = EditTemplateTransactionDirections.actionEditTemplateTransactionToSelectAccount()
+            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
         val toAccountView = view.findViewById<View>(R.id.toAccountInput)
@@ -135,15 +137,16 @@ class EditTemplateTransaction : Fragment() {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 EditTemplateTransactionViewModel.Companion.FIELDS.TO_ACCOUNT
             val action = EditTemplateTransactionDirections.actionEditTemplateTransactionToSelectAccount()
+            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
         val categoryView = view.findViewById<View>(R.id.category_input)
         categoryView.setOnClickListener {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 EditTemplateTransactionViewModel.Companion.FIELDS.CATEGORY
-            val action = EditTemplateTransactionDirections.actionEditTemplateTransactionToTransactionCategory()
-            action.transactionType = viewModel.transactionType.value!!
+            val action = EditTemplateTransactionDirections.actionEditTemplateTransactionToTransactionCategory((viewModel.transactionType.value?:0).toString())
             action.selectCategory = true
+            selectCategoryViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
     }

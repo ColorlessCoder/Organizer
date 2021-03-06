@@ -11,6 +11,7 @@ import android.widget.GridView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 
@@ -20,6 +21,7 @@ import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.entity.Account
 import com.example.organizer.ui.Utils.ColorUtil
 import com.example.organizer.ui.money.transactionPlan.EditTemplateTransactionViewModel
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.launch
 
@@ -46,6 +48,7 @@ class MoneyFragment : Fragment() {
         val database = AppDatabase.getInstance(view.context)
         val accountDAO = database.accountDao()
         accountDAO.getAllAccounts().observe(this, Observer { accounts ->
+            viewModel.totalAmount = accounts.fold(0.0){acc, account -> account.balance + acc}.toString() + " BDT"
             accountsGrid.adapter =
                 AccountGridAdapter(
                     accounts,
@@ -55,8 +58,20 @@ class MoneyFragment : Fragment() {
         });
         view.findViewById<View>(R.id.category_card)
             .setOnClickListener {
-                val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory()
+                val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory("0")
                 findNavController().navigate(action)
+            }
+        view.findViewById<MaterialButton>(R.id.transactions)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToViewTransaction(null);
+                findNavController().navigate(action)
+            }
+        view.findViewById<MaterialButton>(R.id.total_button)
+            .setOnClickListener {
+                MaterialAlertDialogBuilder(view.context, R.style.AppTheme_CenterModal)
+                    .setTitle("Total balance")
+                    .setMessage(viewModel.totalAmount)
+                    .show()
             }
         loadTransactionPlanView(view, database)
     }

@@ -7,7 +7,7 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
     var selectedRecords = mutableListOf<T>()
     var allSelected = false
     var mode: SELECTION_MODE = SELECTION_MODE.SINGLE
-    var currentList = mutableListOf<T>()
+    private var currentList = mutableListOf<T>()
 
     companion object {
         enum class SELECTION_MODE {
@@ -51,5 +51,13 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
     fun selectNone() {
         allSelected = false
         selectedRecords.clear()
+    }
+
+    fun setCurrentList(list: List<T>) {
+        currentList = list.toMutableList();
+        if(allSelected) {
+            selectedRecords.clear()
+            selectedRecords.addAll(currentList)
+        }
     }
 }

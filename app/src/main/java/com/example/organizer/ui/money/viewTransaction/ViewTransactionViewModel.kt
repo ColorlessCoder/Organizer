@@ -9,14 +9,15 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class ViewTransactionViewModel : ViewModel() {
     val ALL = "<ALL>"
-    val EMPTY = "<EMPTY>>"
-    var filterAccountText :String = ALL
+    val EMPTY = "<EMPTY>"
+    val filterAccountText  = MutableLiveData<String>()
     var filterAccountValue = mutableListOf<Account>()
-    var filterCategoryText :String = ALL
+    val filterCategoryText  = MutableLiveData<String>()
     var filterCategoryValue = mutableListOf<Category>()
-    var filterTypeText :String = ALL
+    val filterTypeText  = MutableLiveData<String>()
     var filterTypeValue = mutableListOf<TransactionType>()
-    var filterDays: String = "30";
+    val filterDays = MutableLiveData<String>()
+    var previousFilterDays: String = "30";
     var bottomSheetState: Int = BottomSheetBehavior.STATE_EXPANDED
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
 
@@ -37,9 +38,10 @@ class ViewTransactionViewModel : ViewModel() {
     }
 
     fun clearFilter() {
-        filterAccountText = ALL;
-        filterCategoryText = ALL;
-        filterTypeText = ALL;
-        filterDays = "30";
+        filterAccountText.value = ALL;
+        filterCategoryText.value = ALL;
+        filterTypeText.value = ALL;
+        filterDays.value = "30";
+        previousFilterDays = "30";
     }
 }

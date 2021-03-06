@@ -7,4 +7,5 @@ import com.example.organizer.database.entity.TransactionPlan
 
 class MoneyFragmentViewModel : ViewModel(){
     val applyTransactionPlanId = MutableLiveData<String>()
+    var totalAmount: String = "0 BDT"
 }

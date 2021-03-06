@@ -2,13 +2,16 @@ package com.example.organizer.database.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import androidx.sqlite.db.SimpleSQLiteQuery
+import androidx.sqlite.db.SupportSQLiteQuery
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
 import com.example.organizer.database.entity.Transaction
 import com.example.organizer.database.relation.TransactionDetails
+import java.util.*
 
 @Dao
-interface CategoryDAO {
+interface CategoryDAO: BaseDAO {
     @Insert
     suspend fun insert(vararg category: Category)
 
@@ -30,4 +33,24 @@ interface CategoryDAO {
     @Query("Select * From categories")
     fun getAllCategories(): LiveData<List<Category>>
 
+    @RawQuery
+    suspend fun getCategories(query: SupportSQLiteQuery): List<Category>
+
+    fun getQueryForCategoryTypeIn(type: List<Int>?): SimpleSQLiteQuery {
+        var queryString: StringBuilder = StringBuilder()
+        var args: MutableList<Any> = mutableListOf()
+        queryString.append("Select * From categories Where 1=1 ")
+        if(type != null) {
+            if(type.isEmpty()) {
+                queryString.append(" AND transaction_type IS NULL ")
+            } else {
+                queryString.append(" AND ${createInQuery("transaction_type", type)} ")
+                args.addAll(type)
+            }
+        }
+        queryString.append(" ORDER BY transaction_type DESC ")
+        println(queryString.toString())
+        val query = SimpleSQLiteQuery(queryString.toString(), args.toTypedArray())
+        return query
+    }
 }
