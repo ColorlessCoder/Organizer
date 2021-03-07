@@ -25,6 +25,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDAO
     abstract fun transactionPlanDao(): TransactionPlanDAO
     abstract fun templateTransactionDao(): TemplateTransactionDAO
+    abstract fun utilDAO(): UtilDAO
 
     companion object {
         private final const val DB_NAME: String = "organizer.db"

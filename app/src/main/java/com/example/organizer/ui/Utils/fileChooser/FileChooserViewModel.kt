@@ -7,11 +7,31 @@ import java.io.File
 
 class FileChooserViewModel : ViewModel() {
     val currentDirectory = MutableLiveData<File>()
-    var selectedFile: File? = null
     var selectedDirectory: File? = null
-    val selectedPath = MutableLiveData<File>()
+    var chooseDirectory: Boolean = false
+    val directoryTree = mutableListOf<File>()
     init {
-        currentDirectory.value = Environment.getExternalStorageDirectory()
-        selectedPath.value = Environment.getExternalStorageDirectory()
+        clearModel()
+    }
+
+    fun clearModel() {
+        selectedDirectory = null
+        selectDir(Environment.getExternalStorageDirectory(), true)
+    }
+
+    fun selectDir( dir: File, clearTree: Boolean) {
+        if(clearTree) {
+            directoryTree.clear()
+        }
+        currentDirectory.value = dir
+        directoryTree.add(dir)
+    }
+
+    fun backToPreviousDir(): Boolean {
+        directoryTree.removeAt(directoryTree.size-1)
+        if(directoryTree.isNotEmpty()) {
+            currentDirectory.value = directoryTree.last()
+        }
+        return directoryTree.isEmpty();
     }
 }

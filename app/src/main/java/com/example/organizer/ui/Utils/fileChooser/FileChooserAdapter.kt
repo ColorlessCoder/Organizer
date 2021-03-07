@@ -20,7 +20,8 @@ import java.io.File
 
 class FileChooserAdapter(
     private val files: List<File>,
-    private val viewModel: FileChooserViewModel
+    private val viewModel: FileChooserViewModel,
+    private val parentView: View
 ) : RecyclerView.Adapter<FileChooserAdapter.ViewHolder>() {
     lateinit var context: Context
 
@@ -47,12 +48,11 @@ class FileChooserAdapter(
             ContextCompat.getDrawable(context, R.drawable.ic_outline_folder_24)
         else ContextCompat.getDrawable(context, R.drawable.ic_outline_insert_drive_file_24)
         holder.itemView.setOnClickListener {
-            if(file.isDirectory) {
+            if (file.isDirectory) {
+                viewModel.selectDir(file, false)
+            } else if (!viewModel.chooseDirectory) {
                 viewModel.selectedDirectory = file
-                viewModel.selectedPath.value = file
-            } else {
-                viewModel.selectedFile = file
-                viewModel.selectedPath.value = file
+                parentView.findNavController().popBackStack()
             }
         }
     }

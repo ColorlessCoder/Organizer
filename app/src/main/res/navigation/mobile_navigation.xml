@@ -117,7 +117,17 @@
         android:id="@+id/fileChooser"
         android:name="com.example.organizer.ui.Utils.fileChooser.FileChooser"
         android:label="Choose file"
-        tools:layout="@layout/file_chooser_fragment" />
+        tools:layout="@layout/file_chooser_fragment">
+        <argument
+            android:name="chooseDirectory"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+        <argument
+            android:name="selectedPath"
+            app:argType="string"
+            />
+    </fragment>
     <fragment
         android:id="@+id/transactionCategory"
         android:name="com.example.organizer.ui.money.transactionCategory.TransactionCategory"
