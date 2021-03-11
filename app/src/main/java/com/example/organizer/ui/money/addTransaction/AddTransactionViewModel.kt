@@ -82,7 +82,8 @@ class AddTransactionViewModel : ViewModel() {
                     null,
                     if (category.value == null) null else category.value!!.id,
                     details.value,
-                    Date().time
+                    Date().time,
+                    null
                 )
                 try {
                     transactionService.insert(transaction)

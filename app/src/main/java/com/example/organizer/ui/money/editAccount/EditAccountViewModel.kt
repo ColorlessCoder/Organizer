@@ -70,7 +70,7 @@ class EditAccountViewModel() : ViewModel() {
                     );
                 try {
                     if (isCreating.value!!) {
-                        accountDAO.createAccount(account)
+                        accountDAO.insert(account)
                     } else {
                         accountDAO.update(account)
                     }

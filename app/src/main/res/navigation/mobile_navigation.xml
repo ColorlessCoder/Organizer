@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTransaction"
-        android:name="com.example.organizer.ui.money.addTransaction.EditDebt"
+        android:name="com.example.organizer.ui.money.addTransaction.AddTransaction"
         android:label="AddTransaction">
         <argument
             android:name="transactionType"
