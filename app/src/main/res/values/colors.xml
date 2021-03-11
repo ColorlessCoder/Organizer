@@ -13,4 +13,5 @@
     <color name="TransferColor">#2196F3</color>
     <color name="IncomeColor">#43A047</color>
     <color name="DangerColor">#BC3238</color>
+    <color name="GrayColor">#555</color>
 </resources>

@@ -190,11 +190,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/whiteText"
-                app:layout_constraintBottom_toTopOf="@+id/button"
+                app:layout_constraintBottom_toTopOf="@+id/save_button"
                 tools:layout_editor_absoluteX="3dp" />
 
             <Button
-                android:id="@+id/button"
+                android:id="@+id/save_button"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.findNavController
 import com.example.organizer.R
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.dao.CategoryDAO
 import com.example.organizer.database.entity.Category
 import kotlinx.coroutines.launch

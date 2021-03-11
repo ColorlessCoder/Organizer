@@ -1,4 +1,4 @@
-package com.example.organizer.ui.money.selectTransactionType
+package com.example.organizer.ui.money.selectDebtType
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider
@@ -10,17 +10,17 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
-import com.example.organizer.database.enums.TransactionType
+import com.example.organizer.database.enums.DebtType
 import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.money.common.CommonSelectFragment
 import com.example.organizer.ui.money.common.CommonSelectRecyclerListAdapter
 import com.example.organizer.ui.money.common.CommonSelectViewHolder
 
-class SelectTransactionType :
-    CommonSelectFragment<TransactionType, SelectTransactionTypeViewModel, TransactionTypeListAdapter.ViewHolder, TransactionTypeListAdapter>() {
+class SelectDebtType :
+    CommonSelectFragment<DebtType, SelectDebtTypeViewModel, DebtTypeAdapter.ViewHolder, DebtTypeAdapter>() {
 
     companion object {
-        fun newInstance() = SelectTransactionType()
+        fun newInstance() = SelectDebtType()
     }
 
     private lateinit var currentView: View
@@ -29,21 +29,21 @@ class SelectTransactionType :
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.select_transaction_type_fragment, container, false)
+        return inflater.inflate(R.layout.select_debt_type_fragment, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         currentView = view
         selectViewModel =
-            ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
+            ViewModelProvider(requireActivity()).get(SelectDebtTypeViewModel::class.java)
         if (selectViewModel.allSelected) {
             selectViewModel.selectAll()
         }
         setSelectGridAdapter(
-            TransactionType.values().asList(),
-            TransactionTypeListAdapter(
-                TransactionType.values().asList(),
+            DebtType.values().asList(),
+            DebtTypeAdapter(
+                DebtType.values().asList(),
                 selectViewModel,
                 view
             )
@@ -52,16 +52,16 @@ class SelectTransactionType :
     }
 
     override fun getSelectRecyclerView(): RecyclerView {
-        return currentView.findViewById(R.id.selectTransactionTypeList);
+        return currentView.findViewById(R.id.selectDebtTypeList);
     }
 }
 
-class TransactionTypeListAdapter(
-    private val transactionTypeList: List<TransactionType>,
-    private val viewModel: SelectTransactionTypeViewModel,
+class DebtTypeAdapter(
+    private val debtTypeList: List<DebtType>,
+    private val viewModel: SelectDebtTypeViewModel,
     private val parentView: View
-) : CommonSelectRecyclerListAdapter<TransactionTypeListAdapter.ViewHolder, TransactionType, SelectTransactionTypeViewModel>(
-    transactionTypeList,
+) : CommonSelectRecyclerListAdapter<DebtTypeAdapter.ViewHolder, DebtType, SelectDebtTypeViewModel>(
+    debtTypeList,
     viewModel,
     parentView
 ) {
@@ -83,12 +83,12 @@ class TransactionTypeListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return transactionTypeList.size
+        return debtTypeList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         super.onBindViewHolder(holder, position)
-        val type = transactionTypeList.get(position)
+        val type = debtTypeList.get(position)
         holder.label.text = type.name
         holder.label.background = ShpaeUtil.getRoundCornerShape(
             15.toFloat(),

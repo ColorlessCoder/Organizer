@@ -2,7 +2,6 @@ package com.example.organizer.ui.money.viewTransaction
 
 import android.graphics.Color
 import android.os.Bundle
-import android.text.Editable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,7 +12,6 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -22,23 +20,18 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.relation.TransactionDetails
-import com.example.organizer.databinding.EditAccountFragmentBinding
 import com.example.organizer.databinding.ViewTransactionFragmentBinding
-import com.example.organizer.ui.Utils.ColorUtil
 import com.example.organizer.ui.Utils.DateUtils
 import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.Utils.StringUtils
-import com.example.organizer.ui.money.ColorSpinnerAdapter
 import com.example.organizer.ui.money.common.CommonSelectViewModel
-import com.example.organizer.ui.money.editAccount.EditAccountViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.util.*
 

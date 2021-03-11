@@ -1,6 +1,5 @@
 package com.example.organizer.ui.money.transactionCategory
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -12,13 +11,8 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.Enums.TransactionType
-import com.example.organizer.databinding.EditAccountFragmentBinding
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.databinding.EditCategoryFragmentBinding
-import com.example.organizer.ui.Utils.ColorUtil
-import com.example.organizer.ui.money.ColorSpinnerAdapter
-import com.example.organizer.ui.money.editAccount.EditAccountArgs
-import com.example.organizer.ui.money.editAccount.EditAccountViewModel
 
 class EditCategory : Fragment() {
 

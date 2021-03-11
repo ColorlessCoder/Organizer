@@ -17,11 +17,9 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.TemplateTransaction
 import com.example.organizer.database.relation.TemplateTransactionDetails
-import com.example.organizer.database.relation.TransactionDetails
-import com.example.organizer.ui.Utils.DateUtils
 import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.Utils.StringUtils
 import kotlinx.coroutines.launch

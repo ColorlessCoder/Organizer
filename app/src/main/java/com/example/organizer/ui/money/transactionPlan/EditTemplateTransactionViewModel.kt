@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.organizer.R
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.dao.TemplateTransactionDAO
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category

@@ -54,7 +54,7 @@
     </fragment>
     <fragment
         android:id="@+id/addTransaction"
-        android:name="com.example.organizer.ui.money.addTransaction.AddTransaction"
+        android:name="com.example.organizer.ui.money.addTransaction.EditDebt"
         android:label="AddTransaction">
         <argument
             android:name="transactionType"
@@ -214,5 +214,35 @@
             android:id="@+id/action_editTemplateTransaction_to_transactionCategory"
             app:destination="@id/transactionCategory" />
     </fragment>
+    <fragment
+        android:id="@+id/debtList"
+        android:name="com.example.organizer.ui.money.debtlist.DebtList"
+        android:label="debt_list_fragment"
+        tools:layout="@layout/debt_list_fragment" >
+        <action
+            android:id="@+id/action_debtList_to_editDebt"
+            app:destination="@id/editDebt" />
+    </fragment>
+    <fragment
+        android:id="@+id/editDebt"
+        android:name="com.example.organizer.ui.money.editDebt.EditDebt"
+        android:label="EditDebt" >
+        <argument
+            android:name="debtId"
+            app:argType="string"
+            app:nullable="true"
+            />
+        <action
+            android:id="@+id/action_editDebt_to_selectDebtType"
+            app:destination="@id/selectDebtType" />
+        <action
+            android:id="@+id/action_editDebt_to_selectAccount"
+            app:destination="@id/selectAccount" />
+    </fragment>
+    <fragment
+        android:id="@+id/selectDebtType"
+        android:name="com.example.organizer.ui.money.selectDebtType.SelectDebtType"
+        android:label="select_debt_type_fragment"
+        tools:layout="@layout/select_debt_type_fragment" />
 
 </navigation>

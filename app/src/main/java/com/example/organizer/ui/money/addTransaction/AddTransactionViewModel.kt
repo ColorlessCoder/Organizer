@@ -1,13 +1,10 @@
 package com.example.organizer.ui.money.addTransaction
 
-import android.graphics.Color
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.organizer.R
-import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.Enums.TransactionType
-import com.example.organizer.database.dao.TransactionDAO
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
 import com.example.organizer.database.entity.Transaction

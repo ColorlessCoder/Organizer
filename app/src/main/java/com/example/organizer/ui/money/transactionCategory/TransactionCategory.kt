@@ -18,7 +18,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Category
 import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.money.common.CommonSelectFragment

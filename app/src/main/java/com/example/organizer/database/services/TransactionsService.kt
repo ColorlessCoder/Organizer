@@ -1,6 +1,6 @@
 package com.example.organizer.database.services
 
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.dao.TransactionDAO
 import com.example.organizer.database.entity.Transaction
 import java.lang.Exception

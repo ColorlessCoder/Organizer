@@ -23,7 +23,7 @@ import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewMode
 class AddTransaction : Fragment() {
 
     companion object {
-        fun newInstance() = AddTransaction()
+        fun newInstance() = EditDebt()
     }
 
     private lateinit var viewModel: AddTransactionViewModel

@@ -4,16 +4,18 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
+import com.example.organizer.database.entity.Debt
 import com.example.organizer.database.entity.Transaction
+import com.example.organizer.database.enums.DebtType
 import com.example.organizer.database.relation.TemplateTransactionDetails
 import com.example.organizer.database.relation.TransactionDetails
 import java.util.*
 
 
 @Dao
-interface TransactionDAO: BaseDAO {
+interface TransactionDAO : BaseDAO {
     @Insert
     suspend fun insert(vararg transaction: Transaction)
 
@@ -66,7 +68,8 @@ interface TransactionDAO: BaseDAO {
                             null,
                             it.transaction.transactionCategoryId,
                             it.transaction.details,
-                            Date().time
+                            Date().time,
+                            null
                         )
                     )
                     successfulMessage += "Template #" + (index + 1) + "\n" + transactionToString(it) + "\n\n"
@@ -100,31 +103,41 @@ interface TransactionDAO: BaseDAO {
     @RawQuery
     suspend fun getTransactionDetailsAsPerRawQuery(query: SupportSQLiteQuery): List<TransactionDetails>
 
-    suspend fun getAllTransactionDetailsQueryForFilter(accountIds: List<String>?, categoryIds: List<String>?, type: List<Int>?, days: Int): SimpleSQLiteQuery {
+    suspend fun getAllTransactionDetailsQueryForFilter(
+        accountIds: List<String>?,
+        categoryIds: List<String>?,
+        type: List<Int>?,
+        days: Int
+    ): SimpleSQLiteQuery {
         var queryString: StringBuilder = StringBuilder()
         var args: MutableList<Any> = mutableListOf()
-        val before = Date().time - (1L * days * 24* 60* 60* 1000)
+        val before = Date().time - (1L * days * 24 * 60 * 60 * 1000)
         queryString.append("Select * From transactions Where transacted_at > ? ")
         args.add(before)
-        if(accountIds != null) {
-            if(accountIds.isEmpty()) {
+        if (accountIds != null) {
+            if (accountIds.isEmpty()) {
                 queryString.append(" AND from_account IS NULL AND to_account IS NULL ")
             } else {
-                queryString.append(" AND ${createInQuery("from_account", accountIds)} or ${createInQuery("to_account", accountIds)} ")
+                queryString.append(
+                    " AND ${createInQuery(
+                        "from_account",
+                        accountIds
+                    )} or ${createInQuery("to_account", accountIds)} "
+                )
                 args.addAll(accountIds)
                 args.addAll(accountIds)
             }
         }
-        if(categoryIds != null) {
-            if(categoryIds.isEmpty()) {
+        if (categoryIds != null) {
+            if (categoryIds.isEmpty()) {
                 queryString.append(" AND transaction_category_id IS NULL ")
             } else {
                 queryString.append(" AND ${createInQuery("transaction_category_id", categoryIds)} ")
                 args.addAll(categoryIds)
             }
         }
-        if(type != null) {
-            if(type.isEmpty()) {
+        if (type != null) {
+            if (type.isEmpty()) {
                 queryString.append(" AND transaction_type IS NULL ")
             } else {
                 queryString.append(" AND ${createInQuery("transaction_type", type)} ")
@@ -135,6 +148,35 @@ interface TransactionDAO: BaseDAO {
         println(queryString.toString())
         val query = SimpleSQLiteQuery(queryString.toString(), args.toTypedArray())
         return query
+    }
+
+
+    @Insert
+    suspend fun insert(vararg debt: Debt)
+
+    @Update
+    suspend fun update(vararg debt: Debt)
+
+    @androidx.room.Transaction
+    suspend fun createDebt(debt: Debt) {
+        insert(debt)
+        val debtType = DebtType.from(debt.debtType)
+        if (debtType != DebtType.INSTALLMENT) {
+            insertAndUpdateAccount(
+                Transaction(
+                    UUID.randomUUID().toString(),
+                    debtType.relatedTransactionType.typeCode,
+                    debt.amount - debt.paidSoFar,
+                    debt.fromAccount,
+                    debt.toAccount,
+                    null,
+                    null,
+                    debtType.name + ": " + debt.details,
+                    Date().time,
+                    debt.id
+                )
+            )
+        }
     }
 
 }

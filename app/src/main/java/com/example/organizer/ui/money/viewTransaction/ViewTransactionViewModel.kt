@@ -2,7 +2,7 @@ package com.example.organizer.ui.money.viewTransaction
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.example.organizer.database.Enums.TransactionType
+import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
 import com.google.android.material.bottomsheet.BottomSheetBehavior

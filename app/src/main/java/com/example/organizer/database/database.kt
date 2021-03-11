@@ -16,8 +16,9 @@ import com.example.organizer.database.entity.*
         Transaction::class,
         Category::class,
         TransactionPlan::class,
-        TemplateTransaction::class
-    ], version = 4
+        TemplateTransaction::class,
+        Debt::class
+    ], version = 5
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDAO
@@ -25,6 +26,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDAO
     abstract fun transactionPlanDao(): TransactionPlanDAO
     abstract fun templateTransactionDao(): TemplateTransactionDAO
+    abstract fun debtDao(): DebtDAO
     abstract fun utilDAO(): UtilDAO
 
     companion object {
@@ -39,7 +41,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DB_NAME
                 ).enableMultiInstanceInvalidation()
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
                     .build()
             }
             return instance as AppDatabase
@@ -58,7 +60,7 @@ abstract class AppDatabase : RoomDatabase() {
                         "PRIMARY KEY(`id`))")
             }
         }
-        val MIGRATION_3_4 = object : Migration(3, 4) {
+        private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE `transaction_plans` (`id` TEXT NOT NULL," +
                         " `name` TEXT NOT NULL, " +
@@ -75,6 +77,22 @@ abstract class AppDatabase : RoomDatabase() {
                         " `details` TEXT , " +
                         " `order` INTEGER NOT NULL, " +
                         "PRIMARY KEY(`id`))")
+            }
+        }
+        private val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("CREATE TABLE `debts` (`id` TEXT NOT NULL," +
+                        " `debt_type` INTEGER NOT NULL, " +
+                        " `amount` REAL NOT NULL, " +
+                        " `paid_so_far` REAL NOT NULL, " +
+                        " `from_account` TEXT , " +
+                        " `to_account` TEXT , " +
+                        " `details` TEXT NOT NULL, " +
+                        " `created_at` INTEGER NOT NULL, " +
+                        " `completed_at` INTEGER, " +
+                        " `scheduled_at` INTEGER NOT NULL, " +
+                        "PRIMARY KEY(`id`))")
+                database.execSQL("ALTER TABLE `transactions` ADD COLUMN debt_id TEXT")
             }
         }
 
