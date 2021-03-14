@@ -8,5 +8,8 @@ class DateUtils {
         fun dateToString(date: Date): String {
             return SimpleDateFormat("dd/MM/yy hh:mm a").format(date)
         }
+        fun getDateString(date: Date): String {
+            return SimpleDateFormat("dd/MM/yyyy").format(date)
+        }
     }
 }

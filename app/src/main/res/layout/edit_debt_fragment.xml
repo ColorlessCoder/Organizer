@@ -42,7 +42,6 @@
                         android:editable="false"
                         android:hint="Debt Type"
                         android:text="@{viewModel.debtTypeText}"
-                        android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -61,7 +60,6 @@
                         android:hint="Details"
                         android:inputType="textMultiLine"
                         android:text="@={viewModel.details}"
-                        android:textColor="@color/whiteText"
                         android:textStyle="bold" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -82,7 +80,6 @@
                         android:inputType="numberDecimal"
                         android:maxLength="10"
                         android:text="@={viewModel.amount}"
-                        android:textColor="@color/whiteText"
                         android:textSize="35dp"
                         android:textStyle="bold" />
 
@@ -150,7 +147,7 @@
                             android:layout_height="wrap_content"
                             android:hint="Due Date"
                             android:inputType="date"
-                            android:text="22/2/13"
+                            android:text="@={viewModel.dueDateText}"
                             android:textStyle="bold" />
 
                     </com.google.android.material.textfield.TextInputLayout> <com.google.android.material.textfield.TextInputLayout
@@ -166,9 +163,9 @@
                             android:id="@+id/due_time_input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:hint="Due Date"
+                            android:hint="Due Time"
                             android:inputType="time"
-                            android:text="12:06 PM"
+                            android:text="@={viewModel.dueTimeText}"
                             android:textStyle="bold" />
 
                     </com.google.android.material.textfield.TextInputLayout>

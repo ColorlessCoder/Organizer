@@ -18,6 +18,7 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.enums.DebtType
 import com.example.organizer.databinding.EditDebtFragmentBinding
+import com.example.organizer.ui.Utils.DateUtils
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.debt.selectDebtType.SelectDebtTypeViewModel
@@ -25,7 +26,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
-import java.util.Date
+import java.util.*
 
 class EditDebt : Fragment() {
 
@@ -126,21 +127,21 @@ class EditDebt : Fragment() {
             val datePicker = MaterialDatePicker.Builder.datePicker()
                 .setTitleText("Select Due Date")
                 .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
-                .setSelection(viewModel.dueDate?.time)
+                .setSelection(viewModel.dueDate?.time?.time)
                 .build()
             datePicker.addOnPositiveButtonClickListener {
                 if (it != null) {
-                    val date = Date(it)
+                    val cal = Calendar.getInstance()
+                    cal.time = Date(it)
                     if (viewModel.dueDate == null) {
-                        viewModel.dueDate = Date()
-                        viewModel.dueDate?.hours = 0;
-                        viewModel.dueDate?.minutes = 0;
+                        cal.set(Calendar.HOUR, 0)
+                        cal.set(Calendar.MINUTE, 0)
+                    } else {
+                        cal.set(Calendar.HOUR, viewModel.dueDate!!.get(Calendar.HOUR))
+                        cal.set(Calendar.MINUTE, viewModel.dueDate!!.get(Calendar.MINUTE))
                     }
-                    viewModel.dueDate?.date = date.date
-                    viewModel.dueDate?.month = date.month
-                    viewModel.dueDate?.year = date.year
-                    viewModel.dueDateText.value =
-                        "" + date.month + "/" + date.date + "/" + date.year
+                    viewModel.dueDate = cal
+                    viewModel.dueDateText.value = DateUtils.getDateString(cal.time)
                 }
             }
             activity?.supportFragmentManager?.let { it1 ->
@@ -152,12 +153,12 @@ class EditDebt : Fragment() {
             val timePicker = MaterialTimePicker.Builder()
                 .setTitleText("Select Due Date")
                 .setInputMode(MaterialTimePicker.INPUT_MODE_CLOCK)
-                .setHour(viewModel.dueDate?.hours ?: 0)
-                .setMinute(viewModel.dueDate?.minutes ?: 0)
+                .setHour(viewModel.dueDate?.get(Calendar.HOUR) ?: 0)
+                .setMinute(viewModel.dueDate?.get(Calendar.MINUTE) ?: 0)
                 .build()
             timePicker.addOnPositiveButtonClickListener {
-                viewModel.dueDate?.hours = timePicker.hour
-                viewModel.dueDate?.minutes = timePicker.minute
+                viewModel.dueDate?.set(Calendar.HOUR, timePicker.hour)
+                viewModel.dueDate?.set(Calendar.MINUTE, timePicker.minute)
                 viewModel.dueTimeText.value = timePicker.hour.toString() + ":" + timePicker.minute
             }
             activity?.supportFragmentManager?.let { it1 ->

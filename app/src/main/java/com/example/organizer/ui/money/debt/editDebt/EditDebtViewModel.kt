@@ -24,7 +24,7 @@ class EditDebtViewModel : ViewModel() {
     lateinit var transactionDAO: TransactionDAO
     val selectedAccount = MutableLiveData<Account>()
     var initializedNotAllowed = false
-    var dueDate: Date? = null
+    var dueDate: Calendar? = null
     val dueDateText = MutableLiveData<String>()
     val dueTimeText = MutableLiveData<String>()
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
@@ -66,7 +66,12 @@ class EditDebtViewModel : ViewModel() {
         amount.value = currentDebtDetails.amount.toString()
         paidSoFar.value = currentDebtDetails.paidSoFar.toString()
         details.value = currentDebtDetails.details
-        dueDate = currentDebtDetails.scheduledAt.let { if (it == null) null else Date(it) }
+        if(currentDebtDetails.scheduledAt != null) {
+            dueDate = Calendar.getInstance()
+            dueDate!!.time = Date(currentDebtDetails.scheduledAt!!)
+        } else {
+            dueDate = null
+        }
         showAccount.value = false
         selectDebtType(DebtType.from(currentDebtDetails.debtType))
     }
@@ -81,7 +86,7 @@ class EditDebtViewModel : ViewModel() {
                 details.value!!,
                 debt?.createdAt ?: Date().time,
                 null,
-                dueDate?.time
+                dueDate?.timeInMillis
             )
             try {
                 if (debt == null) {
@@ -101,8 +106,7 @@ class EditDebtViewModel : ViewModel() {
             account.value = null
         }
         debtType.value = type
-        if(debtType.value == DebtType.INSTALLMENT) {
-            showAccount.value = false
-        }
+        debtTypeText.value = type.name
+        showAccount.value = debtType.value != DebtType.INSTALLMENT
     }
 }

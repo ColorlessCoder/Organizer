@@ -88,7 +88,7 @@ abstract class AppDatabase : RoomDatabase() {
                         " `details` TEXT NOT NULL, " +
                         " `created_at` INTEGER NOT NULL, " +
                         " `completed_at` INTEGER, " +
-                        " `scheduled_at` INTEGER NOT NULL, " +
+                        " `scheduled_at` INTEGER, " +
                         "PRIMARY KEY(`id`))")
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN debt_id TEXT")
             }
