@@ -30,6 +30,9 @@
         <action
             android:id="@+id/action_nav_money_to_viewTransaction"
             app:destination="@id/viewTransaction" />
+        <action
+            android:id="@+id/action_nav_money_to_debt_list"
+            app:destination="@id/debtList"/>
     </fragment>
     <fragment
         android:id="@+id/editAccount"
@@ -216,16 +219,22 @@
     </fragment>
     <fragment
         android:id="@+id/debtList"
-        android:name="com.example.organizer.ui.money.debtlist.DebtList"
+        android:name="com.example.organizer.ui.money.debt.debtlist.DebtList"
         android:label="debt_list_fragment"
         tools:layout="@layout/debt_list_fragment" >
         <action
             android:id="@+id/action_debtList_to_editDebt"
             app:destination="@id/editDebt" />
+        <action
+            android:id="@+id/action_debtList_to_debtPayment"
+            app:destination="@id/debtPayment" />
+        <action
+            android:id="@+id/action_debtList_to_debtTransactionList"
+            app:destination="@id/debtTransactionList" />
     </fragment>
     <fragment
         android:id="@+id/editDebt"
-        android:name="com.example.organizer.ui.money.editDebt.EditDebt"
+        android:name="com.example.organizer.ui.money.debt.editDebt.EditDebt"
         android:label="EditDebt" >
         <argument
             android:name="debtId"
@@ -241,8 +250,34 @@
     </fragment>
     <fragment
         android:id="@+id/selectDebtType"
-        android:name="com.example.organizer.ui.money.selectDebtType.SelectDebtType"
-        android:label="select_debt_type_fragment"
+        android:name="com.example.organizer.ui.money.debt.selectDebtType.SelectDebtType"
+        android:label="Select Debt Type"
         tools:layout="@layout/select_debt_type_fragment" />
+    <fragment
+        android:id="@+id/debtPayment"
+        android:name="com.example.organizer.ui.money.debt.debtPayment.DebtPayment"
+        android:label="debt_payment_fragment"
+        tools:layout="@layout/debt_payment_fragment" >
+        <argument
+            android:name="debtId"
+            app:argType="string"/>
+        <action
+            android:id="@+id/debt_payment_to_select_account"
+            app:destination="@id/selectAccount"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/debtTransactionList"
+        android:name="com.example.organizer.ui.money.debt.debtTransactionList.DebtTransactionList"
+        android:label="debt_transaction_list_fragment"
+        tools:layout="@layout/debt_transaction_list_fragment" >
+        <argument
+            android:name="debtId"
+            app:argType="string"
+            />
+        <action
+            android:id="@+id/action_debtTransactionList_to_debtPayment"
+            app:destination="@id/debtPayment" />
+    </fragment>
 
 </navigation>

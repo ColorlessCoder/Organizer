@@ -10,8 +10,6 @@ data class Debt(
     @ColumnInfo(name = "debt_type", typeAffinity = ColumnInfo.INTEGER) var debtType: Int,
     @ColumnInfo(name = "amount", typeAffinity = ColumnInfo.REAL) var amount: Double,
     @ColumnInfo(name = "paid_so_far", typeAffinity = ColumnInfo.REAL) var paidSoFar: Double,
-    @ColumnInfo(name = "from_account", typeAffinity = ColumnInfo.TEXT) var fromAccount: String?,
-    @ColumnInfo(name = "to_account", typeAffinity = ColumnInfo.TEXT) var toAccount: String?,
     @ColumnInfo(name = "details", typeAffinity = ColumnInfo.TEXT) var details: String,
     @ColumnInfo(name = "created_at", typeAffinity = ColumnInfo.INTEGER) var createdAt: Long,
     @ColumnInfo(name = "completed_at", typeAffinity = ColumnInfo.INTEGER) var completedAt: Long?,

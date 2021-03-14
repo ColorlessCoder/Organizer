@@ -1,7 +1,6 @@
-package com.example.organizer.ui.money.selectDebtType
+package com.example.organizer.ui.money.debt.selectDebtType
 
 import com.example.organizer.database.enums.DebtType
-import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 
 class SelectDebtTypeViewModel : CommonSelectViewModel<DebtType>() {

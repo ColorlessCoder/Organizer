@@ -1,4 +1,4 @@
-package com.example.organizer.ui.money.editDebt
+package com.example.organizer.ui.money.debt.editDebt
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -20,8 +20,9 @@ import com.example.organizer.database.enums.DebtType
 import com.example.organizer.databinding.EditDebtFragmentBinding
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
-import com.example.organizer.ui.money.selectDebtType.SelectDebtTypeViewModel
+import com.example.organizer.ui.money.debt.selectDebtType.SelectDebtTypeViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import java.util.Date
@@ -42,7 +43,8 @@ class EditDebt : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val actionBarActivity: MainActivity = activity as MainActivity
-        actionBarActivity.supportActionBar?.title = "Create Debt"
+        actionBarActivity.supportActionBar?.title =
+            if (args.debtId == null) "Create Debt" else "Edit Debt"
         val binding = DataBindingUtil.inflate<EditDebtFragmentBinding>(
             inflater,
             R.layout.edit_debt_fragment,
@@ -59,23 +61,25 @@ class EditDebt : Fragment() {
             ViewModelProviders.of(requireActivity()).get(SelectDebtTypeViewModel::class.java)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
-        if (viewModel.fieldPendingToSetAfterNavigateBack == EditDebtViewModel.Companion.FIELDS.FROM_ACCOUNT && selectAccountViewModel.selectedRecord != null) {
-            viewModel.fromAccount.value = selectAccountViewModel.selectedRecord
-            viewModel.fromAccountName.value = selectAccountViewModel.selectedRecord?.accountName
-        } else if (viewModel.fieldPendingToSetAfterNavigateBack == EditDebtViewModel.Companion.FIELDS.TO_ACCOUNT && selectAccountViewModel.selectedRecord != null) {
-            viewModel.toAccount.value = selectAccountViewModel.selectedRecord
-            viewModel.toAccountName.value = selectAccountViewModel.selectedRecord?.accountName
-        } else if (viewModel.fieldPendingToSetAfterNavigateBack == EditDebtViewModel.Companion.FIELDS.DEBT_TYPE && selectDebtTypeViewModel.selectedRecord != null) {
-            viewModel.selectDebtType(selectDebtTypeViewModel.selectedRecord?:DebtType.BORROWED)
-        }
-        if (args.debtId != null) {
-            dbInstance.debtDao()
-                .getDebtDetailsById(args.debtId!!)
-                .observe(
-                    this,
-                    Observer {
-                        viewModel.setDebtRecord(it)
-                    })
+        if (viewModel.fieldPendingToSetAfterNavigateBack == EditDebtViewModel.Companion.FIELDS.ACCOUNT
+            && selectAccountViewModel.selectedRecord != null
+        ) {
+            viewModel.account.value = selectAccountViewModel.selectedRecord
+            viewModel.accountName.value = selectAccountViewModel.selectedRecord?.accountName
+        } else if (viewModel.fieldPendingToSetAfterNavigateBack == EditDebtViewModel.Companion.FIELDS.DEBT_TYPE
+            && selectDebtTypeViewModel.selectedRecord != null
+        ) {
+            viewModel.selectDebtType(selectDebtTypeViewModel.selectedRecord ?: DebtType.BORROWED)
+        } else {
+            if (args.debtId != null) {
+                dbInstance.debtDao()
+                    .getDebtById(args.debtId!!)
+                    .observe(
+                        this,
+                        Observer {
+                            viewModel.setDebtRecord(it)
+                        })
+            }
         }
         viewModel.navigateBack.observe(this, Observer { value ->
             if (value) {
@@ -94,29 +98,28 @@ class EditDebt : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         print("view created")
-        val fromAccountView = view.findViewById<View>(R.id.fromAccountInput)
-        fromAccountView.setOnClickListener {
-            viewModel.fieldPendingToSetAfterNavigateBack =
-                EditDebtViewModel.Companion.FIELDS.FROM_ACCOUNT
-            val action = EditDebtDirections.actionEditDebtToSelectAccount()
-            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
-            view.findNavController().navigate(action)
-        }
-        val toAccountView = view.findViewById<View>(R.id.toAccountInput)
-        toAccountView.setOnClickListener {
-            viewModel.fieldPendingToSetAfterNavigateBack =
-                EditDebtViewModel.Companion.FIELDS.TO_ACCOUNT
-            val action = EditDebtDirections.actionEditDebtToSelectAccount()
-            selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
-            view.findNavController().navigate(action)
-        }
-        val debtTypeView = view.findViewById<View>(R.id.debt_type_input)
-        debtTypeView.setOnClickListener {
-            viewModel.fieldPendingToSetAfterNavigateBack =
-                EditDebtViewModel.Companion.FIELDS.TO_ACCOUNT
-            val action = EditDebtDirections.actionEditDebtToSelectDebtType()
-            selectDebtTypeViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
-            view.findNavController().navigate(action)
+        if (args.debtId == null) {
+            val debtTypeView = view.findViewById<View>(R.id.debt_type_input)
+            debtTypeView.setOnClickListener {
+                viewModel.fieldPendingToSetAfterNavigateBack =
+                    EditDebtViewModel.Companion.FIELDS.DEBT_TYPE
+                selectDebtTypeViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
+                selectDebtTypeViewModel.selectedRecord = viewModel.debtType.value
+                findNavController().navigate(EditDebtDirections.actionEditDebtToSelectDebtType())
+            }
+            val fromAccountView = view.findViewById<View>(R.id.account_input)
+            fromAccountView.setOnClickListener {
+                viewModel.fieldPendingToSetAfterNavigateBack =
+                    EditDebtViewModel.Companion.FIELDS.ACCOUNT
+                val action = EditDebtDirections.actionEditDebtToSelectAccount()
+                selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
+                selectAccountViewModel.selectedRecord = viewModel.account.value
+                view.findNavController().navigate(action)
+            }
+        } else {
+            view.findViewById<View>(R.id.account).visibility = View.GONE
+            view.findViewById<TextInputLayout>(R.id.amount).isEnabled = false
+            view.findViewById<TextInputLayout>(R.id.paid_so_far).isEnabled = false
         }
         val dueDateField = view.findViewById<TextInputLayout>(R.id.due_date)
         dueDateField.setStartIconOnClickListener {
@@ -128,7 +131,7 @@ class EditDebt : Fragment() {
             datePicker.addOnPositiveButtonClickListener {
                 if (it != null) {
                     val date = Date(it)
-                    if(viewModel.dueDate == null) {
+                    if (viewModel.dueDate == null) {
                         viewModel.dueDate = Date()
                         viewModel.dueDate?.hours = 0;
                         viewModel.dueDate?.minutes = 0;
@@ -136,7 +139,8 @@ class EditDebt : Fragment() {
                     viewModel.dueDate?.date = date.date
                     viewModel.dueDate?.month = date.month
                     viewModel.dueDate?.year = date.year
-                    viewModel.dueDateText.value = "" + date.month + "/" + date.date + "/" + date.year
+                    viewModel.dueDateText.value =
+                        "" + date.month + "/" + date.date + "/" + date.year
                 }
             }
             activity?.supportFragmentManager?.let { it1 ->
@@ -162,7 +166,7 @@ class EditDebt : Fragment() {
         }
         view.findViewById<Button>(R.id.save_button).setOnClickListener {
             val message = viewModel.validation()
-            if(message.isEmpty()) {
+            if (message.isEmpty()) {
                 viewModel.saveDebt()
             } else {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()

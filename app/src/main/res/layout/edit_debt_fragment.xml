@@ -7,13 +7,13 @@
         <import type="android.view.View" />
         <variable
             name="viewModel"
-            type="com.example.organizer.ui.money.editDebt.EditDebtViewModel" />
+            type="com.example.organizer.ui.money.debt.editDebt.EditDebtViewModel" />
     </data>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".ui.money.editDebt.EditDebt">
+        tools:context=".ui.money.debt.editDebt.EditDebt">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -75,6 +75,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/details">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/amount_input"
                         android:layout_width="match_parent"
                         android:layout_height="97dp"
                         android:hint="Amount"
@@ -96,6 +97,7 @@
                     app:layout_constraintTop_toBottomOf="@+id/amount">
 
                     <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/paid_so_far_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Paid So Far"
@@ -107,45 +109,23 @@
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/fromAccount"
+                    android:id="@+id/account"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
-                    app:helperText="@{`Current balance: ` + viewModel.fromAccount.balance + `BDT`}"
+                    app:helperText="@{`Current balance: ` + viewModel.account.balance + `BDT`}"
                     app:helperTextEnabled="true"
                     app:layout_constraintTop_toBottomOf="@+id/paid_so_far"
-                    android:visibility="@{viewModel.showFromAccount ? View.VISIBLE: View.GONE}">
+                    android:visibility="@{viewModel.showAccount ? View.VISIBLE: View.GONE}">
 
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/fromAccountInput"
+                        android:id="@+id/account_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:editable="false"
-                        android:hint="From account"
-                        android:text="@{viewModel.fromAccount.accountName}"
-                        android:textStyle="bold" />
-
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/toAccount"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    app:helperText="@{`Current balance: ` + viewModel.toAccount.balance + `BDT`}"
-                    app:helperTextEnabled="true"
-                    app:layout_constraintTop_toBottomOf="@+id/fromAccount"
-                    android:visibility="@{viewModel.showToAccount ? View.VISIBLE: View.GONE}">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/toAccountInput"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:editable="false"
-                        android:hint="To account"
-                        android:text="@{viewModel.toAccount.accountName}"
+                        android:hint="Account"
+                        android:text="@{viewModel.account.accountName}"
                         android:textStyle="bold" />
 
                 </com.google.android.material.textfield.TextInputLayout>
@@ -154,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:weightSum="12"
-                    app:layout_constraintTop_toBottomOf="@+id/toAccount">
+                    app:layout_constraintTop_toBottomOf="@+id/account">
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/due_date"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"

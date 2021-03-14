@@ -40,6 +40,16 @@ interface TransactionDAO : BaseDAO {
             }
             updateAccount(account)
         }
+        if(transaction.debtId != null) {
+            var debt = getDebtById(transaction.debtId!!)
+            debt.paidSoFar += debt.amount
+            if(debt.amount.compareTo(debt.paidSoFar) < 0) {
+                throw java.lang.Exception("Payment exceeds the required debt amount")
+            } else if (debt.amount.equals(debt.paidSoFar)) {
+                debt.completedAt = Date().time
+            }
+            update(debt)
+        }
         insert(transaction)
     }
 
@@ -94,6 +104,10 @@ interface TransactionDAO : BaseDAO {
     @androidx.room.Transaction
     @Query("Select * From transactions")
     fun getAllTransactionDetails(): LiveData<List<TransactionDetails>>
+
+    @androidx.room.Transaction
+    @Query("Select * From transactions WHERE debt_id = :debtId")
+    fun getAllTransactionsByDebId(debtId: String): LiveData<List<TransactionDetails>>
 
     @androidx.room.Transaction
     @Query("Select * From transactions where from_account = :accountId or to_account = :accountId ORDER BY transacted_at DESC")
@@ -157,8 +171,11 @@ interface TransactionDAO : BaseDAO {
     @Update
     suspend fun update(vararg debt: Debt)
 
+    @Query("Select * from debts where id=:id")
+    suspend fun getDebtById(id: String): Debt
+
     @androidx.room.Transaction
-    suspend fun createDebt(debt: Debt) {
+    suspend fun createDebt(debt: Debt, accountId: String?) {
         insert(debt)
         val debtType = DebtType.from(debt.debtType)
         if (debtType != DebtType.INSTALLMENT) {
@@ -167,8 +184,8 @@ interface TransactionDAO : BaseDAO {
                     UUID.randomUUID().toString(),
                     debtType.relatedTransactionType.typeCode,
                     debt.amount - debt.paidSoFar,
-                    debt.fromAccount,
-                    debt.toAccount,
+                    if(debtType.relatedTransactionType == TransactionType.EXPENSE) accountId else null,
+                    if(debtType.relatedTransactionType == TransactionType.INCOME) accountId else null,
                     null,
                     null,
                     debtType.name + ": " + debt.details,
@@ -178,5 +195,4 @@ interface TransactionDAO : BaseDAO {
             )
         }
     }
-
 }

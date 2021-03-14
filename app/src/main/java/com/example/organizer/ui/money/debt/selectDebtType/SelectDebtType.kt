@@ -1,4 +1,4 @@
-package com.example.organizer.ui.money.selectDebtType
+package com.example.organizer.ui.money.debt.selectDebtType
 
 import android.content.Context
 import androidx.lifecycle.ViewModelProvider

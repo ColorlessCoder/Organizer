@@ -1,17 +1,12 @@
-package com.example.organizer.ui.money.editDebt
+package com.example.organizer.ui.money.debt.editDebt
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.organizer.R
 import com.example.organizer.database.dao.TransactionDAO
-import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Debt
-import com.example.organizer.database.entity.Transaction
 import com.example.organizer.database.enums.DebtType
-import com.example.organizer.database.relation.DebtDetails
-import com.example.organizer.database.services.TransactionsService
 import kotlinx.coroutines.launch
 import java.lang.Exception
 import java.util.*
@@ -23,13 +18,9 @@ class EditDebtViewModel : ViewModel() {
     val amount = MutableLiveData<String>()
     val paidSoFar = MutableLiveData<String>()
     val details = MutableLiveData<String>()
-    val fromAccount = MutableLiveData<Account>()
-    val fromAccountName = MutableLiveData<String>()
-    val toAccount = MutableLiveData<Account>()
-    val toAccountName = MutableLiveData<String>()
-    var backgroundColor = MutableLiveData<Int>()
-    val showFromAccount = MutableLiveData<Boolean>()
-    val showToAccount = MutableLiveData<Boolean>()
+    val account = MutableLiveData<Account>()
+    val accountName = MutableLiveData<String>()
+    val showAccount = MutableLiveData<Boolean>()
     lateinit var transactionDAO: TransactionDAO
     val selectedAccount = MutableLiveData<Account>()
     var initializedNotAllowed = false
@@ -41,11 +32,12 @@ class EditDebtViewModel : ViewModel() {
 
     companion object {
         enum class FIELDS {
-            NONE, FROM_ACCOUNT, TO_ACCOUNT, DEBT_TYPE
+            NONE, ACCOUNT, DEBT_TYPE
         }
     }
 
     init {
+        showAccount.value = true
         selectDebtType(DebtType.BORROWED)
         navigateBack.value = false
     }
@@ -63,24 +55,20 @@ class EditDebtViewModel : ViewModel() {
             return "Paid so far should be less than amount"
         } else if (details.value.isNullOrEmpty()) {
             return "Details is required"
-        } else if (debtType.value!! == DebtType.BORROWED && toAccount.value == null) {
+        } else if (debtType.value!! != DebtType.INSTALLMENT && account.value == null) {
             return "Please select to account"
-        } else if (debtType.value!! == DebtType.LENT && fromAccount.value == null) {
-            return "Please select from account"
         }
         return ""
     }
 
-    fun setDebtRecord(currentDebtDetails: DebtDetails) {
-        val currentDebt = currentDebtDetails.debt
-        debt = currentDebt
-        amount.value = currentDebt.amount.toString()
-        paidSoFar.value = currentDebt.paidSoFar.toString()
-        fromAccountName.value = currentDebtDetails.fromAccountName
-        toAccountName.value = currentDebtDetails.toAccountName
-        details.value = currentDebt.details
-        dueDate = currentDebt.scheduledAt.let { if (it == null) null else Date(it) }
-        selectDebtType(DebtType.from(currentDebt.debtType))
+    fun setDebtRecord(currentDebtDetails: Debt) {
+        debt = currentDebtDetails
+        amount.value = currentDebtDetails.amount.toString()
+        paidSoFar.value = currentDebtDetails.paidSoFar.toString()
+        details.value = currentDebtDetails.details
+        dueDate = currentDebtDetails.scheduledAt.let { if (it == null) null else Date(it) }
+        showAccount.value = false
+        selectDebtType(DebtType.from(currentDebtDetails.debtType))
     }
 
     fun saveDebt() {
@@ -90,8 +78,6 @@ class EditDebtViewModel : ViewModel() {
                 debtType.value!!.typeCode,
                 amount.value!!.toDouble(),
                 paidSoFar.value!!.toDouble(),
-                if (debt == null) fromAccount.value!!.id else debt!!.fromAccount,
-                if (debt == null) toAccount.value!!.id else debt!!.toAccount,
                 details.value!!,
                 debt?.createdAt ?: Date().time,
                 null,
@@ -99,7 +85,7 @@ class EditDebtViewModel : ViewModel() {
             )
             try {
                 if (debt == null) {
-                    transactionDAO.createDebt(debtRecord)
+                    transactionDAO.createDebt(debtRecord, account.value?.id)
                 } else {
                     transactionDAO.update(debtRecord)
                 }
@@ -111,24 +97,12 @@ class EditDebtViewModel : ViewModel() {
     }
 
     fun selectDebtType (type: DebtType) {
+        if(type != debtType.value) {
+            account.value = null
+        }
         debtType.value = type
-        when (type) {
-            DebtType.BORROWED -> {
-                showFromAccount.value = false
-                fromAccount.value = null
-                showToAccount.value = true
-            }
-            DebtType.LENT -> {
-                showFromAccount.value = true
-                showToAccount.value = false
-                toAccount.value = null
-            }
-            DebtType.INSTALLMENT -> {
-                showFromAccount.value = false
-                showToAccount.value = false
-                fromAccount.value = null
-                toAccount.value = null
-            }
+        if(debtType.value == DebtType.INSTALLMENT) {
+            showAccount.value = false
         }
     }
 }

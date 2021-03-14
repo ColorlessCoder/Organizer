@@ -48,7 +48,8 @@ class MoneyFragment : Fragment() {
         val database = AppDatabase.getInstance(view.context)
         val accountDAO = database.accountDao()
         accountDAO.getAllAccounts().observe(this, Observer { accounts ->
-            viewModel.totalAmount = accounts.fold(0.0){acc, account -> account.balance + acc}.toString() + " BDT"
+            viewModel.totalAmount =
+                accounts.fold(0.0) { acc, account -> account.balance + acc }.toString() + " BDT"
             accountsGrid.adapter =
                 AccountGridAdapter(
                     accounts,
@@ -64,6 +65,11 @@ class MoneyFragment : Fragment() {
         view.findViewById<MaterialButton>(R.id.transactions)
             .setOnClickListener {
                 val action = MoneyFragmentDirections.actionNavMoneyToViewTransaction(null);
+                findNavController().navigate(action)
+            }
+        view.findViewById<MaterialButton>(R.id.debts)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToDebtList();
                 findNavController().navigate(action)
             }
         view.findViewById<MaterialButton>(R.id.total_button)
@@ -91,14 +97,17 @@ class MoneyFragment : Fragment() {
                 viewModel
             )
         })
-        if(viewModel.applyTransactionPlanId.hasObservers()) {
+        if (viewModel.applyTransactionPlanId.hasObservers()) {
             viewModel.applyTransactionPlanId.removeObservers(this)
         }
         viewModel.applyTransactionPlanId.observe(this, Observer {
-            if(it != null) {
+            if (it != null) {
                 lifecycleScope.launch {
                     try {
-                        val successfulMessage = database.transactionDao().applyTransactionPlan(database.templateTransactionDao().getAllTemplateTransactionDetailsNonLive(it))
+                        val successfulMessage = database.transactionDao().applyTransactionPlan(
+                            database.templateTransactionDao()
+                                .getAllTemplateTransactionDetailsNonLive(it)
+                        )
                         MaterialAlertDialogBuilder(view.context)
                             .setTitle("Successfully Applied")
                             .setMessage(successfulMessage)

@@ -85,8 +85,6 @@ abstract class AppDatabase : RoomDatabase() {
                         " `debt_type` INTEGER NOT NULL, " +
                         " `amount` REAL NOT NULL, " +
                         " `paid_so_far` REAL NOT NULL, " +
-                        " `from_account` TEXT , " +
-                        " `to_account` TEXT , " +
                         " `details` TEXT NOT NULL, " +
                         " `created_at` INTEGER NOT NULL, " +
                         " `completed_at` INTEGER, " +
