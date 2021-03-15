@@ -72,8 +72,8 @@ class EditDebtViewModel : ViewModel() {
         } else {
             dueDate = null
         }
-        showAccount.value = false
         selectDebtType(DebtType.from(currentDebtDetails.debtType))
+        showAccount.value = false
     }
 
     fun saveDebt() {

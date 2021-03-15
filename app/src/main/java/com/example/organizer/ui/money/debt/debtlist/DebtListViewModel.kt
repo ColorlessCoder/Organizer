@@ -8,6 +8,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class DebtListViewModel : ViewModel() {
+    var lastClickedDebt: Int? = null
     lateinit var debtDAO: DebtDAO
     fun deleteDebt(debtId: String) {
         viewModelScope.launch {

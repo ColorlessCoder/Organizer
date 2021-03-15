@@ -26,7 +26,7 @@ interface TransactionDAO : BaseDAO {
     suspend fun getAccount(id: String): Account
 
     @androidx.room.Transaction
-    suspend fun insertAndUpdateAccount(transaction: Transaction) {
+    suspend fun insertAndUpdateAccount(transaction: Transaction, updateDebt: Boolean = true) {
         if (transaction.toAccount != null) {
             var account = getAccount(transaction.toAccount!!)
             account.balance += transaction.amount
@@ -40,9 +40,9 @@ interface TransactionDAO : BaseDAO {
             }
             updateAccount(account)
         }
-        if(transaction.debtId != null) {
+        if(transaction.debtId != null && updateDebt) {
             var debt = getDebtById(transaction.debtId!!)
-            debt.paidSoFar += debt.amount
+            debt.paidSoFar += transaction.amount
             if(debt.amount.compareTo(debt.paidSoFar) < 0) {
                 throw java.lang.Exception("Payment exceeds the required debt amount")
             } else if (debt.amount.equals(debt.paidSoFar)) {
@@ -191,7 +191,7 @@ interface TransactionDAO : BaseDAO {
                     debtType.name + ": " + debt.details,
                     Date().time,
                     debt.id
-                )
+                ), false
             )
         }
     }

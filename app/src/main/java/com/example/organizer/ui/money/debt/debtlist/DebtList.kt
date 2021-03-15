@@ -116,9 +116,13 @@ class DebtList : Fragment() {
             }
             holder.createdAt.text = DateUtils.dateToString(Date(debt.createdAt))
             holder.debtDetails.text = debt.details
-
-            holder.card.setOnFocusChangeListener { _, hasFocus ->
-                holder.actionBar.visibility = if (hasFocus) View.VISIBLE else View.GONE
+            holder.actionBar.visibility = if(viewModel.lastClickedDebt == position) View.VISIBLE else View.GONE
+            holder.card.setOnClickListener {
+                holder.actionBar.visibility = View.VISIBLE
+                if(viewModel.lastClickedDebt != position && viewModel.lastClickedDebt != null) {
+                    this.notifyItemChanged(viewModel.lastClickedDebt!!)
+                }
+                viewModel.lastClickedDebt = position
             }
             holder.historyButton.setOnClickListener {
                 view.findNavController()

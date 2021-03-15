@@ -60,9 +60,11 @@ class DebtPayment : Fragment() {
                 viewModel.debt = it
             })
         }
+        viewModel.navigatedToSet = DebtPaymentViewModel.Companion.NavigatedToSet.NONE
         val view = binding.root
         view.findViewById<TextInputEditText>(R.id.accountInput)
             .setOnClickListener {
+                viewModel.navigatedToSet = DebtPaymentViewModel.Companion.NavigatedToSet.ACCOUNT
                 val action = DebtPaymentDirections.debtPaymentToSelectAccount()
                 selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
                 selectAccountViewModel.selectedRecord = viewModel.account.value
@@ -70,7 +72,7 @@ class DebtPayment : Fragment() {
             }
         view.findViewById<Button>(R.id.make_payment).setOnClickListener {
             if (viewModel.amount.value.isNullOrEmpty() || viewModel.amount.value!!.toDouble()
-                    .compareTo(0.0) > 0
+                    .compareTo(0.0) <= 0
             ) {
                 Toast.makeText(
                     requireContext(),
@@ -103,7 +105,7 @@ class DebtPayment : Fragment() {
                         )
                         findNavController().popBackStack()
                     } catch (ex:Exception) {
-                        Toast.makeText(requireContext(),ex.message, Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(),ex.message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }

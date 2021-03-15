@@ -65,7 +65,6 @@
                 android:hint="Details"
                 android:inputType="textMultiLine"
                 android:text="@={viewModel.details}"
-                android:textColor="@color/whiteText"
                 android:textStyle="bold" />
 
         </com.google.android.material.textfield.TextInputLayout>

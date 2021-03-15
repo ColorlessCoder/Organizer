@@ -146,6 +146,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:hint="Due Date"
+                            android:editable="false"
                             android:inputType="date"
                             android:text="@={viewModel.dueDateText}"
                             android:textStyle="bold" />
@@ -163,6 +164,7 @@
                             android:id="@+id/due_time_input"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:editable="false"
                             android:hint="Due Time"
                             android:inputType="time"
                             android:text="@={viewModel.dueTimeText}"
