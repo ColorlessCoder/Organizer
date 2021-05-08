@@ -3,11 +3,11 @@ package com.example.organizer.ui.backup.database
 import android.content.DialogInterface
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.os.Environment
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
@@ -15,12 +15,16 @@ import androidx.navigation.fragment.findNavController
 import androidx.sqlite.db.SimpleSQLiteQuery
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.services.SalatService
 import com.example.organizer.ui.Utils.fileChooser.FileChooserViewModel
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
+import java.util.*
 
 class DatabaseBackup : Fragment() {
 
@@ -38,21 +42,22 @@ class DatabaseBackup : Fragment() {
         return inflater.inflate(R.layout.database_backup_fragment, container, false)
     }
 
-    fun showToastMessage(message: String) {
+    private fun showToastMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    fun exportBackup(dialogInterface: DialogInterface, directory: File, fileName: String) {
+    private fun exportBackup(dialogInterface: DialogInterface, directory: File, fileName: String) {
         val file = File(directory, "$fileName.db")
-        if(file.exists()) {
+        if (file.exists()) {
             showToastMessage("Duplicate File Exists")
         } else {
             try {
-                val currentDbFile = requireContext().applicationContext.getDatabasePath("organizer.db")
-                if(currentDbFile.exists()) {
+                val currentDbFile =
+                    requireContext().applicationContext.getDatabasePath("organizer.db")
+                if (currentDbFile.exists()) {
                     val db = AppDatabase.getInstance(requireContext())
                     lifecycleScope.launch {
-                        db.utilDAO().checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
+                        db.utilDao().checkpoint(SimpleSQLiteQuery("pragma wal_checkpoint(full)"))
                         val src = FileInputStream(currentDbFile).channel
                         val dst = FileOutputStream(file).channel
                         dst.transferFrom(src, 0, src.size())
@@ -64,17 +69,18 @@ class DatabaseBackup : Fragment() {
                 }
             } catch (ex: Exception) {
                 println(ex)
-                showToastMessage("Cannot backup due to "+ ex.message)
+                showToastMessage("Cannot backup due to " + ex.message)
             }
         }
     }
 
-    fun importBackup(file: File) {
-        if(!file.exists()) {
+    private fun importBackup(file: File) {
+        if (!file.exists()) {
             showToastMessage("File does not exists")
         } else {
             try {
-                val currentDbFile = requireContext().applicationContext.getDatabasePath("organizer.db")
+                val currentDbFile =
+                    requireContext().applicationContext.getDatabasePath("organizer.db")
                 val db = AppDatabase.getInstance(requireContext())
                 val write = db.openHelper.writableDatabase.path
                 AppDatabase.destroyInstance()
@@ -85,46 +91,123 @@ class DatabaseBackup : Fragment() {
                 dst.close()
             } catch (ex: Exception) {
                 println(ex)
-                showToastMessage("Cannot import backup due to "+ ex.message)
+                showToastMessage("Cannot import backup due to " + ex.message)
             }
         }
+    }
+
+    private fun selectDateToDownloadSalatTimes(view: View, db: AppDatabase) {
+        val datePicker = MaterialDatePicker.Builder.datePicker()
+            .setTitleText("Select Due Date")
+            .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
+            .setSelection(Date().time)
+            .build()
+        datePicker.addOnPositiveButtonClickListener {
+            if (it != null) {
+                val cal = Calendar.getInstance()
+                cal.time = Date(it)
+                downloadSalatTimes(view, cal.get(Calendar.MONTH), cal.get(Calendar.YEAR), db)
+            }
+        }
+        activity?.supportFragmentManager?.let { it1 ->
+            datePicker.show(it1, "dateToDownloadSalatTimes")
+        }
+    }
+
+    private fun downloadSalatTimes(view: View, month: Int, year: Int, db: AppDatabase) {
+        val salatService = SalatService(db.salatTimesDao())
+        try {
+            val country = getCountryName(view)
+            val city = getCityName(view)
+            if (city.isEmpty() || country.isEmpty()) {
+                throw java.lang.Exception("Country or city cannot be empty")
+            }
+            salatService.downloadSalatTimes(
+                month + 1,
+                year,
+                city,
+                country,
+                requireContext(),
+                lifecycleScope,
+                false
+            )
+            lifecycleScope.launch {
+                viewModel.userSettings.city = city
+                viewModel.userSettings.country = country
+                db.userSettingsDao().update(viewModel.userSettings)
+            }
+        } catch (ex: java.lang.Exception) {
+            showToastMessage(ex.message.toString())
+        }
+    }
+
+    private fun getCountryName(view: View): String {
+        return view.findViewById<TextInputEditText>(R.id.country_name_input).text.toString()
+    }
+
+    private fun setCountryName(view: View, text: String) {
+        view.findViewById<TextInputEditText>(R.id.country_name_input).setText(text)
+    }
+
+    private fun getCityName(view: View): String {
+        return view.findViewById<TextInputEditText>(R.id.city_name_input).text.toString()
+    }
+
+    private fun setCityName(view: View, text: String) {
+        view.findViewById<TextInputEditText>(R.id.city_name_input).setText(text)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(DatabaseBackupViewModel::class.java)
-        fileChooserViewModel = ViewModelProvider(requireActivity()).get(FileChooserViewModel::class.java)
-        if(viewModel.navigationPurpose == DatabaseBackupViewModel.Companion.Purpose.EXPORT && fileChooserViewModel.selectedDirectory != null) {
+        val db = AppDatabase.getInstance(requireContext())
+        db.userSettingsDao().getActiveUserSettings().observe(this, androidx.lifecycle.Observer {
+            viewModel.userSettings = it
+            setCountryName(view, it.country)
+            setCityName(view, it.city)
+        })
+        fileChooserViewModel =
+            ViewModelProvider(requireActivity()).get(FileChooserViewModel::class.java)
+        if (viewModel.navigationPurpose == DatabaseBackupViewModel.Companion.Purpose.EXPORT && fileChooserViewModel.selectedDirectory != null) {
             val folderNameInput = EditText(requireContext())
             MaterialAlertDialogBuilder(view.context, R.style.AppTheme_CenterModal)
                 .setTitle("File name")
                 .setView(folderNameInput)
                 .setPositiveButton("Export") { dialogInterface: DialogInterface, _: Int ->
-                    exportBackup(dialogInterface, fileChooserViewModel.selectedDirectory!!, folderNameInput.text.toString())
+                    exportBackup(
+                        dialogInterface,
+                        fileChooserViewModel.selectedDirectory!!,
+                        folderNameInput.text.toString()
+                    )
                     dialogInterface.dismiss()
                 }
                 .setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
                     dialogInterface.cancel()
                 }
                 .show()
-        } else  if (viewModel.navigationPurpose == DatabaseBackupViewModel.Companion.Purpose.IMPORT && fileChooserViewModel.selectedDirectory != null) {
+        } else if (viewModel.navigationPurpose == DatabaseBackupViewModel.Companion.Purpose.IMPORT && fileChooserViewModel.selectedDirectory != null) {
             importBackup(fileChooserViewModel.selectedDirectory!!)
         }
         viewModel.navigationPurpose = DatabaseBackupViewModel.Companion.Purpose.NONE
         view.findViewById<View>(R.id.importButton)
             .setOnClickListener {
-                val action = DatabaseBackupDirections.actionNavDatabaseBackupToFileChooser("/storage")
+                val action =
+                    DatabaseBackupDirections.actionNavDatabaseBackupToFileChooser("/storage")
                 action.chooseDirectory = false
                 viewModel.navigationPurpose = DatabaseBackupViewModel.Companion.Purpose.IMPORT
                 findNavController().navigate(action)
             }
         view.findViewById<View>(R.id.exportButton)
             .setOnClickListener {
-                val action = DatabaseBackupDirections.actionNavDatabaseBackupToFileChooser("/storage")
+                val action =
+                    DatabaseBackupDirections.actionNavDatabaseBackupToFileChooser("/storage")
                 action.chooseDirectory = true
                 viewModel.navigationPurpose = DatabaseBackupViewModel.Companion.Purpose.EXPORT
                 findNavController().navigate(action)
             }
+        view.findViewById<Button>(R.id.downloadSalatTimes).setOnClickListener {
+            this.selectDateToDownloadSalatTimes(view, db)
+        }
     }
 
 }

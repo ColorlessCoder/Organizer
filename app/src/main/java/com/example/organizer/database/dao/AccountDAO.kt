@@ -3,11 +3,35 @@ package com.example.organizer.database.dao
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.example.organizer.database.entity.Account
+import com.example.organizer.database.enums.TransactionType
+import java.util.*
 
 @Dao
 interface AccountDAO {
     @Insert
     suspend fun insert(vararg account: Account)
+
+    @androidx.room.Transaction
+    suspend fun createAccount(account: Account) {
+        insert(account)
+        insertTransaction(
+            com.example.organizer.database.entity.Transaction(
+                UUID.randomUUID().toString(),
+                TransactionType.INITIAL.typeCode,
+                account.balance,
+                null,
+                account.id,
+                null,
+                null,
+                null,
+                Date().time,
+                null
+            )
+        )
+    }
+
+    @Insert
+    suspend fun insertTransaction(transaction: com.example.organizer.database.entity.Transaction)
 
     @Update
     suspend fun update(vararg account: Account)

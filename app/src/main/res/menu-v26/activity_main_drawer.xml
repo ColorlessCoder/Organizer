@@ -11,6 +11,7 @@
         <item
             android:id="@+id/nav_prayer"
             android:icon="@drawable/ic_mosque__1_"
+            android:iconTint="@color/TransferColor"
             android:title="Prayer" />
     </group>
     <item android:id="@+id/backupMenu" android:title="Backup">
@@ -18,7 +19,6 @@
             <item
             android:id="@+id/nav_database_backup"
             android:icon="@drawable/ic_baseline_storage_24"
-            android:iconTint="@color/TransferColor"
             android:title="@string/database"
             />
         </menu>

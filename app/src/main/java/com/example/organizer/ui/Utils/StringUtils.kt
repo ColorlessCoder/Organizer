@@ -8,5 +8,8 @@ class StringUtils {
         fun doubleToString(value: Double):String {
             return if (ceil(value) == floor(value)) value.toInt().toString() else value.toString()
         }
+        fun isNumeric(a: Char): Boolean {
+            return a in '0'..'9'
+        }
     }
 }
