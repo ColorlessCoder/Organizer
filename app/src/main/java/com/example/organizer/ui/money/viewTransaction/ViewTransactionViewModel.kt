@@ -27,7 +27,7 @@ class ViewTransactionViewModel : ViewModel() {
 
     companion object {
         enum class FIELDS {
-            ACCOUNT, CATEGORY, TYPE, NONE
+            ACCOUNT, CATEGORY, TYPE, NONE, DETAILS
         }
     }
 

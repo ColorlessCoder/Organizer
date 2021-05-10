@@ -100,7 +100,8 @@ class DebtPayment : Fragment() {
                                 null,
                                 viewModel.details.value,
                                 Date().time,
-                                viewModel.debt.id
+                                viewModel.debt.id,
+                                null,null,null,null
                             )
                         )
                         findNavController().popBackStack()

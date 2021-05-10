@@ -27,19 +27,7 @@ interface TransactionDAO : BaseDAO {
 
     @androidx.room.Transaction
     suspend fun insertAndUpdateAccount(transaction: Transaction, updateDebt: Boolean = true) {
-        if (transaction.toAccount != null) {
-            var account = getAccount(transaction.toAccount!!)
-            account.balance += transaction.amount
-            updateAccount(account)
-        }
-        if (transaction.fromAccount != null) {
-            var account = getAccount(transaction.fromAccount!!)
-            account.balance -= transaction.amount
-            if (account.balance < 0) {
-                throw Exception("Balance of " + account.accountName + " will become negative.")
-            }
-            updateAccount(account)
-        }
+        updateAccountForTransaction(transaction)
         if(transaction.debtId != null && updateDebt) {
             var debt = getDebtById(transaction.debtId!!)
             debt.paidSoFar += transaction.amount
@@ -51,6 +39,30 @@ interface TransactionDAO : BaseDAO {
             update(debt)
         }
         insert(transaction)
+    }
+
+    @androidx.room.Transaction
+    private suspend fun updateAccountForTransaction(transaction: Transaction) {
+        println(transaction)
+        if (transaction.toAccount != null) {
+            var account = getAccount(transaction.toAccount!!)
+            println(account)
+            transaction.toAccountOldAmount = account.balance + 0
+            account.balance += transaction.amount
+            transaction.toAccountNewAmount = account.balance + 0
+            updateAccount(account)
+        }
+        if (transaction.fromAccount != null) {
+            var account = getAccount(transaction.fromAccount!!)
+            println(account)
+            transaction.fromAccountOldAmount = account.balance + 0
+            account.balance -= transaction.amount
+            transaction.fromAccountNewAmount = account.balance + 0
+            if (account.balance < 0) {
+                throw Exception("Balance of " + account.accountName + " will become negative.")
+            }
+            updateAccount(account)
+        }
     }
 
     suspend fun transactionToString(transaction: TemplateTransactionDetails): String {
@@ -79,6 +91,10 @@ interface TransactionDAO : BaseDAO {
                             it.transaction.transactionCategoryId,
                             it.transaction.details,
                             Date().time,
+                            null,
+                            null,
+                            null,
+                            null,
                             null
                         )
                     )
@@ -100,6 +116,10 @@ interface TransactionDAO : BaseDAO {
 
     @Query("Select * From transactions where id = :id")
     fun getTransactionById(id: String): LiveData<Transaction>
+
+    @androidx.room.Transaction
+    @Query("Select * From transactions where id = :id")
+    fun getTransactionDetailsById(id: String): LiveData<TransactionDetails>
 
     @androidx.room.Transaction
     @Query("Select * From transactions")
@@ -190,9 +210,26 @@ interface TransactionDAO : BaseDAO {
                     null,
                     debtType.name + ": " + debt.details,
                     Date().time,
-                    debt.id
+                    debt.id,
+                    null,null,null,null
                 ), false
             )
+        }
+    }
+
+    @androidx.room.Transaction
+    suspend fun revertTransaction(transaction: Transaction) {
+        if(transaction.debtId == null) {
+            println("Revert ATransaction")
+            val from = transaction.fromAccount;
+            transaction.fromAccount = transaction.toAccount;
+            transaction.toAccount = from;
+            transaction.fromAccountOldAmount = null;
+            transaction.fromAccountNewAmount = null;
+            transaction.toAccountNewAmount = null;
+            transaction.toAccountOldAmount = null;
+            updateAccountForTransaction(transaction)
+            deleteById(transaction.id)
         }
     }
 }

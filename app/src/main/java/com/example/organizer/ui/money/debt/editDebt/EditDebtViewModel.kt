@@ -18,7 +18,7 @@ class EditDebtViewModel : ViewModel() {
     val amount = MutableLiveData<String>()
     val paidSoFar = MutableLiveData<String>()
     val details = MutableLiveData<String>()
-    val account = MutableLiveData<Account>()
+    val account = MutableLiveData<Account?>()
     val accountName = MutableLiveData<String>()
     val showAccount = MutableLiveData<Boolean>()
     lateinit var transactionDAO: TransactionDAO

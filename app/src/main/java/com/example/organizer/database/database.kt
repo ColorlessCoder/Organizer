@@ -18,7 +18,8 @@ import com.example.organizer.database.entity.*
         TransactionPlan::class,
         TemplateTransaction::class,
         Debt::class
-    ], version = 5
+    ], version = 6,
+    exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun accountDao(): AccountDAO
@@ -41,7 +42,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DB_NAME
                 ).enableMultiInstanceInvalidation()
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5)
+                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
                     .build()
             }
             return instance as AppDatabase
@@ -91,6 +92,14 @@ abstract class AppDatabase : RoomDatabase() {
                         " `scheduled_at` INTEGER, " +
                         "PRIMARY KEY(`id`))")
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN debt_id TEXT")
+            }
+        }
+        private val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `transactions` ADD COLUMN from_account_old_amount REAL")
+                database.execSQL("ALTER TABLE `transactions` ADD COLUMN to_account_old_amount REAL")
+                database.execSQL("ALTER TABLE `transactions` ADD COLUMN from_account_new_amount REAL")
+                database.execSQL("ALTER TABLE `transactions` ADD COLUMN to_account_new_amount REAL")
             }
         }
 

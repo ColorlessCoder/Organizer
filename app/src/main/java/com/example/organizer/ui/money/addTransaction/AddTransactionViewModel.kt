@@ -17,9 +17,9 @@ class AddTransactionViewModel : ViewModel() {
     var transactionType = MutableLiveData<Int>()
     val amount = MutableLiveData<String>()
     val details = MutableLiveData<String>()
-    val fromAccount = MutableLiveData<Account>()
-    val toAccount = MutableLiveData<Account>()
-    val category = MutableLiveData<Category>()
+    val fromAccount = MutableLiveData<Account?>()
+    val toAccount = MutableLiveData<Account?>()
+    val category = MutableLiveData<Category?>()
     var backgroundColor = MutableLiveData<Int>()
     val showFromAccount = MutableLiveData<Boolean>()
     val showToAccount = MutableLiveData<Boolean>()
@@ -83,7 +83,8 @@ class AddTransactionViewModel : ViewModel() {
                     if (category.value == null) null else category.value!!.id,
                     details.value,
                     Date().time,
-                    null
+                    null,
+                    null,null,null,null
                 )
                 try {
                     transactionService.insert(transaction)

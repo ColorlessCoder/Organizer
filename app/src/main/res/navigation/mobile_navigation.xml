@@ -9,7 +9,7 @@
         android:id="@+id/nav_money"
         android:name="com.example.organizer.ui.money.MoneyFragment"
         android:label="@string/menu_money"
-        tools:layout="@layout/fragment_money" >
+         >
         <argument
             android:name="fromCreate"
             app:argType="boolean"
@@ -38,7 +38,7 @@
         android:id="@+id/editAccount"
         android:name="com.example.organizer.ui.money.editAccount.EditAccount"
         android:label="Edit Account"
-        tools:layout="@layout/edit_account_fragment" >
+         >
         <argument
             android:name="id"
             app:argType="string"
@@ -80,7 +80,7 @@
         android:id="@+id/selectAccount"
         android:name="com.example.organizer.ui.money.selectAccount.SelectAccount"
         android:label="select_account_fragment"
-        tools:layout="@layout/select_account_fragment">
+        >
         <argument
             android:name="ignoreAccountId"
             app:argType="boolean"
@@ -91,7 +91,7 @@
         android:id="@+id/viewTransaction"
         android:name="com.example.organizer.ui.money.viewTransaction.ViewTransaction"
         android:label="view_transaction_fragment"
-        tools:layout="@layout/view_transaction_fragment" >
+         >
         <argument
             android:name="sourceAccountId"
             app:argType="string"
@@ -106,12 +106,15 @@
         <action
             android:id="@+id/action_viewTransaction_to_transactionCategory"
             app:destination="@id/transactionCategory" />
+        <action
+            android:id="@+id/action_viewTransaction_to_transactionDetails"
+            app:destination="@id/transactionDetails" />
     </fragment>
     <fragment
         android:id="@+id/nav_database_backup"
         android:name="com.example.organizer.ui.backup.database.DatabaseBackup"
         android:label="@string/database_backup"
-        tools:layout="@layout/database_backup_fragment" >
+         >
         <action
             android:id="@+id/action_nav_database_backup_to_fileChooser"
             app:destination="@id/fileChooser" />
@@ -120,7 +123,7 @@
         android:id="@+id/fileChooser"
         android:name="com.example.organizer.ui.Utils.fileChooser.FileChooser"
         android:label="Choose file"
-        tools:layout="@layout/file_chooser_fragment">
+        >
         <argument
             android:name="chooseDirectory"
             app:argType="boolean"
@@ -135,7 +138,7 @@
         android:id="@+id/transactionCategory"
         android:name="com.example.organizer.ui.money.transactionCategory.TransactionCategory"
         android:label="Categories"
-        tools:layout="@layout/transaction_category_fragment" >
+         >
         <argument
             android:name="selectCategory"
             app:argType="boolean"
@@ -156,7 +159,7 @@
         android:id="@+id/selectTransactionType"
         android:name="com.example.organizer.ui.money.selectTransactionType.SelectTransactionType"
         android:label="Select Transaction Type"
-        tools:layout="@layout/select_transaction_type_fragment" />
+         />
     <fragment
         android:id="@+id/editCategory"
         android:name="com.example.organizer.ui.money.transactionCategory.EditCategory"
@@ -175,7 +178,7 @@
         android:id="@+id/editTransactionPlan"
         android:name="com.example.organizer.ui.money.transactionPlan.EditTransactionPlan"
         android:label="edit_transaction_plan_fragment"
-        tools:layout="@layout/edit_transaction_plan_fragment" >
+         >
         <argument
             android:name="id"
             app:argType="string"
@@ -185,7 +188,7 @@
         android:id="@+id/templateTransactions"
         android:name="com.example.organizer.ui.money.transactionPlan.TemplateTransactions"
         android:label="Templates"
-        tools:layout="@layout/template_transactions_fragment" >
+         >
         <argument
             android:name="id"
             app:argType="string"/>
@@ -197,7 +200,7 @@
         android:id="@+id/editTemplateTransaction"
         android:name="com.example.organizer.ui.money.transactionPlan.EditTemplateTransaction"
         android:label="edit_template_transaction_fragment"
-        tools:layout="@layout/edit_template_transaction_fragment" >
+         >
         <argument
             android:name="transactionPlanId"
             app:argType="string"
@@ -221,7 +224,7 @@
         android:id="@+id/debtList"
         android:name="com.example.organizer.ui.money.debt.debtlist.DebtList"
         android:label="Debts"
-        tools:layout="@layout/debt_list_fragment" >
+         >
         <action
             android:id="@+id/action_debtList_to_editDebt"
             app:destination="@id/editDebt" />
@@ -252,12 +255,12 @@
         android:id="@+id/selectDebtType"
         android:name="com.example.organizer.ui.money.debt.selectDebtType.SelectDebtType"
         android:label="Select Debt Type"
-        tools:layout="@layout/select_debt_type_fragment" />
+         />
     <fragment
         android:id="@+id/debtPayment"
         android:name="com.example.organizer.ui.money.debt.debtPayment.DebtPayment"
         android:label="Make Payment"
-        tools:layout="@layout/debt_payment_fragment" >
+         >
         <argument
             android:name="debtId"
             app:argType="string"/>
@@ -270,7 +273,7 @@
         android:id="@+id/debtTransactionList"
         android:name="com.example.organizer.ui.money.debt.debtTransactionList.DebtTransactionList"
         android:label="Debt Transactions"
-        tools:layout="@layout/debt_transaction_list_fragment" >
+         >
         <argument
             android:name="debtId"
             app:argType="string"
@@ -278,6 +281,15 @@
         <action
             android:id="@+id/action_debtTransactionList_to_debtPayment"
             app:destination="@id/debtPayment" />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionDetails"
+        android:name="com.example.organizer.ui.money.viewTransaction.TransactionDetailsFragment"
+        android:label="Details">
+        <argument
+            android:name="transactionId"
+            app:argType="string"
+            />
     </fragment>
 
 </navigation>

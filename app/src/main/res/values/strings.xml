@@ -22,4 +22,11 @@
     <string name="database_backup">Database Backup</string>
     <string name="categories">Categories</string>
     <string name="transactions">Transactions</string>
+    <string name="amount">Amount</string>
+    <string name="from_account">From Account</string>
+    <string name="account">Account</string>
+    <string name="category">Category</string>
+    <string name="comments">Comments</string>
+    <string name="revert">Revert</string>
+    <string name="transaction_type">Transaction Type</string>
 </resources>

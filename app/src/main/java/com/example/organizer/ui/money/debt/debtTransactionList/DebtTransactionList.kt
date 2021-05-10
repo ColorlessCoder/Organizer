@@ -40,7 +40,8 @@ class DebtTransactionList : Fragment() {
             .observe(this, Observer {
                 listView.adapter = ViewTransaction.ViewTransactionListAdapter(
                     it,
-                    view
+                    view,
+                    null
                 )
             })
         view.findViewById<Button>(R.id.make_payment)

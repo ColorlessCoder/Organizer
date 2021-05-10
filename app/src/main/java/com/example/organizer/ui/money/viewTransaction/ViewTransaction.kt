@@ -1,5 +1,6 @@
 package com.example.organizer.ui.money.viewTransaction
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
@@ -227,11 +229,13 @@ class ViewTransaction : Fragment() {
             transactionList.adapter =
                 ViewTransactionListAdapter(
                     transactionDetailsList,
-                    view
+                    view,
+                    viewModel
                 )
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateTotalFields(view:View, transactionDetailsList: List<TransactionDetails>) {
         view.findViewById<TextView>(R.id.total_income).text = transactionDetailsList
             .filter { it.transaction.transactionType == TransactionType.INCOME.typeCode }
@@ -245,7 +249,8 @@ class ViewTransaction : Fragment() {
 
     class ViewTransactionListAdapter(
         private val transactionDetailsList: List<TransactionDetails>,
-        val view: View
+        val view: View,
+        val viewModel: ViewTransactionViewModel?
     ) : RecyclerView.Adapter<ViewTransactionListAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val transactionType: TextView = view.findViewById(R.id.transaction_type)
@@ -297,6 +302,17 @@ class ViewTransaction : Fragment() {
             }
             holder.transactionDate.text =
                 DateUtils.dateToString(Date(transactionDetails.transaction.transactedAt));
+            if(viewModel != null) {
+                holder.itemView.setOnClickListener {
+                    viewModel.fieldPendingToSetAfterNavigateBack =
+                        ViewTransactionViewModel.Companion.FIELDS.DETAILS
+                    val action =
+                        ViewTransactionDirections.actionViewTransactionToTransactionDetails(
+                            transactionDetails.transaction.id
+                        )
+                    view.findNavController().navigate(action)
+                }
+            }
         }
 
     }
