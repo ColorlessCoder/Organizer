@@ -1,5 +1,6 @@
 package com.example.organizer.database.dao
 
+import androidx.core.util.Pair
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
@@ -141,13 +142,17 @@ interface TransactionDAO : BaseDAO {
         accountIds: List<String>?,
         categoryIds: List<String>?,
         type: List<Int>?,
-        days: Int
+        dateRange: Pair<Long, Long>?
     ): SimpleSQLiteQuery {
         var queryString: StringBuilder = StringBuilder()
         var args: MutableList<Any> = mutableListOf()
-        val before = Date().time - (1L * days * 24 * 60 * 60 * 1000)
-        queryString.append("Select * From transactions Where transacted_at > ? ")
-        args.add(before)
+        queryString.append("Select * From transactions Where 1=1 ")
+        if(dateRange != null) {
+            queryString.append(" AND transacted_at >= ? ")
+            queryString.append(" AND transacted_at < ? ")
+            args.add(dateRange.first!!)
+            args.add(dateRange.second!! +  ( 24 * 60 * 60 * 1000))
+        }
         if (accountIds != null) {
             if (accountIds.isEmpty()) {
                 queryString.append(" AND from_account IS NULL AND to_account IS NULL ")

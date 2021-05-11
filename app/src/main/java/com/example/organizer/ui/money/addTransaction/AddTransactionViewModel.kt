@@ -81,7 +81,7 @@ class AddTransactionViewModel : ViewModel() {
                     if (toAccount.value == null) null else toAccount.value!!.id,
                     null,
                     if (category.value == null) null else category.value!!.id,
-                    details.value!!.trim(),
+                    details.value?.trim(),
                     Date().time,
                     null,
                     null,null,null,null

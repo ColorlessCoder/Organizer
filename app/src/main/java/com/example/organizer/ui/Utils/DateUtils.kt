@@ -11,5 +11,8 @@ class DateUtils {
         fun getDateString(date: Date): String {
             return SimpleDateFormat("dd/MM/yyyy").format(date)
         }
+        fun getDateStringWithMonth(date: Date): String {
+            return SimpleDateFormat("dd-MMM-yyyy").format(date)
+        }
     }
 }

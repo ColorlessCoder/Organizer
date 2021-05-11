@@ -98,7 +98,7 @@ class DebtPayment : Fragment() {
                                 if(transactionType == TransactionType.INCOME) viewModel.account.value!!.id else null,
                                 null,
                                 null,
-                                viewModel.details.value!!.trim(),
+                                viewModel.details.value?.trim(),
                                 Date().time,
                                 viewModel.debt.id,
                                 null,null,null,null

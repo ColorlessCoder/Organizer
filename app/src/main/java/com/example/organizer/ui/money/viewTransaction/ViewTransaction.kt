@@ -34,9 +34,10 @@ import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
-import com.example.organizer.ui.money.transactionCategory.TransactionCategory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -111,13 +112,20 @@ class ViewTransaction : Fragment() {
     }
 
     private fun loadDaysFilter(parentView: View) {
-        val filterDaysInput = parentView.findViewById<TextInputEditText>(R.id.filter_days_input)
-        filterDaysInput.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                if (viewModel.previousFilterDays != viewModel.filterDays.value) {
-                    viewModel.previousFilterDays = viewModel.filterDays.value?: "30"
-                    loadTransactions(parentView)
-                }
+
+        val filterDateRangeInputLayout = parentView.findViewById<TextInputLayout>(R.id.filter_date_range)
+        filterDateRangeInputLayout.setStartIconOnClickListener {
+            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                    .setTitleText("Select dates")
+                    .setSelection(viewModel.filterDateRange)
+                    .build()
+            dateRangePicker.addOnPositiveButtonClickListener {
+                viewModel.filterDateRange = dateRangePicker.selection
+                viewModel.setDateRangeString()
+                loadTransactions(parentView)
+            }
+            activity?.supportFragmentManager?.let { it1 ->
+                dateRangePicker.show(it1, "viewTransactionDateRangePicker")
             }
         }
     }
@@ -172,8 +180,7 @@ class ViewTransaction : Fragment() {
 
         sheetBehavior = BottomSheetBehavior.from(contentLayout)
         sheetBehavior.isFitToContents = false
-        sheetBehavior.isHideable =
-            false //prevents the bottom sheet from completely hiding off the screen
+        sheetBehavior.isHideable = false //prevents the bottom sheet from completely hiding off the screen
 
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED //initially state to fully expanded
         val swipeRefreshLayout: SwipeRefreshLayout = contentLayout.findViewById(R.id.swiperefresh)
@@ -206,9 +213,8 @@ class ViewTransaction : Fragment() {
                 if (viewModel.filterAccountText.value == viewModel.ALL) null else viewModel.filterAccountValue.map { it.id },
                 if (viewModel.filterCategoryText.value == viewModel.ALL) null else viewModel.filterCategoryValue.map { it.id },
                 if (viewModel.filterTypeText.value == viewModel.ALL) null else viewModel.filterTypeValue.map { it.typeCode },
-                (viewModel.filterDays.value?:"30").toInt()
+                viewModel.filterDateRange
             ))
-            viewModel.previousFilterDays = viewModel.filterDays.value?:"0"
             updateTotalFields(view, transactionDetailsList)
             transactionList.adapter =
                 ViewTransactionListAdapter(

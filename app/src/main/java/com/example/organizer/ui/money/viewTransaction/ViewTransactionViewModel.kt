@@ -1,11 +1,15 @@
 package com.example.organizer.ui.money.viewTransaction
 
+import androidx.core.util.Pair
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
+import com.example.organizer.ui.Utils.DateUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.datepicker.MaterialDatePicker
+import java.util.*
 
 class ViewTransactionViewModel : ViewModel() {
     val ALL = "<ALL>"
@@ -16,8 +20,8 @@ class ViewTransactionViewModel : ViewModel() {
     var filterCategoryValue = mutableListOf<Category>()
     val filterTypeText  = MutableLiveData<String>()
     var filterTypeValue = mutableListOf<TransactionType>()
-    val filterDays = MutableLiveData<String>()
-    var previousFilterDays: String = "30";
+    var filterDateRange: Pair<Long, Long>? = Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
+    val filterDateRangeText = MutableLiveData<String>()
     var bottomSheetState: Int = BottomSheetBehavior.STATE_EXPANDED
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
 
@@ -31,6 +35,14 @@ class ViewTransactionViewModel : ViewModel() {
         }
     }
 
+    fun setDateRangeString() {
+        if(filterDateRange == null) {
+            filterDateRangeText.value = "<ALL>"
+        } else {
+            filterDateRangeText.value = DateUtils.getDateStringWithMonth(Date(filterDateRange!!.first!!)) + "  to  " + DateUtils.getDateStringWithMonth(Date(filterDateRange!!.second!!))
+        }
+    }
+
     fun clear() {
         bottomSheetState = BottomSheetBehavior.STATE_EXPANDED
         fieldPendingToSetAfterNavigateBack = FIELDS.NONE
@@ -41,7 +53,7 @@ class ViewTransactionViewModel : ViewModel() {
         filterAccountText.value = ALL;
         filterCategoryText.value = ALL;
         filterTypeText.value = ALL;
-        filterDays.value = "30";
-        previousFilterDays = "30";
+        filterDateRange = Pair(MaterialDatePicker.thisMonthInUtcMilliseconds(), MaterialDatePicker.todayInUtcMilliseconds())
+        setDateRangeString()
     }
 }

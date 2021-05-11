@@ -93,22 +93,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filter_days"
+                    android:id="@+id/filter_date_range"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
+                    app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
+                    android:layout_margin="5dp">
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/filter_days_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Days"
-                        android:inputType="number"
-                        android:text="@={viewModel.filterDays}"
+                        android:hint="@string/date_range"
+                        android:text="@{viewModel.filterDateRangeText}"
+                        android:editable="false"
                         android:textStyle="bold" />
 
                 </com.google.android.material.textfield.TextInputLayout>

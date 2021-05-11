@@ -16,7 +16,7 @@ class EditDebtViewModel : ViewModel() {
     val debtType = MutableLiveData<DebtType>()
     val debtTypeText = MutableLiveData<String>()
     val amount = MutableLiveData<String>()
-    val paidSoFar = MutableLiveData<String>()
+    val paidSoFar = MutableLiveData<String>("0")
     val details = MutableLiveData<String>()
     val account = MutableLiveData<Account?>()
     val accountName = MutableLiveData<String>()
