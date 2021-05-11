@@ -62,7 +62,7 @@ class EditAccountViewModel() : ViewModel() {
             viewModelScope.launch {
                 val account = Account(
                        id.value!!,
-                        accountName.value!!,
+                        accountName.value!!.trim(),
                         amount.value!!.toDouble(),
                         colors.get(backgroundColorIndex.value!!),
                         Color.WHITE,

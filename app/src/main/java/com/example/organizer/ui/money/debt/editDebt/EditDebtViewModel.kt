@@ -83,7 +83,7 @@ class EditDebtViewModel : ViewModel() {
                 debtType.value!!.typeCode,
                 amount.value!!.toDouble(),
                 paidSoFar.value!!.toDouble(),
-                details.value!!,
+                details.value!!.trim(),
                 debt?.createdAt ?: Date().time,
                 null,
                 dueDate?.timeInMillis

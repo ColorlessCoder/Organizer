@@ -45,9 +45,9 @@ class EditCategory : Fragment() {
         if(args.id != null) {
             dbInstance.categoryDao()
                 .getCategory(args.id!!)
-                .observe(this, Observer {
+                .observe(viewLifecycleOwner, Observer {
                     viewModel.category = it
-                    viewModel.categoryName.value = viewModel.category!!.categoryName
+                    viewModel.setFullCategoryName(viewModel.category!!.categoryName)
                     viewModel.showDelete.value = true
                 })
         } else {

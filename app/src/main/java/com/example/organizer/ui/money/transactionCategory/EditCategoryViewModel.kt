@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 class EditCategoryViewModel : ViewModel() {
+    val categoryGroup = MutableLiveData<String>()
     val categoryName = MutableLiveData<String>()
     val transactionType = MutableLiveData<TransactionType>()
     var category:Category? = null
@@ -22,6 +23,26 @@ class EditCategoryViewModel : ViewModel() {
 
     lateinit var categoryDAO: CategoryDAO;
     lateinit var view: View;
+
+    companion object {
+        fun findCategoryGroup(name: String): String {
+            var group = "";
+            val firstGroupKeyWordIndex = name.indexOfFirst { c -> c == ':' }
+            if(firstGroupKeyWordIndex != -1) {
+                group = name.substring(0, firstGroupKeyWordIndex).trim()
+            }
+            return group
+        }
+
+        fun findCategoryName(name: String): String {
+            var catName = name.trim();
+            val firstGroupKeyWordIndex = name.indexOfFirst { c -> c == ':' }
+            if(firstGroupKeyWordIndex != -1) {
+                catName = name.substring(firstGroupKeyWordIndex + 1).trim()
+            }
+            return catName
+        }
+    }
 
     init {
         showDelete.value = false
@@ -36,21 +57,31 @@ class EditCategoryViewModel : ViewModel() {
         }
     }
 
+    fun setFullCategoryName(name: String) {
+        categoryGroup.value = findCategoryGroup(name);
+        categoryName.value = findCategoryName(name);
+    }
+
+    private fun getFullCategoryName(): String {
+        return categoryGroup.value!!.trim() +": " + categoryName.value!!.trim()
+    }
+
     fun save() {
-        if(!categoryName.value.isNullOrEmpty()) {
+        if(!categoryName.value.isNullOrEmpty() && !categoryGroup.value.isNullOrEmpty()) {
+            val fullName = getFullCategoryName()
             viewModelScope.launch {
                 if(category == null) {
                     categoryDAO.insert(
                         Category(
                             UUID.randomUUID().toString(),
-                            categoryName.value!!,
+                            fullName,
                             transactionType.value!!.typeCode,
                             ContextCompat.getColor(view.context, R.color.TealBCWhiteTC),
                             Color.WHITE
                         )
                     );
                 } else {
-                    category!!.categoryName = categoryName.value!!
+                    category!!.categoryName = fullName
                     categoryDAO.update(category!!)
                 }
                 view.findNavController().popBackStack()

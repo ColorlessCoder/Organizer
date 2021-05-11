@@ -29,4 +29,6 @@
     <string name="comments">Comments</string>
     <string name="revert">Revert</string>
     <string name="transaction_type">Transaction Type</string>
+    <string name="group">Group</string>
+    <string name="name">Name</string>
 </resources>

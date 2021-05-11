@@ -83,7 +83,7 @@ class EditTemplateTransactionViewModel : ViewModel() {
                         if (fromAccount.value == null) null else fromAccount.value!!.id,
                         if (toAccount.value == null) null else toAccount.value!!.id,
                         if (category.value == null) null else category.value!!.id,
-                        details.value,
+                        details.value!!.trim(),
                         order
                     )
                     try {
@@ -96,7 +96,7 @@ class EditTemplateTransactionViewModel : ViewModel() {
                     templateTransaction!!.fromAccount = if (fromAccount.value == null) null else fromAccount.value!!.id
                     templateTransaction!!.toAccount = if (toAccount.value == null) null else toAccount.value!!.id
                     templateTransaction!!.transactionCategoryId = if (category.value == null) null else category.value!!.id
-                    templateTransaction!!.details = details.value
+                    templateTransaction!!.details = details.value!!.trim()
                     templateTransaction!!.transactionType = transactionType.value!!
                     templateTransaction!!.amount = amount.value!!.toDouble()
                     try {

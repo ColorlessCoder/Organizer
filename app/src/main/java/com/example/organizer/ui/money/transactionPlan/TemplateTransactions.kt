@@ -43,7 +43,7 @@ class TemplateTransactions : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(TemplateTransactionsViewModel::class.java)
-        viewModel.transacitonPlanId = args.id
+        viewModel.transactionPlanId = args.id
         val recyclerView = view.findViewById<RecyclerView>(R.id.template_list)
         val dbInstance = AppDatabase.getInstance(requireContext())
         dbInstance.templateTransactionDao()
@@ -61,7 +61,7 @@ class TemplateTransactions : Fragment() {
 
         view.findViewById<View>(R.id.add_template)
             .setOnClickListener {
-                val action = TemplateTransactionsDirections.actionTemplateTransactionsToEditTemplateTransaction(viewModel.transacitonPlanId, null, viewModel.templates.size)
+                val action = TemplateTransactionsDirections.actionTemplateTransactionsToEditTemplateTransaction(viewModel.transactionPlanId, null, viewModel.templates.size)
                 findNavController().navigate(action)
             }
         viewModel.dragStarted.observe(this, androidx.lifecycle.Observer {
@@ -156,7 +156,7 @@ class TemplateTransactionListAdapter(
             if (!viewModel.dragStarted.value!!) {
                 val action =
                     TemplateTransactionsDirections.actionTemplateTransactionsToEditTemplateTransaction(
-                        viewModel.transacitonPlanId,
+                        viewModel.transactionPlanId,
                         transactionDetails.transaction.id,
                         transactionDetails.transaction.order
                     )

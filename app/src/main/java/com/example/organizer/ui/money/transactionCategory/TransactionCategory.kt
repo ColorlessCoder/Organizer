@@ -29,7 +29,6 @@ import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
-import java.util.*
 
 class TransactionCategory :
     CommonSelectFragment<Category, SelectCategoryViewModel, CategoryListAdapter.ViewHolder, CategoryListAdapter>() {
@@ -69,13 +68,22 @@ class TransactionCategory :
         return categories.sortedWith(compareBy(Category::transactionType, Category::categoryName))
     }
 
-    private fun getFilteredCategories(categories: List<Category>): List<Category> {
-        var filteredCategories = categories
-        val filterString = viewModel.filterString.value;
-        if (!filterString.isNullOrEmpty()) {
-            filteredCategories = categories.filter { r -> r.categoryName.toLowerCase(Locale.ROOT).startsWith(filterString) }
+    private fun isRecordMatchedWithFilter(record: Category): Boolean {
+        val filterString = viewModel.filterString.value
+        val filterGroupString = viewModel.filterGroupString.value
+        val recordGroup = EditCategoryViewModel.findCategoryGroup(record.categoryName)
+        val recordCategoryName = EditCategoryViewModel.findCategoryName(record.categoryName)
+        if(!filterString.isNullOrEmpty() && !recordCategoryName.startsWith(filterString)) {
+            return false
         }
-        return filteredCategories;
+        if(!filterGroupString.isNullOrEmpty() && !recordGroup.startsWith(filterGroupString)) {
+            return false
+        }
+        return true
+    }
+
+    private fun getFilteredCategories(categories: List<Category>): List<Category> {
+        return categories.filter { r -> isRecordMatchedWithFilter(r) };
     }
 
     private fun getTransactionTypesInInt(): List<Int>? {
@@ -127,6 +135,14 @@ class TransactionCategory :
         }
         searchCategory.editText?.doOnTextChanged { text, _, _, _ ->  viewModel.filterString.value = text.toString()}
         viewModel.filterString.observe(viewLifecycleOwner, Observer {
+            updateCategoryList(viewModel.allRecords, view)
+        })
+        val searchCategoryGroup = view.findViewById<TextInputLayout>(R.id.find_category_group)
+        if(viewModel.filterGroupString.value != null) {
+            searchCategoryGroup.editText?.setText(viewModel.filterGroupString.value)
+        }
+        searchCategoryGroup.editText?.doOnTextChanged { text, _, _, _ ->  viewModel.filterGroupString.value = text.toString()}
+        viewModel.filterGroupString.observe(viewLifecycleOwner, Observer {
             updateCategoryList(viewModel.allRecords, view)
         })
     }
