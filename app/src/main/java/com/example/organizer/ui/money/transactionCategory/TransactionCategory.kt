@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -26,7 +27,9 @@ import com.example.organizer.ui.money.common.CommonSelectRecyclerListAdapter
 import com.example.organizer.ui.money.common.CommonSelectViewHolder
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
+import java.util.*
 
 class TransactionCategory :
     CommonSelectFragment<Category, SelectCategoryViewModel, CategoryListAdapter.ViewHolder, CategoryListAdapter>() {
@@ -48,15 +51,31 @@ class TransactionCategory :
     }
 
     private fun updateCategoryList(categories: List<Category>, view: View) {
+        var filteredCategories = getFilteredCategories(categories)
+        filteredCategories = sortCategories(filteredCategories)
         setSelectGridAdapter(
-            categories,
+            filteredCategories,
             CategoryListAdapter(
-                categories,
+                filteredCategories,
                 selectViewModel,
                 view,
                 args.selectCategory
-            )
+            ),
+            filteredCategories.size != categories.size
         )
+    }
+
+    private fun sortCategories(categories: List<Category>): List<Category> {
+        return categories.sortedWith(compareBy(Category::transactionType, Category::categoryName))
+    }
+
+    private fun getFilteredCategories(categories: List<Category>): List<Category> {
+        var filteredCategories = categories
+        val filterString = viewModel.filterString.value;
+        if (!filterString.isNullOrEmpty()) {
+            filteredCategories = categories.filter { r -> r.categoryName.toLowerCase(Locale.ROOT).startsWith(filterString) }
+        }
+        return filteredCategories;
     }
 
     private fun getTransactionTypesInInt(): List<Int>? {
@@ -69,7 +88,8 @@ class TransactionCategory :
     private fun setCategoryListForType(view: View) {
         val categoryDAO = AppDatabase.getInstance(requireContext()).categoryDao()
         lifecycleScope.launch {
-            updateCategoryList(categoryDAO.getCategories(categoryDAO.getQueryForCategoryTypeIn(getTransactionTypesInInt())), view)
+            viewModel.allRecords = categoryDAO.getCategories(categoryDAO.getQueryForCategoryTypeIn(getTransactionTypesInInt()))
+            updateCategoryList(viewModel.allRecords, view)
         }
     }
 
@@ -100,6 +120,17 @@ class TransactionCategory :
         )
     }
 
+    private fun handleSearchCategory(view: View) {
+        val searchCategory = view.findViewById<TextInputLayout>(R.id.find_category)
+        if(viewModel.filterString.value != null) {
+            searchCategory.editText?.setText(viewModel.filterString.value)
+        }
+        searchCategory.editText?.doOnTextChanged { text, _, _, _ ->  viewModel.filterString.value = text.toString()}
+        viewModel.filterString.observe(viewLifecycleOwner, Observer {
+            updateCategoryList(viewModel.allRecords, view)
+        })
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         currentView = view
@@ -116,9 +147,11 @@ class TransactionCategory :
         }
         println(selectTransactionTypeViewModel.selectedRecord)
         setCategoryListForType(view)
-        viewModel.transactionTypes.observe(this, Observer {
+        handleSearchCategory(view)
+        viewModel.transactionTypes.observe(viewLifecycleOwner, Observer {
             setCategoryListForType(view)
         })
+
         val typeButton = view.findViewById<Button>(R.id.transaction_type_button);
         updateTransactionTypeView(typeButton);
 

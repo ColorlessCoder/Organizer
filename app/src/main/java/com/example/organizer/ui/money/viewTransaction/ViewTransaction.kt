@@ -22,6 +22,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.entity.Account
+import com.example.organizer.database.entity.Category
 import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.relation.TransactionDetails
 import com.example.organizer.databinding.ViewTransactionFragmentBinding
@@ -32,6 +34,7 @@ import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
+import com.example.organizer.ui.money.transactionCategory.TransactionCategory
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -85,34 +88,15 @@ class ViewTransaction : Fragment() {
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.ACCOUNT) {
             viewModel.filterAccountValue =
                 selectAccountViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectAccountViewModel.allSelected -> viewModel.filterAccountText.value = viewModel.ALL
-                selectAccountViewModel.selectedRecords.isEmpty() -> viewModel.filterAccountText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterAccountText.value =
-                    selectAccountViewModel.selectedRecords.joinToString(separator = ", ") { it.accountName }
-            }
+            viewModel.filterAccountText.value = selectAccountViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, Account::accountName)
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.CATEGORY) {
             viewModel.filterCategoryValue =
                 selectCategoryViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectCategoryViewModel.allSelected -> viewModel.filterCategoryText.value = viewModel.ALL
-                selectCategoryViewModel.selectedRecords.isEmpty() -> viewModel.filterCategoryText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterCategoryText.value =
-                    selectCategoryViewModel.selectedRecords.joinToString(separator = ", ") { it.categoryName }
-            }
+            viewModel.filterCategoryText.value = selectCategoryViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, Category::categoryName)
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.TYPE) {
             viewModel.filterTypeValue =
                 selectTransactionTypeViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectTransactionTypeViewModel.allSelected -> viewModel.filterTypeText.value =
-                    viewModel.ALL
-                selectTransactionTypeViewModel.selectedRecords.isEmpty() -> viewModel.filterTypeText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterTypeText.value =
-                    selectTransactionTypeViewModel.selectedRecords.joinToString(separator = ", ") { it.name }
-            }
+            viewModel.filterTypeText.value = selectTransactionTypeViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, TransactionType::name)
         }
         loadFilter(parentView)
         viewModel.fieldPendingToSetAfterNavigateBack =
