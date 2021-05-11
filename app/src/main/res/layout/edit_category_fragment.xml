@@ -28,7 +28,7 @@
                 android:id="@+id/category_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapSentences"
+                android:inputType="textCapWords"
                 android:hint="Category Group"
                 android:maxLength="50"
                 android:text="@={editCategoryViewModel.categoryGroup}" />
@@ -45,7 +45,7 @@
                 android:id="@+id/category_name"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapSentences"
+                android:inputType="textCapWords"
                 android:hint="Category Name"
                 android:maxLength="50"
                 android:text="@={editCategoryViewModel.categoryName}" />
