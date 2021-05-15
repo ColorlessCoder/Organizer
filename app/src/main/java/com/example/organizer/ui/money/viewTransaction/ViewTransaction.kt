@@ -53,6 +53,7 @@ class ViewTransaction : Fragment() {
     private lateinit var selectAccountViewModel: SelectAccountViewModel
     private lateinit var selectCategoryViewModel: SelectCategoryViewModel
     private lateinit var selectTransactionTypeViewModel: SelectTransactionTypeViewModel
+    private lateinit var viewTransactionSummaryViewModel: ViewTransactionSummaryViewModel
     private val args: ViewTransactionArgs by navArgs()
 
     override fun onCreateView(
@@ -78,6 +79,8 @@ class ViewTransaction : Fragment() {
             ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
         selectTransactionTypeViewModel =
             ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
+        viewTransactionSummaryViewModel =
+            ViewModelProvider(requireActivity()).get(ViewTransactionSummaryViewModel::class.java)
         loadUiAsPerViewModel(coordinatorLayout)
         setBottomSheet(coordinatorLayout)
         return coordinatorLayout
@@ -176,6 +179,7 @@ class ViewTransaction : Fragment() {
     private fun setBottomSheet(coordinatorLayout: CoordinatorLayout) {
 
         val filterIcon = coordinatorLayout.findViewById<View>(R.id.filterIcon)
+        val summaryListIcon = coordinatorLayout.findViewById<View>(R.id.summary_list_icon)
         val contentLayout: LinearLayout = coordinatorLayout.findViewById(R.id.contentLayout)
 
         sheetBehavior = BottomSheetBehavior.from(contentLayout)
@@ -190,6 +194,11 @@ class ViewTransaction : Fragment() {
         }
 
         filterIcon.setOnClickListener { toggleFilters() }
+        summaryListIcon.setOnClickListener {
+            viewTransactionSummaryViewModel.setTransactions(viewModel.transactionDetailsList.toMutableList())
+            val action = ViewTransactionDirections.actionViewTransactionToViewTransactionSummary()
+            findNavController().navigate(action)
+        }
     }
 
     private fun toggleFilters() {
@@ -216,6 +225,7 @@ class ViewTransaction : Fragment() {
                 viewModel.filterDateRange
             ))
             updateTotalFields(view, transactionDetailsList)
+            viewModel.transactionDetailsList = transactionDetailsList
             transactionList.adapter =
                 ViewTransactionListAdapter(
                     transactionDetailsList,

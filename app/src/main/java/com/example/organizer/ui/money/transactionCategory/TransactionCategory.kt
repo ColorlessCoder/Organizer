@@ -73,7 +73,7 @@ class TransactionCategory :
         val filterGroupString = viewModel.filterGroupString.value
         val recordGroup = EditCategoryViewModel.findCategoryGroup(record.categoryName)
         val recordCategoryName = EditCategoryViewModel.findCategoryName(record.categoryName)
-        if(!filterString.isNullOrEmpty() && !recordCategoryName.toLowerCase().startsWith(filterString.toLowerCase())) {
+        if(!filterString.isNullOrEmpty() && !recordCategoryName.toLowerCase().contains(filterString.toLowerCase())) {
             return false
         }
         if(!filterGroupString.isNullOrEmpty() && !recordGroup.toLowerCase().startsWith(filterGroupString.toLowerCase())) {

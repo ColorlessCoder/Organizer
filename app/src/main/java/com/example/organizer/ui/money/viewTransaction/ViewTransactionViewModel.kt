@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
+import com.example.organizer.database.relation.TransactionDetails
 import com.example.organizer.ui.Utils.DateUtils
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -24,6 +25,7 @@ class ViewTransactionViewModel : ViewModel() {
     val filterDateRangeText = MutableLiveData<String>()
     var bottomSheetState: Int = BottomSheetBehavior.STATE_EXPANDED
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
+    var transactionDetailsList = listOf<TransactionDetails>()
 
     init {
         clearFilter()
