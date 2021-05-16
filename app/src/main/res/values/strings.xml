@@ -35,4 +35,6 @@
     <string name="account_summary">Account Summary</string>
     <string name="category_summary">Category Summary</string>
     <string name="debt_summary">Debt Summary</string>
+    <string name="category_group">Category Group</string>
+    <string name="clone">Clone</string>
 </resources>

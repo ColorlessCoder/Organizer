@@ -23,7 +23,6 @@ import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.debt.selectDebtType.SelectDebtTypeViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import java.util.*

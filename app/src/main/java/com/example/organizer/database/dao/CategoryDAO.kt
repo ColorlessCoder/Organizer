@@ -30,6 +30,9 @@ interface CategoryDAO: BaseDAO {
     @Query("Select * From categories where transaction_type = :type")
     fun getCategoriesByType(type:Int): LiveData<List<Category>>
 
+    @Query("Select * From categories where category_name like :group")
+    suspend fun getCategoriesLikeGroup(group: String): List<Category>
+
     @Query("Select * From categories")
     fun getAllCategories(): LiveData<List<Category>>
 
