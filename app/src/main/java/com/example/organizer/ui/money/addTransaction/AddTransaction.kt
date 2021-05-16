@@ -141,7 +141,7 @@ class AddTransaction : Fragment() {
         val fromAccountLayout = view.findViewById<TextInputLayout>(R.id.fromAccount)
         fromAccountLayout.setEndIconOnClickListener {
             if (viewModel.fromAccount.value != null) {
-                viewModel.amount.value += viewModel.fromAccount.value!!.balance.toString()
+                viewModel.amount.value = (viewModel.amount.value?:"") +  viewModel.fromAccount.value!!.balance.toString()
             }
         }
         val toAccountView = view.findViewById<View>(R.id.toAccountInput)
@@ -153,9 +153,10 @@ class AddTransaction : Fragment() {
             view.findNavController().navigate(action)
         }
         val toAccountLayout = view.findViewById<TextInputLayout>(R.id.toAccount)
+
         toAccountLayout.setEndIconOnClickListener {
             if (viewModel.toAccount.value != null) {
-                viewModel.amount.value += viewModel.toAccount.value!!.balance.toString()
+                viewModel.amount.value = (viewModel.amount.value?:"") +  viewModel.toAccount.value!!.balance.toString()
             }
         }
         val categoryView = view.findViewById<View>(R.id.category_input)
