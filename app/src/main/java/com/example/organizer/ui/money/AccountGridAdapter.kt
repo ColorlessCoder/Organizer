@@ -10,6 +10,7 @@ import androidx.navigation.findNavController
 import com.example.organizer.R
 import com.example.organizer.database.entity.Account
 import com.example.organizer.ui.Utils.ShpaeUtil
+import com.example.organizer.ui.Utils.StringUtils.Companion.doubleToString
 import java.util.*
 
 class AccountGridAdapter(val accounts: List<Account>, val activity: FragmentActivity?, val parentView: View) :
@@ -68,7 +69,7 @@ class AccountGridAdapter(val accounts: List<Account>, val activity: FragmentActi
         accountLabel.text = account.accountName
 
         var accountBalance = view.findViewById<TextView>(R.id.accountBalance)
-        accountBalance.text = account.unit + " " + account.balance
+        accountBalance.text = account.unit + " " + doubleToString(account.balance)
     }
 
     override fun getItem(position: Int): Any {

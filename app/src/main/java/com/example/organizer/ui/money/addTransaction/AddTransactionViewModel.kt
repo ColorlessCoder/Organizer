@@ -27,6 +27,8 @@ class AddTransactionViewModel : ViewModel() {
     val selectedAccount = MutableLiveData<Account>()
     var initializedNotAllowed = false
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
+    val amountHint = MutableLiveData<String>("0")
+    val errorEnabled = MutableLiveData<Boolean>(false)
     val navigateBack = MutableLiveData<Boolean>()
 
     companion object {
@@ -62,21 +64,27 @@ class AddTransactionViewModel : ViewModel() {
         navigateBack.value = true
     }
 
-    fun isTheAmountAllowed(): Boolean {
-        val value = if (amount.value != null) amount.value!!.toDouble() else 0.0
-        return value.compareTo(0.0) > 0 && (
+    fun isTheAmountAllowed(amountValue: Double): Boolean {
+        return amountValue.compareTo(0.0) > 0 && (
                 fromAccount.value == null
-                        || fromAccount.value!!.balance.compareTo(value) >= 0
+                        || fromAccount.value!!.balance.compareTo(amountValue) >= 0
                 )
     }
 
     fun createTransaction() {
-        if (amount.value != null && isTheAmountAllowed()) {
+        var amountValue = 0.0
+        try {
+            amountValue = NumberUtils.calculateValueFromString(amount.value?:"", 0).value
+        } catch (ex: Exception) {
+            errorEnabled.value = true
+            amountHint.value = ex.message
+        }
+        if (errorEnabled.value == false && isTheAmountAllowed(amountValue)) {
             viewModelScope.launch {
                 val transaction = Transaction(
                     UUID.randomUUID().toString(),
                     transactionType.value!!,
-                    amount.value!!.toDouble(),
+                    amountValue,
                     if (fromAccount.value == null) null else fromAccount.value!!.id,
                     if (toAccount.value == null) null else toAccount.value!!.id,
                     null,
