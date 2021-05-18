@@ -16,6 +16,7 @@ class EditDebtViewModel : ViewModel() {
     val debtType = MutableLiveData<DebtType>()
     val debtTypeText = MutableLiveData<String>()
     val amount = MutableLiveData<String>()
+    val amountHint = MutableLiveData<String>()
     val paidSoFar = MutableLiveData<String>("0")
     val details = MutableLiveData<String>()
     val account = MutableLiveData<Account?>()
@@ -25,6 +26,7 @@ class EditDebtViewModel : ViewModel() {
     val selectedAccount = MutableLiveData<Account>()
     var initializedNotAllowed = false
     var dueDate: Calendar? = null
+    val errorEnabled = MutableLiveData<Boolean>(false)
     val dueDateText = MutableLiveData<String>()
     val dueTimeText = MutableLiveData<String>()
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
@@ -46,16 +48,17 @@ class EditDebtViewModel : ViewModel() {
         navigateBack.value = true
     }
 
-    fun validation(): String {
-        val value = if (amount.value != null) amount.value!!.toDouble() else 0.0
-        val paidValue = if (paidSoFar.value != null) paidSoFar.value!!.toDouble() else 0.0
-        if (value.compareTo(0.0) < 1) {
+    fun validation(value: Double): String {
+        val paidValue = if (!paidSoFar.value.isNullOrEmpty()) paidSoFar.value!!.toDouble() else 0.0
+        if(errorEnabled.value == true) {
+            return "Invalid amount format"
+        } else if (value.compareTo(0.0) < 1) {
             return "Amount should be greater than zero"
         } else if (value.compareTo(paidValue) < 1) {
             return "Paid so far should be less than amount"
         } else if (details.value.isNullOrEmpty()) {
             return "Details is required"
-        } else if (debtType.value!! != DebtType.INSTALLMENT && account.value == null) {
+        } else if (debtType.value!! != DebtType.INSTALLMENT && account.value == null && paidValue != 0.0) {
             return "Please select to account"
         }
         return ""
@@ -76,13 +79,14 @@ class EditDebtViewModel : ViewModel() {
         showAccount.value = false
     }
 
-    fun saveDebt() {
+    fun saveDebt(value: Double) {
+        val paidValue = if (!paidSoFar.value.isNullOrEmpty()) paidSoFar.value!!.toDouble() else 0.0
         viewModelScope.launch {
             val debtRecord = Debt(
                 debt?.id ?: UUID.randomUUID().toString(),
                 debtType.value!!.typeCode,
-                amount.value!!.toDouble(),
-                paidSoFar.value!!.toDouble(),
+                value,
+                paidValue,
                 details.value!!.trim(),
                 debt?.createdAt ?: Date().time,
                 null,

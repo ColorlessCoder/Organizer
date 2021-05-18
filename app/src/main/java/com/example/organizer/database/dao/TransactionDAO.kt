@@ -203,7 +203,7 @@ interface TransactionDAO : BaseDAO {
     suspend fun createDebt(debt: Debt, accountId: String?) {
         insert(debt)
         val debtType = DebtType.from(debt.debtType)
-        if (debtType != DebtType.INSTALLMENT) {
+        if (debtType != DebtType.INSTALLMENT && accountId != null) {
             insertAndUpdateAccount(
                 Transaction(
                     UUID.randomUUID().toString(),
