@@ -112,6 +112,9 @@
         <action
             android:id="@+id/action_viewTransaction_to_viewTransactionSummary"
             app:destination="@id/viewTransactionSummary" />
+        <action
+            android:id="@+id/action_viewTransaction_to_viewTransactionGraph"
+            app:destination="@id/viewTransactionGraph" />
     </fragment>
     <fragment
         android:id="@+id/nav_database_backup"
@@ -307,5 +310,14 @@
         android:name="com.example.organizer.ui.money.viewTransaction.SimpleTransactionList"
         android:label="Transaction List"
         tools:layout="@layout/simple_transaction_list_fragment" />
+    <fragment
+        android:id="@+id/viewTransactionGraph"
+        android:name="com.example.organizer.ui.money.viewTransaction.ViewTransactionGraph"
+        android:label="Summary"
+        tools:layout="@layout/view_transaction_graph_fragment" >
+        <action
+            android:id="@+id/action_viewTransactionGraph_to_simpleTransactionList"
+            app:destination="@id/simpleTransactionList" />
+    </fragment>
 
 </navigation>

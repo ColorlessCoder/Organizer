@@ -54,6 +54,7 @@ class ViewTransaction : Fragment() {
     private lateinit var selectCategoryViewModel: SelectCategoryViewModel
     private lateinit var selectTransactionTypeViewModel: SelectTransactionTypeViewModel
     private lateinit var viewTransactionSummaryViewModel: ViewTransactionSummaryViewModel
+    private lateinit var viewTransactionGraphViewModel: ViewTransactionGraphViewModel
     private val args: ViewTransactionArgs by navArgs()
 
     override fun onCreateView(
@@ -81,6 +82,8 @@ class ViewTransaction : Fragment() {
             ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
         viewTransactionSummaryViewModel =
             ViewModelProvider(requireActivity()).get(ViewTransactionSummaryViewModel::class.java)
+        viewTransactionGraphViewModel =
+            ViewModelProvider(requireActivity()).get(ViewTransactionGraphViewModel::class.java)
         loadUiAsPerViewModel(coordinatorLayout)
         setBottomSheet(coordinatorLayout)
         return coordinatorLayout
@@ -180,6 +183,7 @@ class ViewTransaction : Fragment() {
 
         val filterIcon = coordinatorLayout.findViewById<View>(R.id.filterIcon)
         val summaryListIcon = coordinatorLayout.findViewById<View>(R.id.summary_list_icon)
+        val summaryGraphIcon = coordinatorLayout.findViewById<View>(R.id.summary_graph_icon)
         val contentLayout: LinearLayout = coordinatorLayout.findViewById(R.id.contentLayout)
 
         sheetBehavior = BottomSheetBehavior.from(contentLayout)
@@ -197,6 +201,11 @@ class ViewTransaction : Fragment() {
         summaryListIcon.setOnClickListener {
             viewTransactionSummaryViewModel.setTransactions(viewModel.transactionDetailsList.toMutableList())
             val action = ViewTransactionDirections.actionViewTransactionToViewTransactionSummary()
+            findNavController().navigate(action)
+        }
+        summaryGraphIcon.setOnClickListener {
+            viewTransactionGraphViewModel.setTransactions(viewModel.transactionDetailsList.toMutableList())
+            val action = ViewTransactionDirections.actionViewTransactionToViewTransactionGraph()
             findNavController().navigate(action)
         }
     }

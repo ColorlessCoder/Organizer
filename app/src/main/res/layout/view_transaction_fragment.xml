@@ -82,6 +82,15 @@
                 app:tooltipText="Summary List"
                 android:src="@drawable/ic_outline_summarize_24" />
             <ImageView
+                android:id="@+id/summary_graph_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="20dp"
+                app:tint="@color/LightBlueBCWhiteTC"
+                app:tooltipText="Summary Graph"
+                android:src="@drawable/ic_baseline_pie_chart_24" />
+            <ImageView
                 android:id="@+id/filterIcon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
