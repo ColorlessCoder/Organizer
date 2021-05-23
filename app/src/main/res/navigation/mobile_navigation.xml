@@ -294,7 +294,7 @@
         android:label="Details">
         <argument
             android:name="transactionId"
-            app:argType="string"
+            app:argType="integer"
             />
     </fragment>
     <fragment

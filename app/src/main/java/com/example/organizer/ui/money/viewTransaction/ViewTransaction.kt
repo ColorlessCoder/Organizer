@@ -269,6 +269,7 @@ class ViewTransaction : Fragment() {
             val toAccount: TextView = view.findViewById(R.id.to_account)
             val transactionDate: TextView = view.findViewById(R.id.transaction_date)
             val categoryName: TextView = view.findViewById(R.id.category_name)
+            val transactionId: TextView = view.findViewById(R.id.transaction_id)
         }
 
         override fun onCreateViewHolder(
@@ -284,11 +285,13 @@ class ViewTransaction : Fragment() {
             return transactionDetailsList.size
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val transactionDetails = transactionDetailsList.get(position)
             val transactionType =
                 TransactionType.from(transactionDetails.transaction.transactionType)
             holder.transactionType.text = transactionType.name
+            holder.transactionId.text = "#" + transactionDetails.transaction.id
             holder.transactionType.background = ShpaeUtil.getRoundCornerShape(
                 15.toFloat(),
                 ContextCompat.getColor(view.context, transactionType.color),

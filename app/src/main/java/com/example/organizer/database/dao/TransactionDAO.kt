@@ -83,7 +83,7 @@ interface TransactionDAO : BaseDAO {
                 try {
                     insertAndUpdateAccount(
                         Transaction(
-                            UUID.randomUUID().toString(),
+                            0,
                             it.transaction.transactionType,
                             it.transaction.amount,
                             it.transaction.fromAccount,
@@ -110,17 +110,17 @@ interface TransactionDAO : BaseDAO {
     }
 
     @Query("Delete from transactions where id= :id")
-    suspend fun deleteById(vararg id: String)
+    suspend fun deleteById(vararg id: Int)
 
     @Query("Select * From transactions")
     fun getAllTransactions(): LiveData<List<Transaction>>
 
     @Query("Select * From transactions where id = :id")
-    fun getTransactionById(id: String): LiveData<Transaction>
+    fun getTransactionById(id: Int): LiveData<Transaction>
 
     @androidx.room.Transaction
     @Query("Select * From transactions where id = :id")
-    fun getTransactionDetailsById(id: String): LiveData<TransactionDetails>
+    fun getTransactionDetailsById(id: Int): LiveData<TransactionDetails>
 
     @androidx.room.Transaction
     @Query("Select * From transactions")
@@ -206,7 +206,7 @@ interface TransactionDAO : BaseDAO {
         if (debtType != DebtType.INSTALLMENT && accountId != null) {
             insertAndUpdateAccount(
                 Transaction(
-                    UUID.randomUUID().toString(),
+                    0,
                     debtType.relatedTransactionType.typeCode,
                     debt.amount - debt.paidSoFar,
                     if(debtType.relatedTransactionType == TransactionType.EXPENSE) accountId else null,

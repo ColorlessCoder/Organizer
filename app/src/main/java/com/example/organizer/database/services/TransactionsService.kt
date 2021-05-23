@@ -20,7 +20,7 @@ class TransactionsService(private val transactionDAO: TransactionDAO) {
         transactionDAO.insertAndUpdateAccount(transaction)
     }
 
-    suspend fun delete(id: String) =  transactionDAO.deleteById(id)
+    suspend fun delete(id: Int) =  transactionDAO.deleteById(id)
 
     fun getAllTransactions() = transactionDAO.getAllTransactions()
 }

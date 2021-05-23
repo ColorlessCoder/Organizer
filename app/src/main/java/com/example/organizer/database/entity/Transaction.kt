@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "transactions")
 data class Transaction(
-    @PrimaryKey val id:String,
+    @PrimaryKey(autoGenerate = true) val id:Int,
     @ColumnInfo(name = "transaction_type", typeAffinity = ColumnInfo.INTEGER) var transactionType: Int,
     @ColumnInfo(name = "amount", typeAffinity = ColumnInfo.REAL) var amount: Double,
     @ColumnInfo(name = "from_account", typeAffinity = ColumnInfo.TEXT) var fromAccount: String?,

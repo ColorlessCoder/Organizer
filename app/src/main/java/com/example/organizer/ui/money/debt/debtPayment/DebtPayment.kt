@@ -91,7 +91,7 @@ class DebtPayment : Fragment() {
                     try {
                         db.transactionDao().insertAndUpdateAccount(
                             Transaction(
-                                UUID.randomUUID().toString(),
+                                0,
                                 transactionType.typeCode,
                                 viewModel.amount.value!!.toDouble(),
                                 if(transactionType == TransactionType.EXPENSE) viewModel.account.value!!.id else null,

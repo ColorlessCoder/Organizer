@@ -18,7 +18,7 @@ import com.example.organizer.database.entity.*
         TransactionPlan::class,
         TemplateTransaction::class,
         Debt::class
-    ], version = 6,
+    ], version = 7,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -42,55 +42,71 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     DB_NAME
                 ).enableMultiInstanceInvalidation()
-                    .addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(
+                        MIGRATION_1_2,
+                        MIGRATION_2_3,
+                        MIGRATION_3_4,
+                        MIGRATION_4_5,
+                        MIGRATION_5_6,
+                        MIGRATION_6_7
+                    )
                     .build()
             }
             return instance as AppDatabase
         }
+
         private val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
             }
         }
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `categories` (`id` TEXT NOT NULL," +
-                        " `category_name` TEXT NOT NULL, " +
-                        " `transaction_type` INTEGER NOT NULL, " +
-                        " `background_color` INTEGER NOT NULL, " +
-                        " `font_color` INTEGER NOT NULL, " +
-                        "PRIMARY KEY(`id`))")
+                database.execSQL(
+                    "CREATE TABLE `categories` (`id` TEXT NOT NULL," +
+                            " `category_name` TEXT NOT NULL, " +
+                            " `transaction_type` INTEGER NOT NULL, " +
+                            " `background_color` INTEGER NOT NULL, " +
+                            " `font_color` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`id`))"
+                )
             }
         }
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `transaction_plans` (`id` TEXT NOT NULL," +
-                        " `name` TEXT NOT NULL, " +
-                        " `delete_after_execute` INTEGER NOT NULL, " +
-                        " `color` INTEGER NOT NULL, " +
-                        "PRIMARY KEY(`id`))")
-                database.execSQL("CREATE TABLE `template_transactions` (`id` TEXT NOT NULL," +
-                        " `transaction_plan_id` TEXT NOT NULL, " +
-                        " `transaction_type` INTEGER NOT NULL, " +
-                        " `amount` REAL NOT NULL, " +
-                        " `from_account` TEXT , " +
-                        " `to_account` TEXT , " +
-                        " `transaction_category_id` TEXT , " +
-                        " `details` TEXT , " +
-                        " `order` INTEGER NOT NULL, " +
-                        "PRIMARY KEY(`id`))")
+                database.execSQL(
+                    "CREATE TABLE `transaction_plans` (`id` TEXT NOT NULL," +
+                            " `name` TEXT NOT NULL, " +
+                            " `delete_after_execute` INTEGER NOT NULL, " +
+                            " `color` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`id`))"
+                )
+                database.execSQL(
+                    "CREATE TABLE `template_transactions` (`id` TEXT NOT NULL," +
+                            " `transaction_plan_id` TEXT NOT NULL, " +
+                            " `transaction_type` INTEGER NOT NULL, " +
+                            " `amount` REAL NOT NULL, " +
+                            " `from_account` TEXT , " +
+                            " `to_account` TEXT , " +
+                            " `transaction_category_id` TEXT , " +
+                            " `details` TEXT , " +
+                            " `order` INTEGER NOT NULL, " +
+                            "PRIMARY KEY(`id`))"
+                )
             }
         }
         private val MIGRATION_4_5 = object : Migration(4, 5) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("CREATE TABLE `debts` (`id` TEXT NOT NULL," +
-                        " `debt_type` INTEGER NOT NULL, " +
-                        " `amount` REAL NOT NULL, " +
-                        " `paid_so_far` REAL NOT NULL, " +
-                        " `details` TEXT NOT NULL, " +
-                        " `created_at` INTEGER NOT NULL, " +
-                        " `completed_at` INTEGER, " +
-                        " `scheduled_at` INTEGER, " +
-                        "PRIMARY KEY(`id`))")
+                database.execSQL(
+                    "CREATE TABLE `debts` (`id` TEXT NOT NULL," +
+                            " `debt_type` INTEGER NOT NULL, " +
+                            " `amount` REAL NOT NULL, " +
+                            " `paid_so_far` REAL NOT NULL, " +
+                            " `details` TEXT NOT NULL, " +
+                            " `created_at` INTEGER NOT NULL, " +
+                            " `completed_at` INTEGER, " +
+                            " `scheduled_at` INTEGER, " +
+                            "PRIMARY KEY(`id`))"
+                )
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN debt_id TEXT")
             }
         }
@@ -100,6 +116,29 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN to_account_old_amount REAL")
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN from_account_new_amount REAL")
                 database.execSQL("ALTER TABLE `transactions` ADD COLUMN to_account_new_amount REAL")
+            }
+        }
+
+        private val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE transactions RENAME TO old_transactions")
+                database.execSQL(
+                    "CREATE TABLE \"transactions\" (\n" +
+                            "  `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT, \n" +
+                            "  `transaction_type` INTEGER NOT NULL,\n" +
+                            "  `amount` REAL NOT NULL, `from_account` TEXT,\n" +
+                            "  `to_account` TEXT, `scheduled_transaction_id` TEXT,\n" +
+                            "  `transaction_category_id` TEXT,\n" +
+                            "  `details` TEXT,\n" +
+                            "  `transacted_at` INTEGER NOT NULL,\n" +
+                            "  debt_id TEXT, from_account_old_amount REAL,\n" +
+                            "  to_account_old_amount REAL,\n" +
+                            "  from_account_new_amount REAL,\n" +
+                            "  to_account_new_amount REAL)"
+                )
+                database.execSQL("INSERT INTO transactions\n" +
+                        "(transaction_type, amount, from_account, to_account, scheduled_transaction_id, transaction_category_id, details, transacted_at, debt_id, from_account_old_amount, to_account_old_amount, from_account_new_amount, to_account_new_amount)\n" +
+                        "SELECT transaction_type, amount, from_account, to_account, scheduled_transaction_id, transaction_category_id, details, transacted_at, debt_id, from_account_old_amount, to_account_old_amount, from_account_new_amount, to_account_new_amount FROM old_transactions ORDER BY old_transactions.transacted_at");
             }
         }
 

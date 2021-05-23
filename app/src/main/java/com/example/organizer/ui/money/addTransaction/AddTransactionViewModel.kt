@@ -82,7 +82,7 @@ class AddTransactionViewModel : ViewModel() {
         if (errorEnabled.value == false && isTheAmountAllowed(amountValue)) {
             viewModelScope.launch {
                 val transaction = Transaction(
-                    UUID.randomUUID().toString(),
+                    0,
                     transactionType.value!!,
                     amountValue,
                     if (fromAccount.value == null) null else fromAccount.value!!.id,
