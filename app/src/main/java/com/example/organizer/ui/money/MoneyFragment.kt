@@ -57,6 +57,11 @@ class MoneyFragment : Fragment() {
                     view
                 )
         });
+        view.findViewById<View>(R.id.chart_button)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToChartList()
+                findNavController().navigate(action)
+            }
         view.findViewById<View>(R.id.category_card)
             .setOnClickListener {
                 val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory("0")

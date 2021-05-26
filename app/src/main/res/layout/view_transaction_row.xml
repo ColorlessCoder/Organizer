@@ -118,10 +118,10 @@
                 android:id="@+id/imageView3"
                 android:layout_width="31dp"
                 android:layout_height="20dp"
-                android:tint="@color/BlackText"
                 app:layout_constraintStart_toEndOf="@+id/from_account"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_baseline_arrow_right_alt_24" />
+                app:srcCompat="@drawable/ic_baseline_arrow_right_alt_24"
+                app:tint="@color/BlackText" />
 
             <TextView
                 android:id="@+id/to_account"

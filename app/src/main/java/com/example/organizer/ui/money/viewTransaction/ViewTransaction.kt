@@ -320,7 +320,7 @@ class ViewTransaction : Fragment() {
                         ViewTransactionViewModel.Companion.FIELDS.DETAILS
                     val action =
                         ViewTransactionDirections.actionViewTransactionToTransactionDetails(
-                            transactionDetails.transaction.id
+                            transactionDetails.transaction.id.toInt()
                         )
                     view.findNavController().navigate(action)
                 }

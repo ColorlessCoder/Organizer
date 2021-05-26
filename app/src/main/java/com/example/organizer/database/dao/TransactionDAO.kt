@@ -110,7 +110,7 @@ interface TransactionDAO : BaseDAO {
     }
 
     @Query("Delete from transactions where id= :id")
-    suspend fun deleteById(vararg id: Int)
+    suspend fun deleteById(vararg id: Long)
 
     @Query("Select * From transactions")
     fun getAllTransactions(): LiveData<List<Transaction>>

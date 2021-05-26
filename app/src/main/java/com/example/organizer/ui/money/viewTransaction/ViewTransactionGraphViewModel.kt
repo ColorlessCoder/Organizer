@@ -1,7 +1,5 @@
 package com.example.organizer.ui.money.viewTransaction
 
-import android.view.View
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.organizer.database.relation.TransactionDetails
 

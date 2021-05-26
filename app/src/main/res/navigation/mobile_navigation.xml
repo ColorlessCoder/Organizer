@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_nav_money_to_debt_list"
             app:destination="@id/debtList"/>
+        <action
+            android:id="@+id/action_nav_money_to_chartList"
+            app:destination="@id/chartList" />
     </fragment>
     <fragment
         android:id="@+id/editAccount"
@@ -308,16 +311,51 @@
     <fragment
         android:id="@+id/simpleTransactionList"
         android:name="com.example.organizer.ui.money.viewTransaction.SimpleTransactionList"
-        android:label="Transaction List"
-        tools:layout="@layout/simple_transaction_list_fragment" />
+        android:label="Transaction List" />
     <fragment
         android:id="@+id/viewTransactionGraph"
         android:name="com.example.organizer.ui.money.viewTransaction.ViewTransactionGraph"
-        android:label="Summary"
-        tools:layout="@layout/view_transaction_graph_fragment" >
+        android:label="Summary" >
         <action
             android:id="@+id/action_viewTransactionGraph_to_simpleTransactionList"
             app:destination="@id/simpleTransactionList" />
+    </fragment>
+    <fragment
+        android:id="@+id/chartList"
+        android:name="com.example.organizer.ui.money.transactionChart.ChartList"
+        android:label="Charts">
+        <action
+            android:id="@+id/action_chartList_to_editChart"
+            app:destination="@id/editChart" />
+        <action
+            android:id="@+id/action_chartList_to_addChartPoint"
+            app:destination="@id/addChartPoint" />
+    </fragment>
+    <fragment
+        android:id="@+id/editChart"
+        android:name="com.example.organizer.ui.money.transactionChart.EditChart"
+        android:label="Create Chart" >
+        <argument
+            android:name="transactionChartId"
+            app:argType="string"
+            app:nullable="true"
+            />
+        <argument
+            android:name="order"
+            app:argType="integer"
+            />
+        <action
+            android:id="@+id/action_editChart_to_addChartPoint"
+            app:destination="@id/addChartPoint" />
+    </fragment>
+    <fragment
+        android:id="@+id/addChartPoint"
+        android:name="com.example.organizer.ui.money.transactionChart.AddChartPoint"
+        android:label="Create Point">
+        <argument
+            android:name="transactionChartId"
+            app:argType="string"
+            />
     </fragment>
 
 </navigation>

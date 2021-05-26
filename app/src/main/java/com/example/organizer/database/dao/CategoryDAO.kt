@@ -4,11 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
-import com.example.organizer.database.entity.Transaction
-import com.example.organizer.database.relation.TransactionDetails
-import java.util.*
 
 @Dao
 interface CategoryDAO: BaseDAO {

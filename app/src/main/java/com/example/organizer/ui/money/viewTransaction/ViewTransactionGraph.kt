@@ -1,6 +1,5 @@
 package com.example.organizer.ui.money.viewTransaction
 
-import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import androidx.activity.OnBackPressedCallback
-import androidx.annotation.IdRes
 import androidx.annotation.MenuRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment

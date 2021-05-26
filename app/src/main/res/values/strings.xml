@@ -42,4 +42,13 @@
     <string name="navigate">Navigate</string>
     <string name="deep">Navigate Deep</string>
     <string name="to_list">Navigate to List</string>
+    <string name="save">Save</string>
+    <string name="chart_name">Chart Name</string>
+    <string name="last_transaction_id_processed">Last Transaction Id processed</string>
+    <string name="show_count_by">Show Count By</string>
+    <string name="add_point">Add Point</string>
+    <string name="from_transaction_id">From Transaction Id</string>
+    <string name="to_transaction_id">To Transaction Id</string>
+    <string name="extra_point">Extra Point covering latest available Transaction</string>
+    <string name="label_for_the_extra_point">Label For The Extra Point</string>
 </resources>
