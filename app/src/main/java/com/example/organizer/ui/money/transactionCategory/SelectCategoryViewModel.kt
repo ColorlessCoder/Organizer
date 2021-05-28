@@ -6,6 +6,7 @@ import com.example.organizer.database.entity.Category
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 
 class SelectCategoryViewModel():CommonSelectViewModel<Category>() {
+    var argSelectedIds: MutableList<String>? = null
     override fun areSameRecord(a: Category, b: Category): Boolean {
         return a.id == b.id
     }

@@ -10,7 +10,7 @@ class TransactionCategoryViewModel : ViewModel() {
     var navigatedToSet = NAVIGATED_TO_SET.NONE
     val filterString = MutableLiveData<String>("")
     val filterGroupString = MutableLiveData<String>("")
-    var allRecords = listOf<Category>()
+    var allRecords = mutableListOf<Category>()
     init {
         transactionTypes.value = mutableListOf(TransactionType.TRANSFER)
     }

@@ -154,6 +154,11 @@
             android:defaultValue="false"
             />
         <argument
+            android:name="includeNoCategory"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+        <argument
             android:name="transactionTypes"
             app:argType="string"
             />
@@ -347,6 +352,9 @@
         <action
             android:id="@+id/action_editChart_to_addChartPoint"
             app:destination="@id/addChartPoint" />
+        <action
+            android:id="@+id/action_editChart_to_transactionCategory"
+            app:destination="@id/transactionCategory" />
     </fragment>
     <fragment
         android:id="@+id/addChartPoint"

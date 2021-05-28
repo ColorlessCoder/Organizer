@@ -21,6 +21,7 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.entity.Category
+import com.example.organizer.database.enums.NoCategoryId
 import com.example.organizer.ui.Utils.ShpaeUtil
 import com.example.organizer.ui.money.common.CommonSelectFragment
 import com.example.organizer.ui.money.common.CommonSelectRecyclerListAdapter
@@ -96,7 +97,25 @@ class TransactionCategory :
     private fun setCategoryListForType(view: View) {
         val categoryDAO = AppDatabase.getInstance(requireContext()).categoryDao()
         lifecycleScope.launch {
-            viewModel.allRecords = categoryDAO.getCategories(categoryDAO.getQueryForCategoryTypeIn(getTransactionTypesInInt()))
+            var transactionTypeList = getTransactionTypesInInt()
+            println(transactionTypeList)
+            viewModel.allRecords = categoryDAO.getCategories(categoryDAO.getQueryForCategoryTypeIn(transactionTypeList)).toMutableList()
+            if(args.includeNoCategory) {
+                if(transactionTypeList == null) {
+                    transactionTypeList = listOf(-1, 0, 1)
+                }
+                transactionTypeList.forEach {
+                    viewModel.allRecords.add(NoCategoryId.from(it).toCategory())
+                }
+            }
+            if(selectViewModel.argSelectedIds != null) {
+                val set = selectViewModel.argSelectedIds!!.toSet()
+                selectViewModel.selectedRecords = viewModel.allRecords.filter { set.contains(it.id) }.toMutableList()
+                println(transactionTypeList)
+                println(selectViewModel.argSelectedIds)
+                println(viewModel.allRecords)
+            }
+            selectViewModel.argSelectedIds = null
             updateCategoryList(viewModel.allRecords, view)
         }
     }
@@ -162,7 +181,7 @@ class TransactionCategory :
             viewModel.transactionTypes.value = mutableListOf(selectTransactionTypeViewModel.selectedRecord?:TransactionType.TRANSFER)
         }
         println(selectTransactionTypeViewModel.selectedRecord)
-        setCategoryListForType(view)
+//        setCategoryListForType(view)
         handleSearchCategory(view)
         viewModel.transactionTypes.observe(viewLifecycleOwner, Observer {
             setCategoryListForType(view)

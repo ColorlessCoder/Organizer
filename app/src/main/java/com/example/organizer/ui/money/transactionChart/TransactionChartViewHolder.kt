@@ -101,7 +101,8 @@ class TransactionChartViewHolder(
     ) {
         var group = currentCategory.trim()
         val firstGroupKeyIndex = currentCategory.indexOfFirst { it == ':' }
-        if (firstGroupKeyIndex != -1) {
+        val groupKeyFound = transactionChart.groupCategories == 1 && firstGroupKeyIndex != -1
+        if (groupKeyFound) {
             group = currentCategory.substring(0, firstGroupKeyIndex).trim()
         }
         if (transactionChartValue != null) {
@@ -112,7 +113,7 @@ class TransactionChartViewHolder(
 
         if (group.isNotEmpty()) {
             val newCategory =
-                if (firstGroupKeyIndex != -1) currentCategory.substring(firstGroupKeyIndex + 1)
+                if (groupKeyFound) currentCategory.substring(firstGroupKeyIndex + 1)
                     .trim() else ""
             if (!currentNode.children.contains(group)) {
                 currentNode.children[group] = TreeNode(
@@ -150,6 +151,10 @@ class TransactionChartViewHolder(
         }
     }
 
+    private fun getCategoryName(categoryName: String, transactionType: Int): String {
+        return (if (transactionChart.groupTransactionType == 1) (TransactionType.from(transactionType).label + ": " ) else "" ) + categoryName
+    }
+
     private fun insertChartValueInTree(
         chartValue: TransactionChartValue?,
         transactionType: Int,
@@ -157,7 +162,7 @@ class TransactionChartViewHolder(
     ) {
         insertUpdateCategoryCount(
             rootNode,
-            TransactionType.from(transactionType).label + ": " + categoryName,
+            getCategoryName(categoryName, transactionType),
             chartValue,
             -1,
             TransactionType.from(transactionType).color
@@ -265,7 +270,7 @@ class TransactionChartViewHolder(
     private fun loadData(transactionChart: TransactionChart) {
         this.transactionChart = transactionChart
         lifecycleCoroutineScope.launch {
-            initializeCategories(transactionChartDAO.getAllCategories())
+            initializeCategories(transactionChartDAO.getCategoriesForChart(transactionChart.id))
             val points =
                 transactionChartDAO.getPointsForChart(transactionChart.id, visiblePoints.value!!)
             var maxPointId = 0L
@@ -279,7 +284,7 @@ class TransactionChartViewHolder(
             maxPointId++
             if(transactionChart.showExtraOnePoint == 1) {
                 val fromId = transactionChart.startAfterTransactionId + 1
-                transactionChartDAO.getValuesForExtraPointInChart(maxPointId, fromId)
+                transactionChartDAO.getValuesForExtraPointInChart(maxPointId, fromId, transactionChart.id)
                     .forEach {
                         insertChartValueInTree(it)
                     }

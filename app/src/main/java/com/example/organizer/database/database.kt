@@ -23,7 +23,7 @@ import java.util.*
         TransactionChartPoint::class,
         TransactionChartValue::class,
         TransactionChartToCategory::class
-    ], version = 9,
+    ], version = 10 ,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -56,7 +56,8 @@ abstract class AppDatabase : RoomDatabase() {
                         MIGRATION_5_6,
                         MIGRATION_6_7,
                         MIGRATION_7_8,
-                        MIGRATION_8_9
+                        MIGRATION_8_9,
+                        MIGRATION_9_10
                     )
                     .build()
             }
@@ -186,6 +187,13 @@ abstract class AppDatabase : RoomDatabase() {
                 database.execSQL("CREATE UNIQUE INDEX transaction_chart_to_category_1 ON transaction_chart_to_category (chart_id, category_id)")
                 database.execSQL("ALTER TABLE `transaction_charts` ADD COLUMN show_extra_one_point INTEGER NOT NULL default 0")
                 database.execSQL("ALTER TABLE `transaction_charts` ADD COLUMN extra_point_label TEXT")
+            }
+        }
+        private val MIGRATION_9_10 = object : Migration(9, 10) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `transaction_charts` ADD COLUMN filter_categories INTEGER NOT NULL default 0")
+                database.execSQL("ALTER TABLE `transaction_charts` ADD COLUMN group_categories INTEGER NOT NULL default 1")
+                database.execSQL("ALTER TABLE `transaction_charts` ADD COLUMN group_transaction_type INTEGER NOT NULL default 1")
             }
         }
 

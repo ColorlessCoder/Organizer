@@ -85,6 +85,40 @@
                         android:maxLength="50"
                         android:text="@={viewModel.extraPointLabel}" />
                 </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="12">
+                    <CheckBox
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:checked="@={viewModel.filterCategories}"
+                        android:layout_weight="10"
+                        android:text="Filter Categories"/>
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/filter_category_button"
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        app:icon="@drawable/ic_round_filter_list_24"
+                        app:backgroundTint="@color/whiteText"
+                        android:textColor="@color/BlackText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="0dp"
+                        android:enabled="@{viewModel.filterCategories}"
+                        android:tooltipText="Filter Categories"
+                        />
+                </LinearLayout>
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:checked="@={viewModel.groupCategories}"
+                    android:text="Group Categories"/>
+                <CheckBox
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:checked="@={viewModel.groupTransactionType}"
+                    android:text="Group by Transaction Type"/>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
         <Button

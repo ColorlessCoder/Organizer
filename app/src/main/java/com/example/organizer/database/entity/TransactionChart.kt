@@ -15,5 +15,8 @@ data class TransactionChart (
     @ColumnInfo(name = "start_after_transaction_id", typeAffinity = ColumnInfo.INTEGER) var startAfterTransactionId: Long,
     @ColumnInfo(name = "x_type", typeAffinity = ColumnInfo.INTEGER) var xType: Int,
     @ColumnInfo(name = "show_extra_one_point", typeAffinity = ColumnInfo.INTEGER) var showExtraOnePoint: Int,
-    @ColumnInfo(name = "extra_point_label", typeAffinity = ColumnInfo.TEXT) var extraPointLabel: String?
+    @ColumnInfo(name = "extra_point_label", typeAffinity = ColumnInfo.TEXT) var extraPointLabel: String?,
+    @ColumnInfo(name = "filter_categories", typeAffinity = ColumnInfo.INTEGER) var filterCategories: Int,
+    @ColumnInfo(name = "group_categories", typeAffinity = ColumnInfo.INTEGER) var groupCategories: Int,
+    @ColumnInfo(name = "group_transaction_type", typeAffinity = ColumnInfo.INTEGER) var groupTransactionType: Int
 )
