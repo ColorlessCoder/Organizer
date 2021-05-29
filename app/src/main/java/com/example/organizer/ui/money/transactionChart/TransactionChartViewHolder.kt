@@ -170,9 +170,9 @@ class TransactionChartViewHolder(
     }
 
     private fun initializeCategories(categories: List<Category>) {
-        insertChartValueInTree(null, TransactionType.EXPENSE.typeCode, NO_CATEGORY)
-        insertChartValueInTree(null, TransactionType.TRANSFER.typeCode, NO_CATEGORY)
-        insertChartValueInTree(null, TransactionType.INCOME.typeCode, NO_CATEGORY)
+//        insertChartValueInTree(null, TransactionType.EXPENSE.typeCode, NO_CATEGORY)
+//        insertChartValueInTree(null, TransactionType.TRANSFER.typeCode, NO_CATEGORY)
+//        insertChartValueInTree(null, TransactionType.INCOME.typeCode, NO_CATEGORY)
         categories.forEach {
             insertChartValueInTree(null, it.transactionType, it.categoryName)
             categoryMap[it.id] = it
@@ -360,8 +360,8 @@ class TransactionChartViewHolder(
 
         val popup = PopupMenu(v.context, v)
         popup.menuInflater.inflate(menuRes, popup.menu)
-        popup.menu.findItem(R.id.label).isChecked = chartSettings.showLabel
-        popup.menu.findItem(R.id.value).isChecked = chartSettings.showValue
+//        popup.menu.findItem(R.id.label).isChecked = chartSettings.showLabel
+//        popup.menu.findItem(R.id.value).isChecked = chartSettings.showValue
         popup.setOnMenuItemClickListener {
             var preventClose = false
 
@@ -378,11 +378,24 @@ class TransactionChartViewHolder(
             } else if (it.itemId == R.id.edit) {
                 val action = ChartListDirections.actionChartListToEditChart(transactionChart.id, 0)
                 parentView.findNavController().navigate(action)
-            } else if (it.itemId == R.id.add_point) {
-                val action = ChartListDirections.actionChartListToAddChartPoint(transactionChart.id)
+            } else if (it.itemId == R.id.clone) {
+                val action = ChartListDirections.actionChartListToEditChart(transactionChart.id, 0)
+                action.clone = true
                 parentView.findNavController().navigate(action)
+            } else if (it.itemId == R.id.add_point) {
+                val action = ChartListDirections.actionChartListToAddChartPoint(transactionChart.id, 0)
+                parentView.findNavController().navigate(action)
+            } else if (it.itemId == R.id.point_list) {
+                val action = ChartListDirections.actionChartListToTransactionChartPointList(transactionChart.id)
+                parentView.findNavController().navigate(action)
+            }  else if (it.itemId == R.id.delete) {
+                attemptDeleteChart()
             } else if (it.itemId == R.id.filter) {
                 showFilters()
+            } else if (it.itemId == R.id.move_up) {
+                swapChartOrder(transactionChart.chartOrder, transactionChart.chartOrder - 1)
+            } else if (it.itemId == R.id.move_down) {
+                swapChartOrder(transactionChart.chartOrder, transactionChart.chartOrder + 1)
             }
             if (preventClose) {
                 it.setShowAsAction(MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW)
@@ -402,6 +415,25 @@ class TransactionChartViewHolder(
         popup.show()
     }
 
+    fun swapChartOrder(a: Int, b: Int) {
+        lifecycleCoroutineScope.launch {
+            transactionChartDAO.swapChartPosition(a,b)
+        }
+    }
+
+    fun attemptDeleteChart() {
+        MaterialAlertDialogBuilder(parentView.context)
+            .setTitle("Delete Chart: ${transactionChart.chartName}")
+            .setMessage("Deleting the chart will delete all the points and values. Are you sure?")
+            .setPositiveButton("Yes") { _, _->
+                lifecycleCoroutineScope.launch {
+                    transactionChartDAO.deleteChart(transactionChart.id)
+                }
+            }
+            .setNegativeButton("No") {_, _ -> }
+            .show();
+    }
+
     fun setDataSetVisibility() {
         val filter = filterTrace.last()
         chart.data.dataSets.forEachIndexed{ i, d ->
@@ -414,7 +446,7 @@ class TransactionChartViewHolder(
     fun showFilters() {
         val filter = filterTrace.last()
         val clonedOne = filter.map{it.copy()}.toMutableList()
-        val dialog = MaterialAlertDialogBuilder(parentView.context)
+        MaterialAlertDialogBuilder(parentView.context)
             .setTitle("Filter")
             .setPositiveButton("OK") { d, _ ->
                 filter.clear()

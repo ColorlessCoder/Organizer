@@ -3,18 +3,28 @@
     <item android:id="@+id/edit"
         android:title="Configure"
         />
-    <item android:id="@+id/add_point"
-        android:title="Add Point"
+    <item android:id="@+id/clone"
+        android:title="Clone"
         />
+    <item android:id="@+id/delete"
+        android:title="Delete"
+        android:icon="@drawable/ic_baseline_delete_24"
+        />
+    <item android:id="@+id/point" android:title="Point">
+        <menu>
+            <item android:id="@+id/add_point"
+                android:title="Add Point"
+                />
+            <item android:title="Existing Points" android:id="@+id/point_list" />
+        </menu>
+    </item>
     <item android:id="@+id/filter"
         android:title="Filter"
         />
-    <item android:id="@+id/label"
-        android:title="@string/label"
-        android:checkable="true"
-        />
-    <item android:id="@+id/value"
-        android:checkable="true"
-        android:title="@string/value"
-        />
+    <item android:id="@+id/move" android:title="Move">
+        <menu>
+            <item android:title="Up" android:id="@+id/move_up" />
+            <item android:title="Down" android:id="@+id/move_down" />
+        </menu>
+    </item>
 </menu>

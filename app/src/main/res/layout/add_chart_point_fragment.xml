@@ -47,7 +47,8 @@
                     android:id="@+id/from_transaction_id"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:enabled="@{viewModel.insert}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -61,7 +62,8 @@
                     android:id="@+id/to_transaction_id"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:enabled="@{viewModel.insert}">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:layout_width="match_parent"
@@ -71,6 +73,30 @@
                         android:maxLength="10"
                         android:text="@={`` + viewModel.toTransactionId}" />
                 </com.google.android.material.textfield.TextInputLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center">
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Regenerate"
+                        android:visibility="@{viewModel.insert ? View.GONE: View.VISIBLE}"
+                        android:onClick="@{() -> viewModel.regenerate()}"
+                        app:icon="@drawable/ic_baseline_autorenew_24"/>
+                    <com.google.android.material.button.MaterialButton
+                        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Delete"
+                        android:visibility="@{viewModel.deleteEnabled ? View.VISIBLE: View.GONE}"
+                        android:onClick="@{() -> viewModel.delete()}"
+                        android:textColor="@color/DangerColor"
+                        app:iconTint="@color/DangerColor"
+                        app:icon="@drawable/ic_baseline_delete_24"/>
+                </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
@@ -80,7 +106,7 @@
             android:layout_height="wrap_content"
             android:background="@color/colorPrimary"
             android:onClick="@{() -> viewModel.add()}"
-            android:text="@string/add_point"
+            android:text="Save"
             android:textColor="@color/whiteText"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "transaction_chart_points")
 data class TransactionChartPoint (
-    @PrimaryKey(autoGenerate = true) val id:Long,
+    @PrimaryKey(autoGenerate = true) var id:Long,
     @ColumnInfo(name = "chart_id", typeAffinity = ColumnInfo.TEXT) var chartId: String,
     @ColumnInfo(name = "label", typeAffinity = ColumnInfo.TEXT) var label: String,
     @ColumnInfo(name = "created_at", typeAffinity = ColumnInfo.INTEGER) var createdAt: Long,

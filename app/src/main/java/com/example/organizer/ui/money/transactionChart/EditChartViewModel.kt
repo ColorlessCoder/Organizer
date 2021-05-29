@@ -27,6 +27,7 @@ class EditChartViewModel : ViewModel() {
     val extraPointLabel = MutableLiveData<String?>(null)
     var fieldPendingToSetAfterNavigateBack: FIELDS = FIELDS.NONE
     var filterCategoryIds = mutableListOf<String>()
+    var clone: Boolean = false
     private var transactionChart: TransactionChart? = null
     lateinit var transactionChartDAO: TransactionChartDAO
     lateinit var view: View
@@ -39,7 +40,9 @@ class EditChartViewModel : ViewModel() {
     }
     fun setChart(transactionChartArg: TransactionChart) {
         this.transactionChart = transactionChartArg
-        chartName.value = transactionChartArg.chartName
+        if(!clone) {
+            chartName.value = transactionChartArg.chartName
+        }
         startAfterTransactionId.value = transactionChartArg.startAfterTransactionId
         xType.value = ChartXType.from(transactionChartArg.xType).name
         showExtraOnePoint.value = transactionChartArg.showExtraOnePoint == 1
@@ -51,8 +54,9 @@ class EditChartViewModel : ViewModel() {
 
     fun save() {
         if (!chartName.value.isNullOrEmpty()) {
+            val cloneId = if(clone && transactionChart != null) transactionChart!!.id else null
             viewModelScope.launch {
-                val insert = transactionChart == null
+                val insert = transactionChart == null || clone
                 if (insert) {
                     transactionChart =
                         TransactionChart(
@@ -62,7 +66,7 @@ class EditChartViewModel : ViewModel() {
                             chartOrder = chartOrder,
                             chartEntity = ChartEntityType.CATEGORY.typeCode,
                             xType = ChartXType.fromName(xType.value!!).typeCode,
-                            startAfterTransactionId = 0,
+                            startAfterTransactionId = if(transactionChart == null ) 0 else transactionChart!!.startAfterTransactionId,
                             showExtraOnePoint = if(showExtraOnePoint.value == true) 1 else 0,
                             extraPointLabel = if(showExtraOnePoint.value == true) extraPointLabel.value else null,
                             filterCategories = if(filterCategories.value == true) 1 else 0,
@@ -72,9 +76,12 @@ class EditChartViewModel : ViewModel() {
                 } else {
                     transactionChart!!.chartName = chartName.value!!
                     transactionChart!!.showExtraOnePoint = if(showExtraOnePoint.value == true) 1 else 0
+                    transactionChart!!.filterCategories = if(filterCategories.value == true) 1 else 0
+                    transactionChart!!.groupCategories = if(groupCategories.value == true) 1 else 0
+                    transactionChart!!.groupTransactionType = if(groupTransactionType.value == true) 1 else 0
                     transactionChart!!.extraPointLabel = if(showExtraOnePoint.value == true) extraPointLabel.value else null
                 }
-                transactionChartDAO.saveTransactionChart(transactionChart!!, insert, filterCategoryIds.toSet())
+                transactionChartDAO.saveTransactionChart(transactionChart!!, insert, cloneId, filterCategoryIds.toSet())
                 view.findNavController().popBackStack()
             }
         }

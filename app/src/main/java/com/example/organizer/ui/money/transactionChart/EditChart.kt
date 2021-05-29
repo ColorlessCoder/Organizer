@@ -51,6 +51,7 @@ class EditChart : Fragment() {
         );
         val view = binding.root
         viewModel = ViewModelProvider(this).get(EditChartViewModel::class.java)
+        viewModel.clone = args.clone
         selectCategoryViewModel =
             ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
         binding.viewModel = viewModel

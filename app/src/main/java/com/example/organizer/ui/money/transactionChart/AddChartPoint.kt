@@ -8,12 +8,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.navArgs
 import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.databinding.AddChartPointFragmentBinding
 import com.example.organizer.databinding.EditChartFragmentBinding
+import kotlinx.coroutines.launch
 
 class AddChartPoint : Fragment() {
 
@@ -30,7 +32,7 @@ class AddChartPoint : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val actionBarActivity: MainActivity = activity as MainActivity
-        actionBarActivity.supportActionBar?.title = "Add Point"
+        actionBarActivity.supportActionBar?.title = if(args.pointId == 0L) "Add Point" else "Edit Point"
         val binding = DataBindingUtil.inflate<AddChartPointFragmentBinding>(
             inflater,
             R.layout.add_chart_point_fragment,
@@ -43,12 +45,17 @@ class AddChartPoint : Fragment() {
         binding.lifecycleOwner = this
         viewModel.transactionChartDAO =
             AppDatabase.getInstance(requireContext()).transactionChartDao()
-        viewModel.transactionChartDAO.getChartById(args.transactionChartId)
-            .observe(viewLifecycleOwner, Observer {
-                viewModel.chart = it
-                actionBarActivity.supportActionBar?.title = "Add Point: ${it.chartName}"
-                viewModel.updateChartRelatedFields()
-            })
+        viewModel.viewModelScope.launch {
+            viewModel.chart = viewModel.transactionChartDAO.getChartByIdSuspend(args.transactionChartId)
+            actionBarActivity.supportActionBar?.title = (if(args.pointId == 0L) "Add Point to " else "Edit Point of ")+
+                    viewModel.chart.chartName
+            viewModel.updateChartRelatedFields()
+            if(args.pointId != 0L) {
+                viewModel.setPoint(viewModel.transactionChartDAO.getPointByIdSuspend(args.pointId))
+                viewModel.insert.value = false
+            }
+        }
+        viewModel.deleteEnabled.value = args.deletedEnabled
         viewModel.view = view
         return view
     }

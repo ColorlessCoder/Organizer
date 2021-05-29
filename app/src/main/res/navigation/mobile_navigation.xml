@@ -335,6 +335,9 @@
         <action
             android:id="@+id/action_chartList_to_addChartPoint"
             app:destination="@id/addChartPoint" />
+        <action
+            android:id="@+id/action_chartList_to_transactionChartPointList"
+            app:destination="@id/transactionChartPointList" />
     </fragment>
     <fragment
         android:id="@+id/editChart"
@@ -348,6 +351,11 @@
         <argument
             android:name="order"
             app:argType="integer"
+            />
+        <argument
+            android:name="clone"
+            app:argType="boolean"
+            android:defaultValue="false"
             />
         <action
             android:id="@+id/action_editChart_to_addChartPoint"
@@ -364,6 +372,26 @@
             android:name="transactionChartId"
             app:argType="string"
             />
+        <argument
+            android:name="pointId"
+            app:argType="long"
+            />
+        <argument
+            android:name="deletedEnabled"
+            app:argType="boolean"
+            android:defaultValue="false"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/transactionChartPointList"
+        android:name="com.example.organizer.ui.money.transactionChart.TransactionChartPointList"
+        android:label="Points" >
+        <argument
+            android:name="chartId"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_transactionChartPointList_to_addChartPoint"
+            app:destination="@id/addChartPoint" />
     </fragment>
 
 </navigation>
