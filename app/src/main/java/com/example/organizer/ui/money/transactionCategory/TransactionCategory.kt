@@ -267,6 +267,7 @@ class CategoryListAdapter(
             holder.itemView.setOnClickListener {
                 val action =
                     TransactionCategoryDirections.actionTransactionCategoryToEditCategory(category.id)
+                action.transactionType = category.transactionType
                 parentView.findNavController().navigate(action)
             }
         } else {

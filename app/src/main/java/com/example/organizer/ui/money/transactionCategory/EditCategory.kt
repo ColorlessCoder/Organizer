@@ -45,9 +45,7 @@ class EditCategory : Fragment() {
         })
         binding.editCategoryViewModel = viewModel
         val dbInstance = AppDatabase.getInstance(view.context)
-        if (args.transactionType != null) {
-            viewModel.transactionType.value = TransactionType.from(args.transactionType)
-        }
+        viewModel.transactionType.value = TransactionType.from(args.transactionType)
         viewModel.categoryDAO = dbInstance.categoryDao()
         binding.lifecycleOwner = this
         if (args.id != null) {
@@ -55,6 +53,7 @@ class EditCategory : Fragment() {
                 .getCategory(args.id!!)
                 .observe(viewLifecycleOwner, Observer {
                     viewModel.category = it
+                    viewModel.transactionType.value = TransactionType.from(it.transactionType)
                     viewModel.setFullCategoryName(viewModel.category!!.categoryName)
                     viewModel.showDelete.value = true
                     viewModel.showClone.value = true
