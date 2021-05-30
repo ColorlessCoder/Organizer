@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 import java.util.*
 
 class AddChartPointViewModel : ViewModel() {
-    val fromTransactionId = MutableLiveData(0L)
-    val toTransactionId = MutableLiveData(0L)
+    val fromTransactionId = MutableLiveData("0")
+    val toTransactionId = MutableLiveData("0")
     val pointLabel = MutableLiveData("")
     val insert = MutableLiveData(true)
     var transactionChartPoint: TransactionChartPoint? = null
@@ -26,24 +26,26 @@ class AddChartPointViewModel : ViewModel() {
     lateinit var view: View
 
     fun updateChartRelatedFields() {
-        fromTransactionId.value = chart.startAfterTransactionId + 1
+        fromTransactionId.value = (chart.startAfterTransactionId + 1).toString()
     }
 
     fun setPoint(point: TransactionChartPoint) {
         transactionChartPoint = point
         pointLabel.value = point.label
-        fromTransactionId.value = point.fromTransactionId
-        toTransactionId.value = point.toTransactionId
+        fromTransactionId.value = point.fromTransactionId.toString()
+        toTransactionId.value = point.toTransactionId.toString()
     }
 
     private fun validate(): String {
+        val from = (fromTransactionId.value?:"0").toLong()
+        val to = (toTransactionId.value?:"0").toLong()
         if (chart.xType == ChartXType.LABEL.typeCode && pointLabel.value.isNullOrEmpty()) {
             return "Please enter a Label"
         }
-        if (fromTransactionId.value!! <= chart.startAfterTransactionId) {
+        if (from <= chart.startAfterTransactionId) {
             return "From Transaction Id must be greater than ${chart.startAfterTransactionId}"
         }
-        if (fromTransactionId.value!! > toTransactionId.value!!) {
+        if (from > to) {
             return "From Transaction Id cannot be greater than Up to transaction Id"
         }
         return ""
@@ -91,8 +93,8 @@ class AddChartPointViewModel : ViewModel() {
                                 chart.id,
                                 pointLabel.value!!.trim(),
                                 Date().time,
-                                fromTransactionId.value!!,
-                                toTransactionId.value!!
+                                (fromTransactionId.value?:"0").toLong(),
+                                (toTransactionId.value?:"0").toLong()
                             ), true
                         )
                     } else {
