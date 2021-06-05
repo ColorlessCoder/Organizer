@@ -18,5 +18,9 @@ data class TransactionChart (
     @ColumnInfo(name = "extra_point_label", typeAffinity = ColumnInfo.TEXT) var extraPointLabel: String?,
     @ColumnInfo(name = "filter_categories", typeAffinity = ColumnInfo.INTEGER) var filterCategories: Int,
     @ColumnInfo(name = "group_categories", typeAffinity = ColumnInfo.INTEGER) var groupCategories: Int,
-    @ColumnInfo(name = "group_transaction_type", typeAffinity = ColumnInfo.INTEGER) var groupTransactionType: Int
+    @ColumnInfo(name = "group_transaction_type", typeAffinity = ColumnInfo.INTEGER) var groupTransactionType: Int,
+    @ColumnInfo(name = "schedule_interval_type", typeAffinity = ColumnInfo.INTEGER) var scheduleIntervalType: Int,
+    @ColumnInfo(name = "generate_at", typeAffinity = ColumnInfo.INTEGER) var generateAt: Int?,
+    @ColumnInfo(name = "last_generated_at", typeAffinity = ColumnInfo.INTEGER) var lastGeneratedAt: Int?,
+    @ColumnInfo(name = "save_point", typeAffinity = ColumnInfo.INTEGER) var save_point: Int
 )
