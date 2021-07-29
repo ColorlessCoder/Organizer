@@ -20,7 +20,7 @@ data class TransactionChart (
     @ColumnInfo(name = "group_categories", typeAffinity = ColumnInfo.INTEGER) var groupCategories: Int,
     @ColumnInfo(name = "group_transaction_type", typeAffinity = ColumnInfo.INTEGER) var groupTransactionType: Int,
     @ColumnInfo(name = "schedule_interval_type", typeAffinity = ColumnInfo.INTEGER) var scheduleIntervalType: Int,
-    @ColumnInfo(name = "generate_at", typeAffinity = ColumnInfo.INTEGER) var generateAt: Int?,
-    @ColumnInfo(name = "last_generated_at", typeAffinity = ColumnInfo.INTEGER) var lastGeneratedAt: Int?,
-    @ColumnInfo(name = "save_point", typeAffinity = ColumnInfo.INTEGER) var save_point: Int
+    @ColumnInfo(name = "generate_at", typeAffinity = ColumnInfo.INTEGER) var generateAt: Long?,
+    @ColumnInfo(name = "last_generated_at", typeAffinity = ColumnInfo.INTEGER) var lastGeneratedAt: Long?,
+    @ColumnInfo(name = "save_point", typeAffinity = ColumnInfo.INTEGER) var savePoint: Int
 )
