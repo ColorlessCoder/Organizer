@@ -30,14 +30,14 @@ class EditTransactionPlanViewModel : ViewModel() {
             val color = colors[colorIndex.value!!]
             viewModelScope.launch {
                 if (transactionPlan != null) {
-                    transactionPlan!!.name = name.value!!
+                    transactionPlan!!.name = name.value!!.trim()
                     transactionPlan!!.color = color
                     transactionPlanDAO.update(transactionPlan!!)
                 } else {
                     transactionPlanDAO.insert(
                         TransactionPlan(
                             UUID.randomUUID().toString(),
-                            name.value!!,
+                            name.value!!.trim(),
                             0,
                             color
                         )

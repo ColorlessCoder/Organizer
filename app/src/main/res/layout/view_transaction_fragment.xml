@@ -54,9 +54,9 @@
                 android:id="@+id/total_income"
                 android:layout_width="0dp"
                 android:layout_height="24dp"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:gravity="center_vertical"
-                android:text="500 BDT"
+                android:text="554600 BDT"
                 android:textColor="@color/BlackText" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -68,11 +68,28 @@
                 android:id="@+id/total_expense"
                 android:layout_width="0dp"
                 android:layout_height="24dp"
-                android:layout_weight="1"
+                android:layout_weight="4"
                 android:gravity="center_vertical"
-                android:text="600 BDT"
+                android:text="554600 BDT"
                 android:textColor="@color/BlackText" />
-
+            <ImageView
+                android:id="@+id/summary_list_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="20dp"
+                app:tint="@color/LightBlueBCWhiteTC"
+                app:tooltipText="Summary List"
+                android:src="@drawable/ic_outline_summarize_24" />
+            <ImageView
+                android:id="@+id/summary_graph_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_marginEnd="20dp"
+                app:tint="@color/LightBlueBCWhiteTC"
+                app:tooltipText="Summary Graph"
+                android:src="@drawable/ic_baseline_pie_chart_24" />
             <ImageView
                 android:id="@+id/filterIcon"
                 android:layout_width="wrap_content"
@@ -93,22 +110,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
-
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/filter_days"
+                    android:id="@+id/filter_date_range"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
-                    app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
+                    app:startIconDrawable="@drawable/ic_baseline_calendar_today_24"
+                    android:layout_margin="5dp">
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/filter_days_input"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Days"
-                        android:inputType="number"
-                        android:text="@={viewModel.filterDays}"
+                        android:hint="@string/date_range"
+                        android:text="@{viewModel.filterDateRangeText}"
+                        android:editable="false"
                         android:textStyle="bold" />
 
                 </com.google.android.material.textfield.TextInputLayout>

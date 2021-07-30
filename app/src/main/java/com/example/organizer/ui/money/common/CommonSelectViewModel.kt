@@ -7,6 +7,7 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
     var selectedRecords = mutableListOf<T>()
     var allSelected = false
     var mode: SELECTION_MODE = SELECTION_MODE.SINGLE
+    var currentListIsFiltered = false
     private var currentList = mutableListOf<T>()
 
     companion object {
@@ -17,9 +18,23 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
 
     abstract fun areSameRecord(a: T, b: T): Boolean
 
+    fun getSelectedRecordString(emptyString: String, allString:String, stringValueOfRecord: (record: T) -> String): String {
+        if(allSelected && !currentListIsFiltered) return allString;
+        if(selectedRecords.isNullOrEmpty()) return emptyString
+        return selectedRecords.joinToString(",") { r -> stringValueOfRecord(r) }
+    }
+
     fun isRecordSelected(record: T): Boolean {
-        return (mode == SELECTION_MODE.SINGLE && selectedRecord != null && areSameRecord(selectedRecord!!, record))
-                || (mode == SELECTION_MODE.MULTIPLE && (allSelected || selectedRecords.find { areSameRecord(it, record) } != null))
+        return (mode == SELECTION_MODE.SINGLE && selectedRecord != null && areSameRecord(
+            selectedRecord!!,
+            record
+        ))
+                || (mode == SELECTION_MODE.MULTIPLE && (allSelected || selectedRecords.find {
+            areSameRecord(
+                it,
+                record
+            )
+        } != null))
     }
 
     fun selectRecord(record: T): Boolean {
@@ -30,7 +45,7 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
             val existingRecord = selectedRecords.find { areSameRecord(it, record) }
             if (existingRecord == null) {
                 selectedRecords.add(record)
-                if(selectedRecords.size == currentList.size) {
+                if (selectedRecords.size == currentList.size) {
                     allSelected = true
                     refreshGrid = true
                 }
@@ -53,11 +68,23 @@ abstract class CommonSelectViewModel<T> : ViewModel() {
         selectedRecords.clear()
     }
 
-    fun setCurrentList(list: List<T>) {
-        currentList = list.toMutableList();
-        if(allSelected) {
+    fun setCurrentList(list: List<T>, filtered: Boolean = false) {
+        currentList = list.toMutableList()
+        currentListIsFiltered = filtered
+        if (allSelected) {
             selectedRecords.clear()
             selectedRecords.addAll(currentList)
+        } else if (filtered) {
+            val availableRecords = selectedRecords.filter { s ->
+                currentList.find { c ->
+                    areSameRecord(
+                        s,
+                        c
+                    )
+                } != null
+            };
+            selectedRecords.clear();
+            selectedRecords.addAll(availableRecords);
         }
     }
 }

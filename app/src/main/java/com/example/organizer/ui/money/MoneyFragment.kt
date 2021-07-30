@@ -47,7 +47,7 @@ class MoneyFragment : Fragment() {
         var accountsGrid: GridView = view.findViewById(R.id.accountsGrid);
         val database = AppDatabase.getInstance(view.context)
         val accountDAO = database.accountDao()
-        accountDAO.getAllAccounts().observe(this, Observer { accounts ->
+        accountDAO.getAllAccounts().observe(viewLifecycleOwner, Observer { accounts ->
             viewModel.totalAmount =
                 accounts.fold(0.0) { acc, account -> account.balance + acc }.toString() + " BDT"
             accountsGrid.adapter =
@@ -57,6 +57,11 @@ class MoneyFragment : Fragment() {
                     view
                 )
         });
+        view.findViewById<View>(R.id.chart_button)
+            .setOnClickListener {
+                val action = MoneyFragmentDirections.actionNavMoneyToChartList()
+                findNavController().navigate(action)
+            }
         view.findViewById<View>(R.id.category_card)
             .setOnClickListener {
                 val action = MoneyFragmentDirections.actionNavMoneyToTransactionCategory("0")
@@ -100,7 +105,7 @@ class MoneyFragment : Fragment() {
         if (viewModel.applyTransactionPlanId.hasObservers()) {
             viewModel.applyTransactionPlanId.removeObservers(this)
         }
-        viewModel.applyTransactionPlanId.observe(this, Observer {
+        viewModel.applyTransactionPlanId.observe(viewLifecycleOwner, Observer {
             if (it != null) {
                 lifecycleScope.launch {
                     try {

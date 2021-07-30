@@ -16,9 +16,11 @@ import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.TransactionsService
 import com.example.organizer.databinding.AddTransactionFragmentBinding
+import com.example.organizer.ui.Utils.StringUtils.Companion.doubleToString
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
+import com.google.android.material.textfield.TextInputLayout
 
 class AddTransaction : Fragment() {
 
@@ -66,12 +68,18 @@ class AddTransaction : Fragment() {
                 viewModel.category.value = selectCategoryViewModel.selectedRecord
             }
         }
-        if(viewModel.selectedAccount.value == null && args.sourceAccountId != null) {
+        if (viewModel.selectedAccount.value == null && args.sourceAccountId != null) {
             dbInstance.accountDao()
                 .getAccountById(args.sourceAccountId!!)
-                .observe(this, Observer { account -> viewModel.selectedAccount.value = account; viewModel.selectTransactionType(viewModel.transactionType.value!!) })
+                .observe(
+                    viewLifecycleOwner,
+                    Observer { account ->
+                        viewModel.selectedAccount.value = account; viewModel.selectTransactionType(
+                        viewModel.transactionType.value!!
+                    )
+                    })
         }
-        viewModel.navigateBack.observe(this, Observer { value ->
+        viewModel.navigateBack.observe(viewLifecycleOwner, Observer { value ->
             if (value) {
                 findNavController().popBackStack()
                 viewModel.navigateBack.value = false
@@ -85,9 +93,43 @@ class AddTransaction : Fragment() {
         viewModel.fieldPendingToSetAfterNavigateBack = AddTransactionViewModel.Companion.FIELDS.NONE
     }
 
+    private fun handleAmountView(view: View) {
+        val amountView = view.findViewById<TextInputLayout>(R.id.amount)
+        amountView.editText?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                println("Focused")
+                amountView.editText?.textSize =
+                    16F
+            } else {
+                println("Focused OUT")
+                amountView.editText?.textSize = 35F
+            }
+        }
+        viewModel.amount.observe(viewLifecycleOwner, Observer {
+            if(!it.isNullOrEmpty()) {
+                try {
+                    viewModel.amountHint.value = doubleToString(NumberUtils.calculateValueFromString(it, 0).value)
+                    viewModel.errorEnabled.value = false
+                } catch (ex: Exception) {
+                    viewModel.amountHint.value = ex.message
+                    viewModel.errorEnabled.value = true
+                }
+            } else {
+                viewModel.amountHint.value = "Required"
+                viewModel.errorEnabled.value = false
+            }
+        })
+        amountView.setEndIconOnClickListener {
+            if(viewModel.errorEnabled.value == false) {
+                viewModel.amount.value = NumberUtils.calculateValueFromString(viewModel.amount.value?:"", 0).value.toString()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         print("view created")
+        this.handleAmountView(view)
         val fromAccountView = view.findViewById<View>(R.id.fromAccountInput)
         fromAccountView.setOnClickListener {
             viewModel.fieldPendingToSetAfterNavigateBack =
@@ -95,6 +137,12 @@ class AddTransaction : Fragment() {
             val action = AddTransactionDirections.actionAddTransactionToSelectAccount()
             selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
+        }
+        val fromAccountLayout = view.findViewById<TextInputLayout>(R.id.fromAccount)
+        fromAccountLayout.setEndIconOnClickListener {
+            if (viewModel.fromAccount.value != null) {
+                viewModel.amount.value = (viewModel.amount.value?:"") +  viewModel.fromAccount.value!!.balance.toString()
+            }
         }
         val toAccountView = view.findViewById<View>(R.id.toAccountInput)
         toAccountView.setOnClickListener {
@@ -104,11 +152,20 @@ class AddTransaction : Fragment() {
             selectAccountViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             view.findNavController().navigate(action)
         }
+        val toAccountLayout = view.findViewById<TextInputLayout>(R.id.toAccount)
+
+        toAccountLayout.setEndIconOnClickListener {
+            if (viewModel.toAccount.value != null) {
+                viewModel.amount.value = (viewModel.amount.value?:"") +  viewModel.toAccount.value!!.balance.toString()
+            }
+        }
         val categoryView = view.findViewById<View>(R.id.category_input)
         categoryView.setOnClickListener {
             viewModel.fieldPendingToSetAfterNavigateBack =
                 AddTransactionViewModel.Companion.FIELDS.CATEGORY
-            val action = AddTransactionDirections.actionAddTransactionToTransactionCategory((viewModel.transactionType.value?:0).toString())
+            val action = AddTransactionDirections.actionAddTransactionToTransactionCategory(
+                (viewModel.transactionType.value ?: 0).toString()
+            )
             selectCategoryViewModel.mode = CommonSelectViewModel.Companion.SELECTION_MODE.SINGLE
             action.selectCategory = true
             view.findNavController().navigate(action)

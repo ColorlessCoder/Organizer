@@ -56,7 +56,7 @@ class DebtPayment : Fragment() {
         if (viewModel.navigatedToSet == DebtPaymentViewModel.Companion.NavigatedToSet.ACCOUNT) {
             viewModel.account.value = selectAccountViewModel.selectedRecord
         } else {
-            db.debtDao().getDebtById(args.debtId).observe(this, Observer {
+            db.debtDao().getDebtById(args.debtId).observe(viewLifecycleOwner, Observer {
                 viewModel.debt = it
             })
         }
@@ -91,16 +91,17 @@ class DebtPayment : Fragment() {
                     try {
                         db.transactionDao().insertAndUpdateAccount(
                             Transaction(
-                                UUID.randomUUID().toString(),
+                                0,
                                 transactionType.typeCode,
                                 viewModel.amount.value!!.toDouble(),
                                 if(transactionType == TransactionType.EXPENSE) viewModel.account.value!!.id else null,
                                 if(transactionType == TransactionType.INCOME) viewModel.account.value!!.id else null,
                                 null,
                                 null,
-                                viewModel.details.value,
+                                viewModel.details.value?.trim(),
                                 Date().time,
-                                viewModel.debt.id
+                                viewModel.debt.id,
+                                null,null,null,null
                             )
                         )
                         findNavController().popBackStack()

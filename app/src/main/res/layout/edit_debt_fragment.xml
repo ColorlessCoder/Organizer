@@ -58,7 +58,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Details"
-                        android:inputType="textMultiLine"
+                        android:inputType="textMultiLine|textCapSentences"
                         android:text="@={viewModel.details}"
                         android:textStyle="bold" />
 
@@ -70,15 +70,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="5dp"
+                    app:endIconDrawable="@drawable/ic_sum_sign"
+                    app:endIconMode="custom"
+                    app:helperText="@{viewModel.amountHint}"
                     app:layout_constraintTop_toBottomOf="@+id/details">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/amount_input"
                         android:layout_width="match_parent"
-                        android:layout_height="97dp"
+                        android:layout_height="wrap_content"
                         android:hint="Amount"
-                        android:inputType="numberDecimal"
-                        android:maxLength="10"
+                        android:digits="0123456789.+-*/()"
+                        android:inputType="textNoSuggestions|numberSigned|textMultiLine"
                         android:text="@={viewModel.amount}"
                         android:textSize="35dp"
                         android:textStyle="bold" />

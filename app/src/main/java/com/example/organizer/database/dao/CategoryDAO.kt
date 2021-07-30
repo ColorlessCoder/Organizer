@@ -4,11 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
 import androidx.sqlite.db.SupportSQLiteQuery
-import com.example.organizer.database.entity.Account
 import com.example.organizer.database.entity.Category
-import com.example.organizer.database.entity.Transaction
-import com.example.organizer.database.relation.TransactionDetails
-import java.util.*
 
 @Dao
 interface CategoryDAO: BaseDAO {
@@ -29,6 +25,9 @@ interface CategoryDAO: BaseDAO {
 
     @Query("Select * From categories where transaction_type = :type")
     fun getCategoriesByType(type:Int): LiveData<List<Category>>
+
+    @Query("Select * From categories where category_name like :group")
+    suspend fun getCategoriesLikeGroup(group: String): List<Category>
 
     @Query("Select * From categories")
     fun getAllCategories(): LiveData<List<Category>>

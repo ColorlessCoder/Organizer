@@ -32,8 +32,8 @@ abstract class CommonSelectFragment<T, VM:CommonSelectViewModel<T>, VH:CommonSel
         }
     }
 
-    fun setSelectGridAdapter(list: List<T>, adapter: AT) {
-        selectViewModel.setCurrentList(list.toMutableList())
+    fun setSelectGridAdapter(list: List<T>, adapter: AT, filtered: Boolean = false) {
+        selectViewModel.setCurrentList(list.toMutableList(), filtered)
         getSelectRecyclerView().adapter = adapter
     }
 }

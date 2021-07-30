@@ -19,11 +19,11 @@ import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.enums.DebtType
 import com.example.organizer.databinding.EditDebtFragmentBinding
 import com.example.organizer.ui.Utils.DateUtils
+import com.example.organizer.ui.Utils.StringUtils
 import com.example.organizer.ui.money.common.CommonSelectViewModel
 import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.debt.selectDebtType.SelectDebtTypeViewModel
 import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.timepicker.MaterialTimePicker
 import java.util.*
@@ -76,13 +76,13 @@ class EditDebt : Fragment() {
                 dbInstance.debtDao()
                     .getDebtById(args.debtId!!)
                     .observe(
-                        this,
+                        viewLifecycleOwner,
                         Observer {
                             viewModel.setDebtRecord(it)
                         })
             }
         }
-        viewModel.navigateBack.observe(this, Observer { value ->
+        viewModel.navigateBack.observe(viewLifecycleOwner, Observer { value ->
             if (value) {
                 findNavController().popBackStack()
                 viewModel.navigateBack.value = false
@@ -96,10 +96,49 @@ class EditDebt : Fragment() {
         viewModel.fieldPendingToSetAfterNavigateBack = EditDebtViewModel.Companion.FIELDS.NONE
     }
 
+    private fun handleAmountView(view: View) {
+        val amountView = view.findViewById<TextInputLayout>(R.id.amount)
+        amountView.editText?.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                println("Focused")
+                amountView.editText?.textSize =
+                    16F
+            } else {
+                println("Focused OUT")
+                amountView.editText?.textSize = 35F
+            }
+        }
+        viewModel.amount.observe(viewLifecycleOwner, Observer {
+            if(!it.isNullOrEmpty()) {
+                try {
+                    viewModel.amountHint.value = StringUtils.doubleToString(
+                        NumberUtils.calculateValueFromString(
+                            it,
+                            0
+                        ).value
+                    )
+                    viewModel.errorEnabled.value = false
+                } catch (ex: Exception) {
+                    viewModel.amountHint.value = ex.message
+                    viewModel.errorEnabled.value = true
+                }
+            } else {
+                viewModel.amountHint.value = "Required"
+                viewModel.errorEnabled.value = false
+            }
+        })
+        amountView.setEndIconOnClickListener {
+            if(viewModel.errorEnabled.value == false) {
+                viewModel.amount.value = NumberUtils.calculateValueFromString(viewModel.amount.value?:"", 0).value.toString()
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         print("view created")
         if (args.debtId == null) {
+            handleAmountView(view)
             val debtTypeView = view.findViewById<View>(R.id.debt_type_input)
             debtTypeView.setOnClickListener {
                 viewModel.fieldPendingToSetAfterNavigateBack =
@@ -166,9 +205,16 @@ class EditDebt : Fragment() {
             }
         }
         view.findViewById<Button>(R.id.save_button).setOnClickListener {
-            val message = viewModel.validation()
+            var amountValue = 0.0
+            try {
+                amountValue = NumberUtils.calculateValueFromString(viewModel.amount.value?:"", 0).value
+            } catch (ex: java.lang.Exception) {
+                viewModel.errorEnabled.value = true
+                viewModel.amountHint.value = ex.message
+            }
+            val message = viewModel.validation(amountValue)
             if (message.isEmpty()) {
-                viewModel.saveDebt()
+                viewModel.saveDebt(amountValue)
             } else {
                 Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
             }

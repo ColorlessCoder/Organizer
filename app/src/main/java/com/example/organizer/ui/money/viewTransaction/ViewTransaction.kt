@@ -1,5 +1,6 @@
 package com.example.organizer.ui.money.viewTransaction
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.RecyclerView
@@ -20,6 +22,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.entity.Account
+import com.example.organizer.database.entity.Category
 import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.relation.TransactionDetails
 import com.example.organizer.databinding.ViewTransactionFragmentBinding
@@ -31,7 +35,9 @@ import com.example.organizer.ui.money.selectAccount.SelectAccountViewModel
 import com.example.organizer.ui.money.selectTransactionType.SelectTransactionTypeViewModel
 import com.example.organizer.ui.money.transactionCategory.SelectCategoryViewModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -47,6 +53,8 @@ class ViewTransaction : Fragment() {
     private lateinit var selectAccountViewModel: SelectAccountViewModel
     private lateinit var selectCategoryViewModel: SelectCategoryViewModel
     private lateinit var selectTransactionTypeViewModel: SelectTransactionTypeViewModel
+    private lateinit var viewTransactionSummaryViewModel: ViewTransactionSummaryViewModel
+    private lateinit var viewTransactionGraphViewModel: ViewTransactionGraphViewModel
     private val args: ViewTransactionArgs by navArgs()
 
     override fun onCreateView(
@@ -72,6 +80,10 @@ class ViewTransaction : Fragment() {
             ViewModelProvider(requireActivity()).get(SelectCategoryViewModel::class.java)
         selectTransactionTypeViewModel =
             ViewModelProvider(requireActivity()).get(SelectTransactionTypeViewModel::class.java)
+        viewTransactionSummaryViewModel =
+            ViewModelProvider(requireActivity()).get(ViewTransactionSummaryViewModel::class.java)
+        viewTransactionGraphViewModel =
+            ViewModelProvider(requireActivity()).get(ViewTransactionGraphViewModel::class.java)
         loadUiAsPerViewModel(coordinatorLayout)
         setBottomSheet(coordinatorLayout)
         return coordinatorLayout
@@ -83,34 +95,15 @@ class ViewTransaction : Fragment() {
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.ACCOUNT) {
             viewModel.filterAccountValue =
                 selectAccountViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectAccountViewModel.allSelected -> viewModel.filterAccountText.value = viewModel.ALL
-                selectAccountViewModel.selectedRecords.isEmpty() -> viewModel.filterAccountText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterAccountText.value =
-                    selectAccountViewModel.selectedRecords.joinToString(separator = ", ") { it.accountName }
-            }
+            viewModel.filterAccountText.value = selectAccountViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, Account::accountName)
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.CATEGORY) {
             viewModel.filterCategoryValue =
                 selectCategoryViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectCategoryViewModel.allSelected -> viewModel.filterCategoryText.value = viewModel.ALL
-                selectCategoryViewModel.selectedRecords.isEmpty() -> viewModel.filterCategoryText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterCategoryText.value =
-                    selectCategoryViewModel.selectedRecords.joinToString(separator = ", ") { it.categoryName }
-            }
+            viewModel.filterCategoryText.value = selectCategoryViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, Category::categoryName)
         } else if (viewModel.fieldPendingToSetAfterNavigateBack == ViewTransactionViewModel.Companion.FIELDS.TYPE) {
             viewModel.filterTypeValue =
                 selectTransactionTypeViewModel.selectedRecords.map { it }.toMutableList()
-            when {
-                selectTransactionTypeViewModel.allSelected -> viewModel.filterTypeText.value =
-                    viewModel.ALL
-                selectTransactionTypeViewModel.selectedRecords.isEmpty() -> viewModel.filterTypeText.value =
-                    viewModel.EMPTY
-                else -> viewModel.filterTypeText.value =
-                    selectTransactionTypeViewModel.selectedRecords.joinToString(separator = ", ") { it.name }
-            }
+            viewModel.filterTypeText.value = selectTransactionTypeViewModel.getSelectedRecordString(viewModel.EMPTY, viewModel.ALL, TransactionType::name)
         }
         loadFilter(parentView)
         viewModel.fieldPendingToSetAfterNavigateBack =
@@ -125,13 +118,20 @@ class ViewTransaction : Fragment() {
     }
 
     private fun loadDaysFilter(parentView: View) {
-        val filterDaysInput = parentView.findViewById<TextInputEditText>(R.id.filter_days_input)
-        filterDaysInput.setOnFocusChangeListener { v, hasFocus ->
-            if (!hasFocus) {
-                if (viewModel.previousFilterDays != viewModel.filterDays.value) {
-                    viewModel.previousFilterDays = viewModel.filterDays.value?: "30"
-                    loadTransactions(parentView)
-                }
+
+        val filterDateRangeInputLayout = parentView.findViewById<TextInputLayout>(R.id.filter_date_range)
+        filterDateRangeInputLayout.setStartIconOnClickListener {
+            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker()
+                    .setTitleText("Select dates")
+                    .setSelection(viewModel.filterDateRange)
+                    .build()
+            dateRangePicker.addOnPositiveButtonClickListener {
+                viewModel.filterDateRange = dateRangePicker.selection
+                viewModel.setDateRangeString()
+                loadTransactions(parentView)
+            }
+            activity?.supportFragmentManager?.let { it1 ->
+                dateRangePicker.show(it1, "viewTransactionDateRangePicker")
             }
         }
     }
@@ -182,12 +182,13 @@ class ViewTransaction : Fragment() {
     private fun setBottomSheet(coordinatorLayout: CoordinatorLayout) {
 
         val filterIcon = coordinatorLayout.findViewById<View>(R.id.filterIcon)
+        val summaryListIcon = coordinatorLayout.findViewById<View>(R.id.summary_list_icon)
+        val summaryGraphIcon = coordinatorLayout.findViewById<View>(R.id.summary_graph_icon)
         val contentLayout: LinearLayout = coordinatorLayout.findViewById(R.id.contentLayout)
 
         sheetBehavior = BottomSheetBehavior.from(contentLayout)
         sheetBehavior.isFitToContents = false
-        sheetBehavior.isHideable =
-            false //prevents the bottom sheet from completely hiding off the screen
+        sheetBehavior.isHideable = false //prevents the bottom sheet from completely hiding off the screen
 
         sheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED //initially state to fully expanded
         val swipeRefreshLayout: SwipeRefreshLayout = contentLayout.findViewById(R.id.swiperefresh)
@@ -197,6 +198,16 @@ class ViewTransaction : Fragment() {
         }
 
         filterIcon.setOnClickListener { toggleFilters() }
+        summaryListIcon.setOnClickListener {
+            viewTransactionSummaryViewModel.setTransactions(viewModel.transactionDetailsList.toMutableList())
+            val action = ViewTransactionDirections.actionViewTransactionToViewTransactionSummary()
+            findNavController().navigate(action)
+        }
+        summaryGraphIcon.setOnClickListener {
+            viewTransactionGraphViewModel.setTransactions(viewModel.transactionDetailsList.toMutableList())
+            val action = ViewTransactionDirections.actionViewTransactionToViewTransactionGraph()
+            findNavController().navigate(action)
+        }
     }
 
     private fun toggleFilters() {
@@ -220,18 +231,20 @@ class ViewTransaction : Fragment() {
                 if (viewModel.filterAccountText.value == viewModel.ALL) null else viewModel.filterAccountValue.map { it.id },
                 if (viewModel.filterCategoryText.value == viewModel.ALL) null else viewModel.filterCategoryValue.map { it.id },
                 if (viewModel.filterTypeText.value == viewModel.ALL) null else viewModel.filterTypeValue.map { it.typeCode },
-                (viewModel.filterDays.value?:"30").toInt()
+                viewModel.filterDateRange
             ))
-            viewModel.previousFilterDays = viewModel.filterDays.value?:"0"
             updateTotalFields(view, transactionDetailsList)
+            viewModel.transactionDetailsList = transactionDetailsList
             transactionList.adapter =
                 ViewTransactionListAdapter(
                     transactionDetailsList,
-                    view
+                    view,
+                    viewModel
                 )
         }
     }
 
+    @SuppressLint("SetTextI18n")
     private fun updateTotalFields(view:View, transactionDetailsList: List<TransactionDetails>) {
         view.findViewById<TextView>(R.id.total_income).text = transactionDetailsList
             .filter { it.transaction.transactionType == TransactionType.INCOME.typeCode }
@@ -245,7 +258,8 @@ class ViewTransaction : Fragment() {
 
     class ViewTransactionListAdapter(
         private val transactionDetailsList: List<TransactionDetails>,
-        val view: View
+        val view: View,
+        val viewModel: ViewTransactionViewModel?
     ) : RecyclerView.Adapter<ViewTransactionListAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val transactionType: TextView = view.findViewById(R.id.transaction_type)
@@ -255,6 +269,7 @@ class ViewTransaction : Fragment() {
             val toAccount: TextView = view.findViewById(R.id.to_account)
             val transactionDate: TextView = view.findViewById(R.id.transaction_date)
             val categoryName: TextView = view.findViewById(R.id.category_name)
+            val transactionId: TextView = view.findViewById(R.id.transaction_id)
         }
 
         override fun onCreateViewHolder(
@@ -270,11 +285,13 @@ class ViewTransaction : Fragment() {
             return transactionDetailsList.size
         }
 
+        @SuppressLint("SetTextI18n")
         override fun onBindViewHolder(holder: ViewHolder, position: Int) {
             val transactionDetails = transactionDetailsList.get(position)
             val transactionType =
                 TransactionType.from(transactionDetails.transaction.transactionType)
             holder.transactionType.text = transactionType.name
+            holder.transactionId.text = "#" + transactionDetails.transaction.id
             holder.transactionType.background = ShpaeUtil.getRoundCornerShape(
                 15.toFloat(),
                 ContextCompat.getColor(view.context, transactionType.color),
@@ -297,6 +314,17 @@ class ViewTransaction : Fragment() {
             }
             holder.transactionDate.text =
                 DateUtils.dateToString(Date(transactionDetails.transaction.transactedAt));
+            if(viewModel != null) {
+                holder.itemView.setOnClickListener {
+                    viewModel.fieldPendingToSetAfterNavigateBack =
+                        ViewTransactionViewModel.Companion.FIELDS.DETAILS
+                    val action =
+                        ViewTransactionDirections.actionViewTransactionToTransactionDetails(
+                            transactionDetails.transaction.id.toInt()
+                        )
+                    view.findNavController().navigate(action)
+                }
+            }
         }
 
     }

@@ -9,6 +9,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.navArgs
+import com.example.organizer.MainActivity
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.enums.TransactionType
@@ -27,6 +28,9 @@ class EditCategory : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val actionBarActivity: MainActivity = activity as MainActivity
+        actionBarActivity.supportActionBar?.title =
+            if (args.id.isNullOrEmpty()) "Create Category" else "Edit Category"
         val binding = DataBindingUtil.inflate<EditCategoryFragmentBinding>(
             inflater,
             R.layout.edit_category_fragment,
@@ -35,20 +39,25 @@ class EditCategory : Fragment() {
         )
         val view = binding.root
         viewModel = ViewModelProviders.of(this).get(EditCategoryViewModel::class.java)
+        viewModel.isCreating.observe(viewLifecycleOwner, Observer {
+            actionBarActivity.supportActionBar?.title =
+                if (it == true) "Create Category" else "Edit Category"
+        })
         binding.editCategoryViewModel = viewModel
         val dbInstance = AppDatabase.getInstance(view.context)
-        if(args.transactionType != null) {
-            viewModel.transactionType.value = TransactionType.from(args.transactionType)
-        }
+        viewModel.transactionType.value = TransactionType.from(args.transactionType)
         viewModel.categoryDAO = dbInstance.categoryDao()
         binding.lifecycleOwner = this
-        if(args.id != null) {
+        if (args.id != null) {
             dbInstance.categoryDao()
                 .getCategory(args.id!!)
-                .observe(this, Observer {
+                .observe(viewLifecycleOwner, Observer {
                     viewModel.category = it
-                    viewModel.categoryName.value = viewModel.category!!.categoryName
+                    viewModel.transactionType.value = TransactionType.from(it.transactionType)
+                    viewModel.setFullCategoryName(viewModel.category!!.categoryName)
                     viewModel.showDelete.value = true
+                    viewModel.showClone.value = true
+                    viewModel.isCreating.value = false
                 })
         } else {
             viewModel.category = null

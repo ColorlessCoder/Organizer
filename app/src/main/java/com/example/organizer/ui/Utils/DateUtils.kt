@@ -12,6 +12,9 @@ class DateUtils {
         fun getDateString(date: Date): String {
             return SimpleDateFormat("dd/MM/yyyy").format(date)
         }
+        fun getDateStringWithMonth(date: Date): String {
+            return SimpleDateFormat("dd-MMM-yyyy").format(date)
+        }
         fun serializeSalatDate(date: Date): String {
             return SimpleDateFormat(salatDatePattern).format(date)
         }

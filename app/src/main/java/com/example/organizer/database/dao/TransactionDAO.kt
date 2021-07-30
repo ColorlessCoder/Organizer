@@ -1,5 +1,6 @@
 package com.example.organizer.database.dao
 
+import androidx.core.util.Pair
 import androidx.lifecycle.LiveData
 import androidx.room.*
 import androidx.sqlite.db.SimpleSQLiteQuery
@@ -27,19 +28,7 @@ interface TransactionDAO : BaseDAO {
 
     @androidx.room.Transaction
     suspend fun insertAndUpdateAccount(transaction: Transaction, updateDebt: Boolean = true) {
-        if (transaction.toAccount != null) {
-            var account = getAccount(transaction.toAccount!!)
-            account.balance += transaction.amount
-            updateAccount(account)
-        }
-        if (transaction.fromAccount != null) {
-            var account = getAccount(transaction.fromAccount!!)
-            account.balance -= transaction.amount
-            if (account.balance < 0) {
-                throw Exception("Balance of " + account.accountName + " will become negative.")
-            }
-            updateAccount(account)
-        }
+        updateAccountForTransaction(transaction)
         if(transaction.debtId != null && updateDebt) {
             var debt = getDebtById(transaction.debtId!!)
             debt.paidSoFar += transaction.amount
@@ -51,6 +40,30 @@ interface TransactionDAO : BaseDAO {
             update(debt)
         }
         insert(transaction)
+    }
+
+    @androidx.room.Transaction
+    private suspend fun updateAccountForTransaction(transaction: Transaction) {
+        println(transaction)
+        if (transaction.toAccount != null) {
+            var account = getAccount(transaction.toAccount!!)
+            println(account)
+            transaction.toAccountOldAmount = account.balance + 0
+            account.balance += transaction.amount
+            transaction.toAccountNewAmount = account.balance + 0
+            updateAccount(account)
+        }
+        if (transaction.fromAccount != null) {
+            var account = getAccount(transaction.fromAccount!!)
+            println(account)
+            transaction.fromAccountOldAmount = account.balance + 0
+            account.balance -= transaction.amount
+            transaction.fromAccountNewAmount = account.balance + 0
+            if (account.balance < 0) {
+                throw Exception("Balance of " + account.accountName + " will become negative.")
+            }
+            updateAccount(account)
+        }
     }
 
     suspend fun transactionToString(transaction: TemplateTransactionDetails): String {
@@ -70,7 +83,7 @@ interface TransactionDAO : BaseDAO {
                 try {
                     insertAndUpdateAccount(
                         Transaction(
-                            UUID.randomUUID().toString(),
+                            0,
                             it.transaction.transactionType,
                             it.transaction.amount,
                             it.transaction.fromAccount,
@@ -79,6 +92,10 @@ interface TransactionDAO : BaseDAO {
                             it.transaction.transactionCategoryId,
                             it.transaction.details,
                             Date().time,
+                            null,
+                            null,
+                            null,
+                            null,
                             null
                         )
                     )
@@ -93,13 +110,17 @@ interface TransactionDAO : BaseDAO {
     }
 
     @Query("Delete from transactions where id= :id")
-    suspend fun deleteById(vararg id: String)
+    suspend fun deleteById(vararg id: Long)
 
     @Query("Select * From transactions")
     fun getAllTransactions(): LiveData<List<Transaction>>
 
     @Query("Select * From transactions where id = :id")
-    fun getTransactionById(id: String): LiveData<Transaction>
+    fun getTransactionById(id: Int): LiveData<Transaction>
+
+    @androidx.room.Transaction
+    @Query("Select * From transactions where id = :id")
+    fun getTransactionDetailsById(id: Int): LiveData<TransactionDetails>
 
     @androidx.room.Transaction
     @Query("Select * From transactions")
@@ -121,13 +142,17 @@ interface TransactionDAO : BaseDAO {
         accountIds: List<String>?,
         categoryIds: List<String>?,
         type: List<Int>?,
-        days: Int
+        dateRange: Pair<Long, Long>?
     ): SimpleSQLiteQuery {
         var queryString: StringBuilder = StringBuilder()
         var args: MutableList<Any> = mutableListOf()
-        val before = Date().time - (1L * days * 24 * 60 * 60 * 1000)
-        queryString.append("Select * From transactions Where transacted_at > ? ")
-        args.add(before)
+        queryString.append("Select * From transactions Where 1=1 ")
+        if(dateRange != null) {
+            queryString.append(" AND transacted_at >= ? ")
+            queryString.append(" AND transacted_at < ? ")
+            args.add(dateRange.first!!)
+            args.add(dateRange.second!! +  ( 24 * 60 * 60 * 1000))
+        }
         if (accountIds != null) {
             if (accountIds.isEmpty()) {
                 queryString.append(" AND from_account IS NULL AND to_account IS NULL ")
@@ -178,10 +203,10 @@ interface TransactionDAO : BaseDAO {
     suspend fun createDebt(debt: Debt, accountId: String?) {
         insert(debt)
         val debtType = DebtType.from(debt.debtType)
-        if (debtType != DebtType.INSTALLMENT) {
+        if (debtType != DebtType.INSTALLMENT && accountId != null) {
             insertAndUpdateAccount(
                 Transaction(
-                    UUID.randomUUID().toString(),
+                    0,
                     debtType.relatedTransactionType.typeCode,
                     debt.amount - debt.paidSoFar,
                     if(debtType.relatedTransactionType == TransactionType.EXPENSE) accountId else null,
@@ -190,9 +215,26 @@ interface TransactionDAO : BaseDAO {
                     null,
                     debtType.name + ": " + debt.details,
                     Date().time,
-                    debt.id
+                    debt.id,
+                    null,null,null,null
                 ), false
             )
+        }
+    }
+
+    @androidx.room.Transaction
+    suspend fun revertTransaction(transaction: Transaction) {
+        if(transaction.debtId == null) {
+            println("Revert ATransaction")
+            val from = transaction.fromAccount;
+            transaction.fromAccount = transaction.toAccount;
+            transaction.toAccount = from;
+            transaction.fromAccountOldAmount = null;
+            transaction.fromAccountNewAmount = null;
+            transaction.toAccountNewAmount = null;
+            transaction.toAccountOldAmount = null;
+            updateAccountForTransaction(transaction)
+            deleteById(transaction.id)
         }
     }
 }
