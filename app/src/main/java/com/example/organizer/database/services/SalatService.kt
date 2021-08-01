@@ -5,8 +5,11 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
+import com.example.organizer.database.dao.SalatSettingsDAO
 import com.example.organizer.database.dao.SalatTimesDAO
+import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.entity.SalatTime
+import com.example.organizer.database.enums.DbBoolValue
 import com.example.organizer.ui.Utils.dto.HourMin
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
@@ -17,6 +20,31 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 class SalatService(val salatTimeDao: SalatTimesDAO) {
+
+    companion object {
+        fun defaultBdSalatSettings(): SalatSettings {
+            return SalatSettings(
+                id = UUID.randomUUID().toString(),
+                settingsName = SalatSettingsDAO.DefaultSettingsName,
+                address = "Khilgoan, Dhaka, Bangladesh",
+                active = DbBoolValue.TRUE.value,
+                salatAlert = DbBoolValue.FALSE.value,
+                fajrAlert = DbBoolValue.FALSE.value,
+                dhuhrAlert = DbBoolValue.FALSE.value,
+                asrAlert = DbBoolValue.FALSE.value,
+                maghribAlert = DbBoolValue.FALSE.value,
+                ishaAlert = DbBoolValue.FALSE.value,
+                fajrSafety = 3,
+                dhuhrSafety = 3,
+                asrSafety = 0,
+                maghribSafety = 3,
+                ishaSafety = 0,
+                sunriseRedzone = 24,
+                middayRedzone = 3,
+                sunsetRedzone = 24
+            )
+        }
+    }
 
     fun downloadSalatTimes(
         month: Int,

@@ -1,11 +1,11 @@
 package com.example.organizer.ui.backup.database
 
 import androidx.lifecycle.ViewModel
-import com.example.organizer.database.entity.UserSettings
+import com.example.organizer.database.entity.SalatSettings
 
 class DatabaseBackupViewModel : ViewModel() {
     var navigationPurpose = Purpose.NONE
-    lateinit var userSettings:UserSettings
+    lateinit var salatSettings:SalatSettings
 
     companion object {
         enum class Purpose {

@@ -8,6 +8,7 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.organizer.database.dao.*
 import com.example.organizer.database.entity.*
+import com.example.organizer.database.services.SalatService
 import java.util.*
 
 
@@ -24,7 +25,7 @@ import java.util.*
         TransactionChartValue::class,
         TransactionChartToCategory::class,
         SalatTime::class,
-        UserSettings::class
+        SalatSettings::class
     ], version = 14 ,
     exportSchema = false
 )
@@ -38,7 +39,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun utilDAO(): UtilDAO
     abstract fun transactionChartDao(): TransactionChartDAO
     abstract fun salatTimesDao(): SalatTimesDAO
-    abstract fun userSettingsDao(): UserSettingsDAO
+    abstract fun userSettingsDao(): SalatSettingsDAO
 
     companion object {
         private final const val DB_NAME: String = "organizer.db"
@@ -225,51 +226,80 @@ abstract class AppDatabase : RoomDatabase() {
         private val MIGRATION_13_14 = object : Migration(13, 14) {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL("CREATE TABLE `salat_times` (`id` TEXT NOT NULL," +
-                        " `city` TEXT NOT NULL, " +
-                        " `country` TEXT NOT NULL, " +
+                        " `address` TEXT NOT NULL, " +
                         " `date` TEXT NOT NULL, " +
-                        " `tahajjud_start` TEXT NOT NULL, " +
-                        " `tahajjud_end` TEXT NOT NULL, " +
                         " `fajr_start` TEXT NOT NULL, " +
-                        " `fajr_end` TEXT NOT NULL, " +
                         " `sunrise` TEXT NOT NULL, " +
-                        " `first_restriction_start` TEXT NOT NULL, " +
-                        " `first_restriction_end` TEXT NOT NULL, " +
-                        " `ishraq_start` TEXT NOT NULL, " +
-                        " `ishraq_end` TEXT NOT NULL, " +
-                        " `midday` TEXT NOT NULL, " +
-                        " `second_restriction_start` TEXT NOT NULL, " +
-                        " `second_restriction_end` TEXT NOT NULL, " +
                         " `dhuhr_start` TEXT NOT NULL, " +
-                        " `dhuhr_end` TEXT NOT NULL, " +
                         " `asr_start` TEXT NOT NULL, " +
-                        " `asr_end` TEXT NOT NULL, " +
                         " `sunset` TEXT NOT NULL, " +
-                        " `third_restriction_start` TEXT NOT NULL, " +
-                        " `third_restriction_end` TEXT NOT NULL, " +
                         " `maghrib_start` TEXT NOT NULL, " +
-                        " `maghrib_end` TEXT NOT NULL, " +
                         " `isha_start` TEXT NOT NULL, " +
-                        " `isha_end` TEXT NOT NULL, " +
                         " `imsak` TEXT NOT NULL, " +
+                        " `midnight` TEXT NOT NULL, " +
                         "PRIMARY KEY(`id`))")
+                database.execSQL("CREATE UNIQUE INDEX index_salat_time_address_date \n" +
+                        "ON salat_times(`address`, `date`)")
                 database.execSQL("CREATE TABLE `user_settings` (`id` TEXT NOT NULL," +
                         " `settings_name` TEXT NOT NULL UNIQUE, " +
-                        " `country` TEXT NOT NULL, " +
-                        " `city` TEXT NOT NULL, " +
+                        " `address` TEXT NULL, " +
                         " `active` INTEGER NOT NULL, " +
+                        " `salat_alert` INTEGER NOT NULL, " +
+                        " `fajr_alert` INTEGER NOT NULL, " +
+                        " `dhuhr_alert` INTEGER NOT NULL, " +
+                        " `asr_alert` INTEGER NOT NULL, " +
+                        " `maghrib_alert` INTEGER NOT NULL, " +
+                        " `isha_alert` INTEGER NOT NULL, " +
+                        " `fajr_safety` INTEGER NOT NULL, " +
+                        " `dhuhr_safety` INTEGER NOT NULL, " +
+                        " `asr_safety` INTEGER NOT NULL, " +
+                        " `maghrib_safety` INTEGER NOT NULL, " +
+                        " `isha_safety` INTEGER NOT NULL, " +
+                        " `sunrise_redzone` INTEGER NOT NULL, " +
+                        " `midday_redzone` INTEGER NOT NULL, " +
+                        " `sunset_redzone` INTEGER NOT NULL, " +
                         "PRIMARY KEY(`id`))")
                 database.execSQL("CREATE UNIQUE INDEX index_user_settings_settings_name \n" +
                         "ON user_settings(settings_name)")
+                val defaultSettings = SalatService.defaultBdSalatSettings()
                 val args = mutableListOf<Any>()
-                args.add(UUID.randomUUID().toString())
-                args.add(UserSettingsDAO.DefaultSettingsName)
-                args.add("Bangladesh")
-                args.add("Dhaka")
-                args.add(1)
-                database.execSQL("Insert into user_settings (id, settings_name, country, city, active)" +
+                args.add(defaultSettings.id);
+                args.add(defaultSettings.settingsName);
+                args.add(defaultSettings.address);
+                args.add(defaultSettings.active);
+                args.add(defaultSettings.salatAlert);
+                args.add(defaultSettings.fajrAlert);
+                args.add(defaultSettings.dhuhrAlert);
+                args.add(defaultSettings.asrAlert);
+                args.add(defaultSettings.maghribAlert);
+                args.add(defaultSettings.ishaAlert);
+                args.add(defaultSettings.fajrSafety);
+                args.add(defaultSettings.dhuhrSafety);
+                args.add(defaultSettings.asrSafety);
+                args.add(defaultSettings.maghribSafety);
+                args.add(defaultSettings.ishaSafety);
+                args.add(defaultSettings.sunriseRedzone);
+                args.add(defaultSettings.middayRedzone);
+                args.add(defaultSettings.sunsetRedzone);
+                database.execSQL("Insert into user_settings (id, settings_name\n" +
+                        "address\n" +
+                        "active\n" +
+                        "salat_alert\n" +
+                        "fajr_alert\n" +
+                        "dhuhr_alert\n" +
+                        "asr_alert\n" +
+                        "maghrib_alert\n" +
+                        "isha_alert\n" +
+                        "fajr_safety\n" +
+                        "dhuhr_safety\n" +
+                        "asr_safety\n" +
+                        "maghrib_safety\n" +
+                        "isha_safety\n" +
+                        "sunrise_redzone\n" +
+                        "midday_redzone\n" +
+                        "sunset_redzone)" +
                         " VALUES " +
-                        " (?, ?, ?, ?, ?)", args.toTypedArray())
+                        " ( ? " + ", ?".repeat(17) + ")", args.toTypedArray())
             }
         }
 

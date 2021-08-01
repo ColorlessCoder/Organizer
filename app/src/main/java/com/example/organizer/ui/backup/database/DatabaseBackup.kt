@@ -132,9 +132,9 @@ class DatabaseBackup : Fragment() {
                 false
             )
             lifecycleScope.launch {
-                viewModel.userSettings.city = city
-                viewModel.userSettings.country = country
-                db.userSettingsDao().update(viewModel.userSettings)
+                viewModel.salatSettings.city = city
+                viewModel.salatSettings.country = country
+                db.userSettingsDao().update(viewModel.salatSettings)
             }
         } catch (ex: java.lang.Exception) {
             showToastMessage(ex.message.toString())
@@ -162,7 +162,7 @@ class DatabaseBackup : Fragment() {
         viewModel = ViewModelProvider(this).get(DatabaseBackupViewModel::class.java)
         val db = AppDatabase.getInstance(requireContext())
         db.userSettingsDao().getActiveUserSettings().observe(this, androidx.lifecycle.Observer {
-            viewModel.userSettings = it
+            viewModel.salatSettings = it
             setCountryName(view, it.country)
             setCityName(view, it.city)
         })
