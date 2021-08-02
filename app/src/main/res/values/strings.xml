@@ -52,4 +52,5 @@
     <string name="extra_point">Extra Point covering latest available Transaction</string>
     <string name="label_for_the_extra_point">Label For The Extra Point</string>
     <string name="forbidden_time_3_message">Asr prayer can be said if you have missed it.</string>
+    <string name="tahajjud_message">Tahajjud prayer is an optional/supererogatory prayer performed during the night after waking up from sleep</string>
 </resources>
