@@ -161,7 +161,7 @@ class DatabaseBackup : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(DatabaseBackupViewModel::class.java)
         val db = AppDatabase.getInstance(requireContext())
-        db.userSettingsDao().getActiveUserSettings().observe(this, androidx.lifecycle.Observer {
+        db.userSettingsDao().getActiveSalatSettings().observe(this, androidx.lifecycle.Observer {
             viewModel.salatSettings = it
             setCountryName(view, it.country)
             setCityName(view, it.city)

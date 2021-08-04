@@ -15,9 +15,11 @@ interface SalatTimesDAO: BaseDAO {
     @Update
     suspend fun update(vararg salatTime: SalatTime)
 
-    @Query("Select * From salat_times where date = :date and country = :country and city = :city")
-    suspend fun getByDateCountryCity(date: String, country: String, city: String): SalatTime?
+    @Query("Select * From salat_times where date = :date and address= :address")
+    suspend fun getByDateAddress(date: String, address: String): SalatTime?
 
     @Query("Select * From salat_times where id = :id")
     suspend fun getById(id: String): SalatTime
+
+    @Query("Select * from SALAT_SETTINGS where active = 1")
 }

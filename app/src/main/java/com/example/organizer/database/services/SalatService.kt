@@ -10,7 +10,9 @@ import com.example.organizer.database.dao.SalatTimesDAO
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.entity.SalatTime
 import com.example.organizer.database.enums.DbBoolValue
+import com.example.organizer.ui.Utils.DateUtils
 import com.example.organizer.ui.Utils.dto.HourMin
+import com.example.organizer.ui.Utils.dto.SalatDetailedTime
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
 import kotlinx.coroutines.CoroutineScope
@@ -19,7 +21,9 @@ import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
-class SalatService(val salatTimeDao: SalatTimesDAO) {
+class SalatService(val salatTimeDao: SalatTimesDAO, val salatSettingsDAO: SalatSettingsDAO) {
+
+    val responseMap = mutableMapOf<String, List<SalatTime>>()
 
     companion object {
         fun defaultBdSalatSettings(): SalatSettings {
@@ -46,31 +50,39 @@ class SalatService(val salatTimeDao: SalatTimesDAO) {
         }
     }
 
-    fun downloadSalatTimes(
+    suspend fun getSalatTime(date: Date, context: Context): SalatDetailedTime {
+        val cal: Calendar = Calendar.getInstance()
+        cal.time = date
+        val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
+        val salatTime: SalatTime? = salatTimeDao.getByDateAddress(DateUtils.serializeSalatDate(cal.time), salatSettings.address)
+        if(salatTime == null) {
+            downloadSalatTimes(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR), salatSettings.address, context)
+        }
+    }
+
+    suspend fun downloadSalatTimes(
         month: Int,
         year: Int,
-        city: String,
-        country: String,
+        address: String,
         context: Context,
-        lifeCycleScope: CoroutineScope,
-        overwrite: Boolean
+        lifeCycleScope: CoroutineScope
     ) {
         val queue = Volley.newRequestQueue(context)
         val url =
-            "https://api.aladhan.com/v1/calendarByCity?city=$city&country=$country&method=1&month=$month&year=$year&school=1"
+            "https://api.aladhan.com/v1/calendarByAddress?address=$address&method=1&month=$month&year=$year&school=1"
         val stringRequest = StringRequest(
             Request.Method.GET, url,
             Response.Listener<String> { response ->
-                val salatTimes = convertSalatTimesApiResponseToSalatTimes(response, city, country)
+                val salatTimes = convertSalatTimesApiResponseToSalatTimes(response, address)
                 lifeCycleScope.launch {
                     salatTimes.forEach {
-                        val salatTime = salatTimeDao.getByDateCountryCity(it.date, country, city)
-                        if (salatTime == null) {
-                            salatTimeDao.insert(it)
-                        } else if (overwrite) {
-                            it.id = salatTime.id
-                            salatTimeDao.update(it)
-                        }
+                            val salatTime = salatTimeDao.getByDateAddress(it.date, address)
+                            if (salatTime == null) {
+                                salatTimeDao.insert(it)
+                            } else {
+                                it.id = salatTime.id
+                                salatTimeDao.update(it)
+                            }
                     }
                 }
             },
@@ -84,8 +96,7 @@ class SalatService(val salatTimeDao: SalatTimesDAO) {
 
     private fun convertSalatTimesApiResponseToSalatTimes(
         response: String,
-        city: String,
-        country: String
+        address: String
     ): List<SalatTime> {
         val salatTimes = mutableListOf<SalatTime>()
         var map: Map<String, Any> = HashMap()
@@ -115,32 +126,16 @@ class SalatService(val salatTimeDao: SalatTimesDAO) {
             val salatTime = SalatTime(
                 UUID.randomUUID().toString(),
                 date = dateString,
-                city = city,
-                country = country,
-                tahajjudStart = midnight.add(1).toString(),
-                tahajjudEnd = fajr.toString(),
+                address = address,
                 fajrStart = fajr.toString(),
-                fajrEnd = sunrise.add(-5).toString(),
                 sunrise = sunrise.toString(),
-                firstRestrictionStart = sunrise.toString(),
-                firstRestrictionEnd = sunrise.add(20).toString(),
-                ishraqStart = sunrise.add(20).toString(),
-                ishraqEnd = sunrise.add(140).toString(),
-                midday = dhuhr.add(-15).toString(),
-                secondRestrictionStart = dhuhr.add(-15).toString(),
-                secondRestrictionEnd = dhuhr.toString(),
                 dhuhrStart = dhuhr.toString(),
-                dhuhrEnd = asr.toString(),
                 asrStart = asr.toString(),
-                asrEnd = sunset.add(-15).toString(),
                 sunset = sunset.toString(),
-                thirdRestrictionStart = sunset.add(-15).toString(),
-                thirdRestrictionEnd = sunset.toString(),
                 maghribStart = maghrib.toString(),
-                maghribEnd = maghrib.add(20).toString(),
                 ishaStart = isha.toString(),
-                ishaEnd = midnight.toString(),
-                imsak = imsak.toString()
+                imsak = imsak.toString(),
+                midnight = midnight.toString()
             )
             salatTimes.add(salatTime)
         }

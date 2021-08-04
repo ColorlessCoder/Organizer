@@ -12,12 +12,12 @@ interface SalatSettingsDAO:BaseDAO {
     @Update
     suspend fun update(vararg settings: SalatSettings)
 
-    @Query("Delete from user_settings where id= :id")
+    @Query("Delete from salat_settings where id= :id")
     suspend fun deleteById(vararg id: String)
 
-    @Query("Select * From user_settings where active = 1")
-    fun getActiveUserSettings(): LiveData<SalatSettings>
+    @Query("Select * From salat_settings where active = 1")
+    suspend fun getActiveSalatSettings(): SalatSettings
 
-    @Query("Select * From user_settings where id = :id")
+    @Query("Select * From salat_settings where id = :id")
     suspend fun getById(id: String): SalatSettings
 }
