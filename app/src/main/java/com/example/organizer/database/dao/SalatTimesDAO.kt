@@ -20,6 +20,4 @@ interface SalatTimesDAO: BaseDAO {
 
     @Query("Select * From salat_times where id = :id")
     suspend fun getById(id: String): SalatTime
-
-    @Query("Select * from SALAT_SETTINGS where active = 1")
 }

@@ -1,6 +1,7 @@
 package com.example.organizer.database.services
 
 import android.content.Context
+import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
@@ -20,10 +21,11 @@ import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+import kotlin.coroutines.suspendCoroutine
 
-class SalatService(val salatTimeDao: SalatTimesDAO, val salatSettingsDAO: SalatSettingsDAO) {
-
-    val responseMap = mutableMapOf<String, List<SalatTime>>()
+class SalatService(private val salatTimeDao: SalatTimesDAO, private val salatSettingsDAO: SalatSettingsDAO) {
 
     companion object {
         fun defaultBdSalatSettings(): SalatSettings {
@@ -50,13 +52,49 @@ class SalatService(val salatTimeDao: SalatTimesDAO, val salatSettingsDAO: SalatS
         }
     }
 
-    suspend fun getSalatTime(date: Date, context: Context): SalatDetailedTime {
+    suspend fun getSalatTime(date: Date, context: Context): SalatDetailedTime? {
         val cal: Calendar = Calendar.getInstance()
         cal.time = date
         val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
-        val salatTime: SalatTime? = salatTimeDao.getByDateAddress(DateUtils.serializeSalatDate(cal.time), salatSettings.address)
-        if(salatTime == null) {
-            downloadSalatTimes(cal.get(Calendar.MONTH), cal.get(Calendar.YEAR), salatSettings.address, context)
+        val response = getSalatTimeForDate(cal, salatSettings, context)
+        cal.add(Calendar.MONTH, 1)
+        getSalatTimeForDate(cal, salatSettings, context)
+        return response
+    }
+
+    private suspend fun getSalatTimeForDate(cal:Calendar, salatSettings: SalatSettings, context: Context): SalatDetailedTime? {
+        var response: SalatDetailedTime? = null
+        val dateString = DateUtils.serializeSalatDate(cal.time)
+        val salatTime: SalatTime? = salatTimeDao.getByDateAddress(
+            DateUtils.serializeSalatDate(cal.time),
+            salatSettings.address
+        )
+        if (salatTime == null) {
+            val salatTimes = downloadSalatTimes(
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.YEAR),
+                salatSettings.address,
+                context
+            )
+            uploadAllSalatTime(salatTimes, salatSettings.address)
+            salatTimes.forEach {
+                if(it.date == dateString) {
+                    response = SalatDetailedTime(it, salatSettings)
+                }
+            }
+        }
+        return response
+    }
+
+    suspend fun uploadAllSalatTime(salatTimes: List<SalatTime>, address: String) {
+        salatTimes.forEach {
+            val salatTime = salatTimeDao.getByDateAddress(it.date, address)
+            if (salatTime == null) {
+                salatTimeDao.insert(it)
+            } else {
+                it.id = salatTime.id
+                salatTimeDao.update(it)
+            }
         }
     }
 
@@ -64,9 +102,8 @@ class SalatService(val salatTimeDao: SalatTimesDAO, val salatSettingsDAO: SalatS
         month: Int,
         year: Int,
         address: String,
-        context: Context,
-        lifeCycleScope: CoroutineScope
-    ) {
+        context: Context
+    ) = suspendCoroutine<List<SalatTime>> { cod->
         val queue = Volley.newRequestQueue(context)
         val url =
             "https://api.aladhan.com/v1/calendarByAddress?address=$address&method=1&month=$month&year=$year&school=1"
@@ -74,21 +111,11 @@ class SalatService(val salatTimeDao: SalatTimesDAO, val salatSettingsDAO: SalatS
             Request.Method.GET, url,
             Response.Listener<String> { response ->
                 val salatTimes = convertSalatTimesApiResponseToSalatTimes(response, address)
-                lifeCycleScope.launch {
-                    salatTimes.forEach {
-                            val salatTime = salatTimeDao.getByDateAddress(it.date, address)
-                            if (salatTime == null) {
-                                salatTimeDao.insert(it)
-                            } else {
-                                it.id = salatTime.id
-                                salatTimeDao.update(it)
-                            }
-                    }
-                }
+                cod.resume(salatTimes)
             },
             Response.ErrorListener {
                 it.printStackTrace()
-                throw Exception("Error occurred while sending request.")
+                cod.resumeWithException(Exception("Error occurred while sending request."))
             })
 
         queue.add(stringRequest)
