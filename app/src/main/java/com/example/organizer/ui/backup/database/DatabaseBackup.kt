@@ -96,51 +96,6 @@ class DatabaseBackup : Fragment() {
         }
     }
 
-    private fun selectDateToDownloadSalatTimes(view: View, db: AppDatabase) {
-        val datePicker = MaterialDatePicker.Builder.datePicker()
-            .setTitleText("Select Due Date")
-            .setInputMode(MaterialDatePicker.INPUT_MODE_CALENDAR)
-            .setSelection(Date().time)
-            .build()
-        datePicker.addOnPositiveButtonClickListener {
-            if (it != null) {
-                val cal = Calendar.getInstance()
-                cal.time = Date(it)
-                downloadSalatTimes(view, cal.get(Calendar.MONTH), cal.get(Calendar.YEAR), db)
-            }
-        }
-        activity?.supportFragmentManager?.let { it1 ->
-            datePicker.show(it1, "dateToDownloadSalatTimes")
-        }
-    }
-
-    private fun downloadSalatTimes(view: View, month: Int, year: Int, db: AppDatabase) {
-        val salatService = SalatService(db.salatTimesDao())
-        try {
-            val country = getCountryName(view)
-            val city = getCityName(view)
-            if (city.isEmpty() || country.isEmpty()) {
-                throw java.lang.Exception("Country or city cannot be empty")
-            }
-            salatService.downloadSalatTimes(
-                month + 1,
-                year,
-                city,
-                country,
-                requireContext(),
-                lifecycleScope,
-                false
-            )
-            lifecycleScope.launch {
-                viewModel.salatSettings.city = city
-                viewModel.salatSettings.country = country
-                db.userSettingsDao().update(viewModel.salatSettings)
-            }
-        } catch (ex: java.lang.Exception) {
-            showToastMessage(ex.message.toString())
-        }
-    }
-
     private fun getCountryName(view: View): String {
         return view.findViewById<TextInputEditText>(R.id.country_name_input).text.toString()
     }
@@ -161,11 +116,6 @@ class DatabaseBackup : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(DatabaseBackupViewModel::class.java)
         val db = AppDatabase.getInstance(requireContext())
-        db.userSettingsDao().getActiveSalatSettings().observe(this, androidx.lifecycle.Observer {
-            viewModel.salatSettings = it
-            setCountryName(view, it.country)
-            setCityName(view, it.city)
-        })
         fileChooserViewModel =
             ViewModelProvider(requireActivity()).get(FileChooserViewModel::class.java)
         if (viewModel.navigationPurpose == DatabaseBackupViewModel.Companion.Purpose.EXPORT && fileChooserViewModel.selectedDirectory != null) {
@@ -205,9 +155,6 @@ class DatabaseBackup : Fragment() {
                 viewModel.navigationPurpose = DatabaseBackupViewModel.Companion.Purpose.EXPORT
                 findNavController().navigate(action)
             }
-        view.findViewById<Button>(R.id.downloadSalatTimes).setOnClickListener {
-            this.selectDateToDownloadSalatTimes(view, db)
-        }
     }
 
 }

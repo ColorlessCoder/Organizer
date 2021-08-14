@@ -398,5 +398,12 @@
         android:id="@+id/nav_prayer"
         android:name="com.example.organizer.ui.prayer.Prayer"
         android:label="Prayer">
+        <action
+            android:id="@+id/action_nav_prayer_to_salatTimesFragment"
+            app:destination="@id/salatTimesFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/salatTimesFragment"
+        android:name="com.example.organizer.ui.prayer.SalatTimesFragment"
+        android:label="Salat Times" />
 </navigation>

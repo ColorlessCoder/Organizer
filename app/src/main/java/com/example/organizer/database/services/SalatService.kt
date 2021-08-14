@@ -25,7 +25,11 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class SalatService(private val salatTimeDao: SalatTimesDAO, private val salatSettingsDAO: SalatSettingsDAO) {
+class SalatService(
+    private val salatTimeDao: SalatTimesDAO,
+    val salatSettingsDAO: SalatSettingsDAO,
+    private val context: Context
+) {
 
     companion object {
         fun defaultBdSalatSettings(): SalatSettings {
@@ -52,35 +56,65 @@ class SalatService(private val salatTimeDao: SalatTimesDAO, private val salatSet
         }
     }
 
-    suspend fun getSalatTime(date: Date, context: Context): SalatDetailedTime? {
-        val cal: Calendar = Calendar.getInstance()
-        cal.time = date
+    suspend fun getConsecutiveSalatTimes(
+        startDate: Date,
+        numberOfDays: Int
+    ): List<SalatDetailedTime>? {
         val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
-        val response = getSalatTimeForDate(cal, salatSettings, context)
+        val cal: Calendar = Calendar.getInstance()
+        cal.time = startDate
+        cal.add(Calendar.DAY_OF_MONTH, -1)
+        val salatTimes = mutableListOf<SalatTime>()
+        var failed = false
+        val response = mutableListOf<SalatDetailedTime>()
+        for (i in 0..numberOfDays) {
+            val salatTime = getSalatTimeForDate(cal, salatSettings)
+            if (salatTime == null) {
+                failed = true
+                break
+            }
+            salatTimes.add(salatTime)
+            if(i > 0) {
+                response.add(SalatDetailedTime(salatTime, salatSettings, salatTimes[i - 1]))
+            }
+            cal.add(Calendar.DAY_OF_MONTH, 1)
+        }
+
+        if (failed) {
+            return null
+        }
+
         cal.add(Calendar.MONTH, 1)
-        getSalatTimeForDate(cal, salatSettings, context)
+        getSalatTimeForDate(cal, salatSettings)
         return response
     }
 
-    private suspend fun getSalatTimeForDate(cal:Calendar, salatSettings: SalatSettings, context: Context): SalatDetailedTime? {
-        var response: SalatDetailedTime? = null
-        val dateString = DateUtils.serializeSalatDate(cal.time)
-        val salatTime: SalatTime? = salatTimeDao.getByDateAddress(
-            DateUtils.serializeSalatDate(cal.time),
-            salatSettings.address
-        )
-        if (salatTime == null) {
-            val salatTimes = downloadSalatTimes(
-                cal.get(Calendar.MONTH),
-                cal.get(Calendar.YEAR),
-                salatSettings.address,
-                context
+    public suspend fun getSalatTimeForDate(
+        cal: Calendar,
+        salatSettings: SalatSettings
+    ): SalatTime? {
+        var response: SalatTime? = null
+        if (!salatSettings.address.isNullOrEmpty()) {
+            val address = salatSettings.address!!
+            val dateString = DateUtils.serializeSalatDate(cal.time)
+            val salatTime: SalatTime? = salatTimeDao.getByDateAddress(
+                DateUtils.serializeSalatDate(cal.time),
+                address
             )
-            uploadAllSalatTime(salatTimes, salatSettings.address)
-            salatTimes.forEach {
-                if(it.date == dateString) {
-                    response = SalatDetailedTime(it, salatSettings)
+            if (salatTime == null) {
+                val salatTimes = downloadSalatTimes(
+                    cal.get(Calendar.MONTH),
+                    cal.get(Calendar.YEAR),
+                    address
+                )
+                uploadAllSalatTime(salatTimes, address)
+                salatTimes.forEach {
+                    if (it.date == dateString) {
+                        response = it
+                    }
                 }
+            } else {
+                response = salatTime
             }
         }
         return response
@@ -101,19 +135,18 @@ class SalatService(private val salatTimeDao: SalatTimesDAO, private val salatSet
     suspend fun downloadSalatTimes(
         month: Int,
         year: Int,
-        address: String,
-        context: Context
-    ) = suspendCoroutine<List<SalatTime>> { cod->
+        address: String
+    ) = suspendCoroutine<List<SalatTime>> { cod ->
         val queue = Volley.newRequestQueue(context)
         val url =
-            "https://api.aladhan.com/v1/calendarByAddress?address=$address&method=1&month=$month&year=$year&school=1"
+            "https://api.aladhan.com/v1/calendarByAddress?address=$address&method=1&month=${month + 1}&year=$year&school=1"
         val stringRequest = StringRequest(
             Request.Method.GET, url,
-            Response.Listener<String> { response ->
+            { response ->
                 val salatTimes = convertSalatTimesApiResponseToSalatTimes(response, address)
                 cod.resume(salatTimes)
             },
-            Response.ErrorListener {
+            {
                 it.printStackTrace()
                 cod.resumeWithException(Exception("Error occurred while sending request."))
             })

@@ -16,7 +16,7 @@ interface AccountDAO {
         insert(account)
         insertTransaction(
             com.example.organizer.database.entity.Transaction(
-                UUID.randomUUID().toString(),
+                0,
                 TransactionType.INITIAL.typeCode,
                 account.balance,
                 null,
@@ -25,8 +25,12 @@ interface AccountDAO {
                 null,
                 null,
                 Date().time,
-                null
-            )
+                null,
+                null,
+                null,
+                null,
+                null,
+            ),
         )
     }
 

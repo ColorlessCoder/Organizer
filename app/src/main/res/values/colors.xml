@@ -14,5 +14,8 @@
     <color name="IncomeColor">#43A047</color>
     <color name="DangerColor">#BC3238</color>
     <color name="GrayColor">#555</color>
+    <color name="BlueGray">#37474f</color>
+    <color name="BlueLightGray">#cfd8dc</color>
     <color name="ShadowColor">#f5feff</color>
+    <color name="RedShadowColor">#ffebee</color>
 </resources>

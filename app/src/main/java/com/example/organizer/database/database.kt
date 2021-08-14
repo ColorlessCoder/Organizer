@@ -36,10 +36,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun transactionPlanDao(): TransactionPlanDAO
     abstract fun templateTransactionDao(): TemplateTransactionDAO
     abstract fun debtDao(): DebtDAO
-    abstract fun utilDAO(): UtilDAO
+    abstract fun utilDao(): UtilDAO
     abstract fun transactionChartDao(): TransactionChartDAO
     abstract fun salatTimesDao(): SalatTimesDAO
-    abstract fun userSettingsDao(): SalatSettingsDAO
+    abstract fun salatSettingsDao(): SalatSettingsDAO
 
     companion object {
         private final const val DB_NAME: String = "organizer.db"
@@ -240,7 +240,7 @@ abstract class AppDatabase : RoomDatabase() {
                         "PRIMARY KEY(`id`))")
                 database.execSQL("CREATE UNIQUE INDEX index_salat_time_address_date \n" +
                         "ON salat_times(`address`, `date`)")
-                database.execSQL("CREATE TABLE `user_settings` (`id` TEXT NOT NULL," +
+                database.execSQL("CREATE TABLE `salat_settings` (`id` TEXT NOT NULL," +
                         " `settings_name` TEXT NOT NULL UNIQUE, " +
                         " `address` TEXT NULL, " +
                         " `active` INTEGER NOT NULL, " +
@@ -259,13 +259,13 @@ abstract class AppDatabase : RoomDatabase() {
                         " `midday_redzone` INTEGER NOT NULL, " +
                         " `sunset_redzone` INTEGER NOT NULL, " +
                         "PRIMARY KEY(`id`))")
-                database.execSQL("CREATE UNIQUE INDEX index_user_settings_settings_name \n" +
-                        "ON user_settings(settings_name)")
+                database.execSQL("CREATE UNIQUE INDEX index_salat_settings_settings_name \n" +
+                        "ON salat_settings(settings_name)")
                 val defaultSettings = SalatService.defaultBdSalatSettings()
                 val args = mutableListOf<Any>()
                 args.add(defaultSettings.id);
                 args.add(defaultSettings.settingsName);
-                args.add(defaultSettings.address);
+                args.add(defaultSettings.address?:"");
                 args.add(defaultSettings.active);
                 args.add(defaultSettings.salatAlert);
                 args.add(defaultSettings.fajrAlert);
@@ -281,22 +281,22 @@ abstract class AppDatabase : RoomDatabase() {
                 args.add(defaultSettings.sunriseRedzone);
                 args.add(defaultSettings.middayRedzone);
                 args.add(defaultSettings.sunsetRedzone);
-                database.execSQL("Insert into user_settings (id, settings_name\n" +
-                        "address\n" +
-                        "active\n" +
-                        "salat_alert\n" +
-                        "fajr_alert\n" +
-                        "dhuhr_alert\n" +
-                        "asr_alert\n" +
-                        "maghrib_alert\n" +
-                        "isha_alert\n" +
-                        "fajr_safety\n" +
-                        "dhuhr_safety\n" +
-                        "asr_safety\n" +
-                        "maghrib_safety\n" +
-                        "isha_safety\n" +
-                        "sunrise_redzone\n" +
-                        "midday_redzone\n" +
+                database.execSQL("Insert into salat_settings (id, settings_name,\n" +
+                        "address,\n" +
+                        "active,\n" +
+                        "salat_alert,\n" +
+                        "fajr_alert,\n" +
+                        "dhuhr_alert,\n" +
+                        "asr_alert,\n" +
+                        "maghrib_alert,\n" +
+                        "isha_alert,\n" +
+                        "fajr_safety,\n" +
+                        "dhuhr_safety,\n" +
+                        "asr_safety,\n" +
+                        "maghrib_safety,\n" +
+                        "isha_safety,\n" +
+                        "sunrise_redzone,\n" +
+                        "midday_redzone,\n" +
                         "sunset_redzone)" +
                         " VALUES " +
                         " ( ? " + ", ?".repeat(17) + ")", args.toTypedArray())

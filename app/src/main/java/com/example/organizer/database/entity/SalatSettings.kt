@@ -9,7 +9,7 @@ import androidx.room.PrimaryKey
 data class SalatSettings(
     @PrimaryKey val id:String,
     @ColumnInfo(name = "settings_name", typeAffinity = ColumnInfo.TEXT) var settingsName: String,
-    @ColumnInfo(name = "address", typeAffinity = ColumnInfo.TEXT) var address: String,
+    @ColumnInfo(name = "address", typeAffinity = ColumnInfo.TEXT) var address: String?,
     @ColumnInfo(name = "active", typeAffinity = ColumnInfo.INTEGER) var active: Int,
     @ColumnInfo(name = "salat_alert", typeAffinity = ColumnInfo.INTEGER) var salatAlert: Int,
     @ColumnInfo(name = "fajr_alert", typeAffinity = ColumnInfo.INTEGER) var fajrAlert: Int,

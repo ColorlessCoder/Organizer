@@ -7,6 +7,7 @@
     android:orientation="vertical"
     android:background="@color/ShadowColor"
     tools:context=".ui.prayer.Prayer">
+    <include android:id="@+id/banner" layout="@layout/salat_time_banner"/>
     <LinearLayout
         android:layout_marginTop="10dp"
         android:layout_width="match_parent"
@@ -57,12 +58,13 @@
                 <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
-                    app:srcCompat="@drawable/ic_add_circle_black_24dp"/>
+                    app:srcCompat="@drawable/ic_baseline_settings_24"
+                    app:tint="@color/BlueBCWhiteTC" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/BlackText"
-                    android:text="Insert Data"
+                    android:text="Settings"
                     />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

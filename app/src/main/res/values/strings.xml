@@ -53,4 +53,25 @@
     <string name="label_for_the_extra_point">Label For The Extra Point</string>
     <string name="forbidden_time_3_message">Asr prayer can be said if you have missed it.</string>
     <string name="tahajjud_message">Tahajjud prayer is an optional/supererogatory prayer performed during the night after waking up from sleep</string>
+    <string name="start_at">Start at</string>
+    <string name="end_at">End at</string>
+    <string name="ongoing">Ongoing</string>
+    <string name="up_next">Up Next</string>
+    <string name="sahari_end">Sahari End</string>
+    <string name="fajr">Fajr</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="forbidden_time_1">Forbidden Time</string>
+    <string name="ishraq">Ishraq</string>
+    <string name="forbidden_time_2">Forbidden Time</string>
+    <string name="dhuhr">Dhuhr</string>
+    <string name="asr">Asr</string>
+    <string name="forbidden_time_3">Forbidden Time</string>
+    <string name="sunset">Sunset</string>
+    <string name="maghrib">Maghrib</string>
+    <string name="isha">Isha</string>
+    <string name="isha_previous_day">Isha (Yesterday)</string>
+    <string name="tahajjud">Tahajjud</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+    <string name="tomorrow">Tomorrow</string>
 </resources>
