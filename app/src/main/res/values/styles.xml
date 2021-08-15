@@ -20,14 +20,30 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
     <style name="AppTheme.WhiteText">
         <item name="android:textColor">@color/whiteText</item>
     </style>
+
     <style name="AppTheme.TransactionPlanAction" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:textColorAlertDialogListItem">@color/BlackText</item>
     </style>
+
     <style name="AppTheme.CenterModal" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:textAlignment">center</item>
         <item name="android:textColor">@color/BlackText</item>
+    </style>
+
+    <style name="Widget.Organizer.AppWidget.Container" parent="android:Widget">
+        <item name="android:id">@android:id/background</item>
+        <item name="android:background">?android:attr/colorBackground</item>
+    </style>
+
+    <style name="Widget.Organizer.AppWidget.InnerView" parent="android:Widget">
+        <item name="android:textColor">@color/whiteText</item>
+        <item name="android:shadowColor">@color/BlackText</item>
+        <item name="android:shadowDx">1</item>
+        <item name="android:shadowDy">1</item>
+        <item name="android:shadowRadius">3</item>
     </style>
 </resources>

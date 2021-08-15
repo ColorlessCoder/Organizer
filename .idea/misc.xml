@@ -7,13 +7,18 @@
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_round_background.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_round_sd_storage_24.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_sum_sign.xml" value="0.18640350877192982" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/left_side_border.xml" value="0.21666666666666667" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/rounded_corner.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/side_nav_bar.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/database_backup_fragment.xml" value="0.22" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/debt_list_fragment.xml" value="0.17280701754385966" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/edit_account_fragment.xml" value="0.17280701754385966" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/edit_debt_fragment.xml" value="0.17280701754385966" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/prayer_fragment.xml" value="0.25" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_event_row.xml" value="0.33" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_events_by_date.xml" value="0.25" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_settings_fragment.xml" value="0.17280701754385966" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_time_app_widget.xml" value="0.5" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_time_banner.xml" value="0.33" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_times_fragment.xml" value="0.17280701754385966" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/view_transaction_fragment.xml" value="0.17280701754385966" />

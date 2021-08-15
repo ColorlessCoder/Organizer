@@ -17,13 +17,15 @@ class SalatDetailedTime(
 
     init {
         val date = DateUtils.deserializeSalatDateString(salatTime.date)
+        val previousDay = DateUtils.deserializeSalatDateString(salatTimeForPreviousDay.date)
 
         salatTimeRange[Type.SAHARI] = Pair(null, makeDate(date, salatTime.imsak, 0))
         salatTimeRange[Type.FAJR] = DateUtils.createDateRange(
             makeDate(date, salatTime.fajrStart, salatSettings.fajrSafety),
             makeDate(date, salatTime.sunrise, 0)
         )
-        salatTimeRange[Type.SUNRISE] = DateUtils.createDateRange(makeDate(date, salatTime.sunrise, 0), null)
+        salatTimeRange[Type.SUNRISE] = DateUtils.createDateRange(makeDate(date, salatTime.sunrise, 0),
+            null)
         salatTimeRange[Type.FORBIDDEN_TIME_1] = DateUtils.createDateRange(
             makeDate(date, salatTime.sunrise, 0),
             makeDate(date, salatTime.sunrise, salatSettings.sunriseRedzone)
@@ -57,8 +59,8 @@ class SalatDetailedTime(
             makeDate(date, salatTime.midnight, 0)
         )
         salatTimeRange[Type.PREVIOUS_ISHA] = DateUtils.createDateRange(
-            makeDate(date, salatTimeForPreviousDay.ishaStart, salatSettings.ishaSafety),
-            makeDate(date, salatTimeForPreviousDay.midnight, 0)
+            makeDate(previousDay, salatTimeForPreviousDay.ishaStart, salatSettings.ishaSafety),
+            makeDate(previousDay, salatTimeForPreviousDay.midnight, 0)
         )
 
         val midnight = salatTimeForPreviousDay.midnight
@@ -172,9 +174,20 @@ class SalatDetailedTime(
         data class Event(val date: String, val type: Type, val range: Pair<Date?, Date?>, var status: Status?)
 
         fun getCurrentEventAndPopulate(salatDetailedTime: SalatDetailedTime?, curNext: Pair<Event?, Event?>): Pair<Event?, Event?> {
-            return getCurrentEventAndPopulate(salatDetailedTime, curNext, false)
+            return getCurrentEventAndPopulate(salatDetailedTime, curNext, false,
+                nextRangeEvent = false
+            )
         }
+
         fun getCurrentEventAndPopulate(salatDetailedTime: SalatDetailedTime?, curNext: Pair<Event?, Event?>, includePreviousDay: Boolean): Pair<Event?, Event?> {
+            return getCurrentEventAndPopulate(salatDetailedTime, curNext, includePreviousDay, false)
+        }
+
+        private fun isValidRange(range: Pair<Date?, Date?>?): Boolean {
+            return range?.first != null && range.second != null && !range.first!!.equals(range.second)
+        }
+
+        fun getCurrentEventAndPopulate(salatDetailedTime: SalatDetailedTime?, curNext: Pair<Event?, Event?>, includePreviousDay: Boolean, nextRangeEvent: Boolean): Pair<Event?, Event?> {
             if(salatDetailedTime == null) {
                 return curNext
             }
@@ -183,7 +196,7 @@ class SalatDetailedTime(
             var next: Event? = curNext.second
             salatDetailedTime.orderedEventList.forEach {
                 if(includePreviousDay || it.type != Type.PREVIOUS_ISHA) {
-                    if (current != null && next == null) {
+                    if (current != null && next == null && (!nextRangeEvent || isValidRange(it.range))) {
                         next = it
                         it.status = Status.NEXT
                     } else if (current == null && DateUtils.dateInRange(now, it.range, false)) {

@@ -28,10 +28,10 @@ import kotlin.coroutines.suspendCoroutine
 class SalatService(
     private val salatTimeDao: SalatTimesDAO,
     val salatSettingsDAO: SalatSettingsDAO,
-    private val context: Context
+    val context: Context
 ) {
-
     companion object {
+        val visitedSet = mutableSetOf<String>()
         fun defaultBdSalatSettings(): SalatSettings {
             return SalatSettings(
                 id = UUID.randomUUID().toString(),
@@ -53,6 +53,51 @@ class SalatService(
                 middayRedzone = 3,
                 sunsetRedzone = 24
             )
+        }
+    }
+
+    suspend fun getCurrentAndNextEvent(validNext: Boolean = false): Pair<Pair<SalatDetailedTime.Companion.Event?, SalatDetailedTime.Companion.Event?>, String> {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.DAY_OF_MONTH, -1)
+        val setting = salatSettingsDAO.getActiveSalatSettings()
+        if(setting.address != null) {
+            val address = setting.address!!
+            val yesterday = salatTimeDao.getByDateAddress(
+                DateUtils.serializeSalatDate(cal.time),
+                address
+            )
+            cal.add(Calendar.DAY_OF_MONTH, 1)
+            val today = salatTimeDao.getByDateAddress(
+                DateUtils.serializeSalatDate(cal.time),
+                address
+            )
+            if (yesterday != null && today != null) {
+                val todayDetailedTime = SalatDetailedTime(today, setting, yesterday)
+                var curNext = SalatDetailedTime.getCurrentEventAndPopulate(todayDetailedTime, Pair(null, null), true, validNext)
+                if(curNext.first == null || curNext.second == null) {
+                    cal.add(Calendar.DAY_OF_MONTH, 1)
+                    val tomorrow = salatTimeDao.getByDateAddress(
+                        DateUtils.serializeSalatDate(cal.time),
+                        address
+                    )
+                    if(tomorrow != null) {
+                        val tomorrowDetailedTime = SalatDetailedTime(tomorrow, setting, today)
+                        curNext = SalatDetailedTime.getCurrentEventAndPopulate(
+                            tomorrowDetailedTime,
+                            curNext,
+                            false,
+                            validNext
+                        )
+                    } else {
+                        throw Exception("Please consider download salat times data first. Go to Backup menu.")
+                    }
+                }
+                return Pair(curNext, address)
+            } else {
+                throw Exception("Please consider download salat times data first. Go to Backup menu.")
+            }
+        } else {
+            throw Exception("Please set an address in Prayer Settings")
         }
     }
 
@@ -83,36 +128,22 @@ class SalatService(
         if (failed) {
             return null
         }
-
-        cal.add(Calendar.MONTH, 1)
-        getSalatTimeForDate(cal, salatSettings)
         return response
     }
 
-    public suspend fun getSalatTimeForDate(
+    suspend fun getSalatTimeForDate(
         cal: Calendar,
         salatSettings: SalatSettings
     ): SalatTime? {
         var response: SalatTime? = null
         if (!salatSettings.address.isNullOrEmpty()) {
             val address = salatSettings.address!!
-            val dateString = DateUtils.serializeSalatDate(cal.time)
             val salatTime: SalatTime? = salatTimeDao.getByDateAddress(
                 DateUtils.serializeSalatDate(cal.time),
                 address
             )
             if (salatTime == null) {
-                val salatTimes = downloadSalatTimes(
-                    cal.get(Calendar.MONTH),
-                    cal.get(Calendar.YEAR),
-                    address
-                )
-                uploadAllSalatTime(salatTimes, address)
-                salatTimes.forEach {
-                    if (it.date == dateString) {
-                        response = it
-                    }
-                }
+                throw Exception("Sorry, no data found")
             } else {
                 response = salatTime
             }
@@ -120,14 +151,48 @@ class SalatService(
         return response
     }
 
+    suspend fun downloadAndUploadSalatTimes(): Boolean {
+        val cal = Calendar.getInstance()
+        var result = true
+        try {
+            val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
+            cal.add(Calendar.DAY_OF_MONTH, -1)
+            downloadAndUploadTimeForMonthIfNotExists(cal, salatSettings.address!!)
+            cal.add(Calendar.DAY_OF_MONTH, 1)
+            downloadAndUploadTimeForMonthIfNotExists(cal, salatSettings.address!!)
+            cal.add(Calendar.MONTH, 1)
+            downloadAndUploadTimeForMonthIfNotExists(cal, salatSettings.address!!)
+        } catch (ex: java.lang.Exception) {
+            result = false
+        }
+        return result
+    }
+
+    private suspend fun downloadAndUploadTimeForMonthIfNotExists(cal: Calendar, address: String, ) {
+        val salatTime = salatTimeDao.getByDateAddress(DateUtils.serializeSalatDate(cal.time), address)
+        if(salatTime == null) {
+            val salatTimes = downloadSalatTimes(
+                cal.get(Calendar.MONTH),
+                cal.get(Calendar.YEAR),
+                address
+            )
+            uploadAllSalatTime(salatTimes, address)
+        }
+    }
+
     suspend fun uploadAllSalatTime(salatTimes: List<SalatTime>, address: String) {
         salatTimes.forEach {
-            val salatTime = salatTimeDao.getByDateAddress(it.date, address)
-            if (salatTime == null) {
-                salatTimeDao.insert(it)
-            } else {
-                it.id = salatTime.id
-                salatTimeDao.update(it)
+            val key = it.date + '#' +  it.address
+            if(!visitedSet.contains(key)) {
+                val salatTime = salatTimeDao.getByDateAddress(it.date, it.address)
+                if (salatTime == null) {
+                    println(it.date + it.address + this)
+                    salatTimeDao.insert(it)
+                } else {
+                    it.id = salatTime.id
+                    salatTimeDao.update(it)
+                }
+                visitedSet.add(key)
             }
         }
     }

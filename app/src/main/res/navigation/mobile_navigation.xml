@@ -401,9 +401,16 @@
         <action
             android:id="@+id/action_nav_prayer_to_salatTimesFragment"
             app:destination="@id/salatTimesFragment" />
+        <action
+            android:id="@+id/action_nav_prayer_to_salatSettings"
+            app:destination="@id/salatSettings" />
     </fragment>
     <fragment
         android:id="@+id/salatTimesFragment"
         android:name="com.example.organizer.ui.prayer.SalatTimesFragment"
         android:label="Salat Times" />
+    <fragment
+        android:id="@+id/salatSettings"
+        android:name="com.example.organizer.ui.prayer.SalatSettings"
+        android:label="Settings" />
 </navigation>

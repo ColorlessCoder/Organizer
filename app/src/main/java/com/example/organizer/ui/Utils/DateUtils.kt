@@ -55,5 +55,9 @@ class DateUtils {
             return (range.first!!.equals(date) || range.first!!.before(date))
                     && ((includeRightRange == true && range.second!!.equals(date)) || range.second!!.after(date))
         }
+
+        fun getCurrentDate(): Date {
+            return Date()
+        }
     }
 }

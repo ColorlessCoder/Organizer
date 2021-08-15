@@ -1,18 +1,16 @@
 package com.example.organizer.ui.prayer
 
-import android.content.res.Resources
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
-import com.example.organizer.database.enums.TransactionType
 import com.example.organizer.database.services.SalatService
 import com.example.organizer.databinding.SalatEventRowBinding
 import com.example.organizer.databinding.SalatEventsByDateBinding

@@ -14,6 +14,12 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.lifecycle.lifecycleScope
+import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.services.SalatService
+import com.example.organizer.utils.AlarmUtils
+import kotlinx.coroutines.launch
+
 //import com.example.organizer.database.AppDatabase
 
 class MainActivity : AppCompatActivity() {
@@ -36,6 +42,16 @@ class MainActivity : AppCompatActivity() {
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
+        val db = AppDatabase.getInstance(this)
+        val context = this
+        val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
+        lifecycleScope.launch {
+            if ( salatService.downloadAndUploadSalatTimes() ) {
+                AlarmUtils.startAlarmScheduler(context)
+            } else {
+                AlarmUtils.stopAlarmScheduler(context)
+            }
+        }
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
