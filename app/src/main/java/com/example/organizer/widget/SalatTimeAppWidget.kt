@@ -105,6 +105,7 @@ internal fun updateAppWidget(
                 )
             )
         }
+        views.setOnClickPendingIntent(R.id.reload_button, SalatTimeAppWidget.getRefreshWidgetPendingIntent(context))
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }

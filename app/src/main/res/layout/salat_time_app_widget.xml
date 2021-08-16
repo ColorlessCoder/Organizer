@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@android:color/transparent"
     android:theme="@style/AppTheme.AppWidgetContainer">
 
     <LinearLayout
@@ -18,14 +17,23 @@
             android:layout_height="match_parent"
             android:layout_weight="6"
             android:orientation="vertical">
-
-            <TextView
-                style="@style/Widget.Organizer.AppWidget.InnerView"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text="@string/ongoing"
-                android:textSize="11sp" />
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/reload_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_baseline_sync_24"/>
+                <TextView
+                    style="@style/Widget.Organizer.AppWidget.InnerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/ongoing"
+                    android:textSize="11sp" />
+            </FrameLayout>
         </LinearLayout>
 
         <LinearLayout
