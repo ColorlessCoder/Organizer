@@ -1,4 +1,4 @@
-package com.example.organizer.ui.backup.database
+package com.example.organizer.ui.system.database
 
 import androidx.lifecycle.ViewModel
 import com.example.organizer.database.entity.SalatSettings

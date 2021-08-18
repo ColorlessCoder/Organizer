@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -46,6 +47,7 @@ class SalatTimesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewModel = ViewModelProvider(this).get(SalatTimesViewModel::class.java)
+        viewModel.scrollToOnGoing = true
         val context = requireContext()
         val db = AppDatabase.getInstance(context)
         val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
@@ -54,13 +56,19 @@ class SalatTimesFragment : Fragment() {
             if(detailedTimes != null) {
                 val map = detailedTimes.associateBy( {it.salatTime.date}, {it} )
                 SalatDetailedTime.getCurrentEventAndPopulate(map)
-                binding.eventsByDate.adapter = SalatDateListAdapter(detailedTimes)
+                binding.eventsByDate.adapter = SalatDateListAdapter(
+                    detailedTimes,
+                    viewModel,
+                    binding.scrollView
+                )
             }
         }
     }
 
     class SalatDateListAdapter(
-        private val salatDetailedTimeList: List<SalatDetailedTime>
+        private val salatDetailedTimeList: List<SalatDetailedTime>,
+        private val viewModel: SalatTimesViewModel,
+        private val scrollView: NestedScrollView
     ) : RecyclerView.Adapter<SalatDateListAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val binding = SalatEventsByDateBinding.bind(view)
@@ -94,13 +102,19 @@ class SalatTimesFragment : Fragment() {
                 binding.headingExtra.visibility = View.GONE
             }
             binding.headingDate.text = DateUtils.salatDisplayDate(salatDetailedTime.salatTime.date)
-            binding.eventsForSingleDay.adapter = SalatEventListAdapter(salatDetailedTime.orderedEventList.filter { it.status != SalatDetailedTime.Companion.Status.IGNORE })
+            binding.eventsForSingleDay.adapter = SalatEventListAdapter(
+                salatDetailedTime.orderedEventList.filter { it.status != SalatDetailedTime.Companion.Status.IGNORE },
+                viewModel,
+                scrollView
+            )
         }
 
     }
 
     class SalatEventListAdapter(
-        private val eventList: List<SalatDetailedTime.Companion.Event>
+        private val eventList: List<SalatDetailedTime.Companion.Event>,
+        private val viewModel: SalatTimesViewModel,
+        private val scrollView: NestedScrollView
     ) : RecyclerView.Adapter<SalatEventListAdapter.ViewHolder>() {
         class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             val binding = SalatEventRowBinding.bind(view)
@@ -126,6 +140,9 @@ class SalatTimesFragment : Fragment() {
             if (event.status != null) {
                 binding.eventStatus.visibility = View.VISIBLE
                 binding.eventStatus.setText(event.status!!.labelKey)
+                if (event.status?.labelKey == R.string.ongoing) {
+                   scrollView.post { scrollView.scrollTo(0, holder.itemView.top) }
+                }
             } else {
                 binding.eventStatus.visibility = View.GONE
             }

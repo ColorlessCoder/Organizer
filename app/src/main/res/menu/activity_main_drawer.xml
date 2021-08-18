@@ -13,13 +13,19 @@
             android:icon="@drawable/ic_mosque__1_"
             android:title="Prayer" />
     </group>
-    <item android:id="@+id/backupMenu" android:title="Backup">
+    <item android:id="@+id/backupMenu" android:title="System">
         <menu>
             <item
             android:id="@+id/nav_database_backup"
             android:icon="@drawable/ic_baseline_storage_24"
             android:iconTint="@color/TransferColor"
             android:title="@string/database"
+            />
+            <item
+            android:id="@+id/nav_scheduler"
+            android:icon="@drawable/ic_baseline_schedule_24"
+            android:iconTint="@color/OrangeBCWhiteTC"
+            android:title="@string/scheduler"
             />
         </menu>
     </item>

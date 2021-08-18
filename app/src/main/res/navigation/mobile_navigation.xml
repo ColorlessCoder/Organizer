@@ -121,7 +121,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_database_backup"
-        android:name="com.example.organizer.ui.backup.database.DatabaseBackup"
+        android:name="com.example.organizer.ui.system.database.DatabaseBackup"
         android:label="@string/database_backup"
          >
         <action
@@ -413,4 +413,9 @@
         android:id="@+id/salatSettings"
         android:name="com.example.organizer.ui.prayer.SalatSettings"
         android:label="Settings" />
+    <fragment
+        android:id="@+id/nav_scheduler"
+        android:name="com.example.organizer.ui.system.scheduler.SchedulerNav"
+        android:label="Schedulers"
+        tools:layout="@layout/scheduler_nav_fragment" />
 </navigation>

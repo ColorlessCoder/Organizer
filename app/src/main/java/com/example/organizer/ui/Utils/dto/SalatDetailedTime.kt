@@ -1,6 +1,5 @@
 package com.example.organizer.ui.Utils.dto
 
-import android.content.res.Resources
 import com.example.organizer.R
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.entity.SalatTime
@@ -30,13 +29,13 @@ class SalatDetailedTime(
             makeDate(date, salatTime.sunrise, 0),
             makeDate(date, salatTime.sunrise, salatSettings.sunriseRedzone)
         )
-        salatTimeRange[Type.ISHRAQ] = DateUtils.createDateRange(
-            makeDate(salatTimeRange[Type.FORBIDDEN_TIME_1]?.first, 1),
-            makeDate(date, salatTime.dhuhrStart, -salatSettings.middayRedzone)
-        )
         salatTimeRange[Type.FORBIDDEN_TIME_2] = DateUtils.createDateRange(
             makeDate(date, salatTime.dhuhrStart, -salatSettings.middayRedzone),
             makeDate(date, salatTime.dhuhrStart, salatSettings.dhuhrSafety)
+        )
+        salatTimeRange[Type.ISHRAQ] = DateUtils.createDateRange(
+            makeDate(salatTimeRange[Type.FORBIDDEN_TIME_1]?.second, 1),
+            makeDate(salatTimeRange[Type.FORBIDDEN_TIME_2]?.first, 0)
         )
         salatTimeRange[Type.DHUHR] = DateUtils.createDateRange(
             makeDate(date, salatTime.dhuhrStart, salatSettings.dhuhrSafety),
@@ -171,7 +170,11 @@ class SalatDetailedTime(
             return fardPrayers[index + 1]
         }
 
-        data class Event(val date: String, val type: Type, val range: Pair<Date?, Date?>, var status: Status?)
+        data class Event(val date: String, val type: Type, val range: Pair<Date?, Date?>, var status: Status?) {
+            override fun toString(): String {
+                return "{ Date = ${date}, Type = ${type.name}, Range: (${DateUtils.dateToStringSafe(range.first)}, ${DateUtils.dateToStringSafe(range.second)}) }"
+            }
+        }
 
         fun getCurrentEventAndPopulate(salatDetailedTime: SalatDetailedTime?, curNext: Pair<Event?, Event?>): Pair<Event?, Event?> {
             return getCurrentEventAndPopulate(salatDetailedTime, curNext, false,

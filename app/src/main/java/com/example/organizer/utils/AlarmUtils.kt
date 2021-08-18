@@ -7,6 +7,7 @@ import android.content.Intent
 import android.os.Build
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.SalatService
+import com.example.organizer.ui.Utils.DateUtils
 import com.example.organizer.widget.SalatTimeAppWidget
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,7 +19,7 @@ class AlarmUtils {
         fun startAlarmScheduler(context: Context, force: Boolean = false) {
             if (force || !PrefUtils.isAlarmSchedulerActive(context)) {
                 if(force) {
-                    stopAlarmScheduler(context)
+                    stopAlarmScheduler(context, force)
                 }
                 PrefUtils.setAlarmSchedulerActive(context, true)
                 setAlarmForNextSalat(context)
@@ -26,8 +27,8 @@ class AlarmUtils {
             }
         }
 
-        fun stopAlarmScheduler(context: Context) {
-            if (!PrefUtils.isAlarmSchedulerActive(context)) {
+        fun stopAlarmScheduler(context: Context, force: Boolean = false) {
+            if (force || PrefUtils.isAlarmSchedulerActive(context)) {
                 cancelAlarmForScheduler(context)
                 PrefUtils.setAlarmSchedulerActive(context, false)
             }
@@ -67,12 +68,26 @@ class AlarmUtils {
             val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
             val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
             coroutineScope.launch {
-                val nowMs = Date().time
+                val now = Date()
+                val nowMs = now.time
                 val curNext = salatService.getCurrentAndNextEvent(true)
                 val next = curNext.first.second
+                var message = "Now: ${DateUtils.dateToStringSafe(now)}, Current Type: ${curNext.first.first.toString()}, Next Type: ${curNext.first.second.toString()}"
                 if (next?.range?.first != null && nowMs < next.range.first!!.time) {
-                    setAlarmForScheduler(context, nowMs, next.range.first!!.time - nowMs)
+                    val delay = next.range.first!!.time - nowMs
+                    PrefUtils.setAlarmSchedulerLastMessage(context,
+                        "Scheduler is running. Next time will be ${DateUtils.dateToStringSafe(next.range.first)} after. $message"
+                    )
+                    setAlarmForScheduler(context, nowMs, delay)
                 } else {
+                    if(next?.range?.first != null) {
+                        if (nowMs >= next.range.first!!.time) {
+                           message = "(nowMs >= next.range.first!!.time) is true. $message"
+                        }
+                    }
+                    PrefUtils.setAlarmSchedulerLastMessage(context,
+                        "Scheduler is stopped. $message"
+                    )
                     stopAlarmScheduler(context)
                 }
             }

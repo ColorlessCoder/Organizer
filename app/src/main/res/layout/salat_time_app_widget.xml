@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@android:color/transparent"
     android:theme="@style/AppTheme.AppWidgetContainer">
 
     <LinearLayout
@@ -22,7 +23,8 @@
                 android:layout_height="wrap_content">
                 <ImageView
                     android:id="@+id/reload_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="16sp"
+                    android:layout_marginStart="10dp"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_baseline_sync_24"/>
                 <TextView

@@ -33,6 +33,11 @@ class Prayer : Fragment() {
         return binding.root
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
     private fun setBanner(curNextAddress: Pair<Pair<SalatDetailedTime.Companion.Event?, SalatDetailedTime.Companion.Event?>, String>) {
         val banner = binding.banner
         val current = curNextAddress.first.first
