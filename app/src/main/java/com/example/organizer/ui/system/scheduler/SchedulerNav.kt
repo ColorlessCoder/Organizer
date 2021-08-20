@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.organizer.databinding.SchedulerNavFragmentBinding
-import com.example.organizer.utils.AlarmUtils
+import com.example.organizer.utils.SalatAlarmUtils
 import com.example.organizer.utils.PrefUtils
 
 class SchedulerNav : Fragment() {
@@ -44,10 +44,10 @@ class SchedulerNav : Fragment() {
         binding.scheduleStatus.text = if(PrefUtils.isAlarmSchedulerActive(context)) "ON" else "OFF"
         binding.lastMessage.text = PrefUtils.getAlarmSchedulerLastMessage(context).joinToString("\n\n")
         binding.stopScheduler.setOnClickListener {
-            AlarmUtils.stopAlarmScheduler(context, true)
+            SalatAlarmUtils.stopAlarmScheduler(context, true)
             PrefUtils.setAlarmSchedulerLastMessage(context, "Stop Alarm Scheduler from screen")
         }
-        binding.restartScheduler.setOnClickListener { AlarmUtils.startAlarmScheduler(context, true) }
+        binding.restartScheduler.setOnClickListener { SalatAlarmUtils.startAlarmScheduler(context, true) }
         binding.refresh.setOnClickListener { refresh() }
     }
 

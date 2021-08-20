@@ -2,34 +2,142 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".ui.prayer.SalatSettings">
+
     <data>
+        <import type="android.view.View" />
         <variable
             name="viewModel"
             type="com.example.organizer.ui.prayer.SalatSettingsViewModel" />
     </data>
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/address"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="5dp">
+            android:orientation="vertical">
 
-            <com.google.android.material.textfield.TextInputEditText
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/address"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Address"
-                android:text="@={viewModel.address}" />
-        </com.google.android.material.textfield.TextInputLayout>
-        <com.google.android.material.button.MaterialButton
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/save"
-            android:onClick="@{() -> viewModel.save()}"
-            />
-    </LinearLayout>
+                android:layout_margin="5dp">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Address"
+                    android:text="@={viewModel.address}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:checked="@={viewModel.salatAlert}"
+                android:text="@string/show_salat_alerts" />
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.salatAlert ? View.VISIBLE: View.GONE}"
+                android:checked="@={viewModel.fajrAlertActive}"
+                android:text="@string/show_alert_for_fajr" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/minutes_before_end"
+                android:visibility="@{(viewModel.fajrAlertActive &amp;&amp; viewModel.salatAlert) ? View.VISIBLE: View.GONE}">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@={viewModel.fajrAlert}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.salatAlert ? View.VISIBLE: View.GONE}"
+                android:checked="@={viewModel.dhuhrAlertActive}"
+                android:text="@string/show_alert_for_dhuhr" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/minutes_before_end"
+                android:visibility="@{(viewModel.dhuhrAlertActive &amp;&amp; viewModel.salatAlert) ? View.VISIBLE: View.GONE}">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@={viewModel.dhuhrAlert}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.salatAlert ? View.VISIBLE: View.GONE}"
+                android:checked="@={viewModel.asrAlertActive}"
+                android:text="@string/show_alert_for_asr" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/minutes_before_end"
+                android:visibility="@{(viewModel.asrAlertActive &amp;&amp; viewModel.salatAlert) ? View.VISIBLE: View.GONE}">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@={viewModel.asrAlert}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.salatAlert ? View.VISIBLE: View.GONE}"
+                android:checked="@={viewModel.maghribAlertActive}"
+                android:text="@string/show_alert_for_maghrib" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/minutes_before_end"
+                android:visibility="@{(viewModel.maghribAlertActive &amp;&amp; viewModel.salatAlert) ? View.VISIBLE: View.GONE}">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@={viewModel.maghribAlert}" />
+            </com.google.android.material.textfield.TextInputLayout>
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.salatAlert ? View.VISIBLE: View.GONE}"
+                android:checked="@={viewModel.ishaAlertActive}"
+                android:text="@string/show_alert_for_isha" />
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/minutes_before_end"
+                android:visibility="@{(viewModel.ishaAlertActive &amp;&amp; viewModel.salatAlert) ? View.VISIBLE: View.GONE}">
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:maxLength="2"
+                    android:text="@={viewModel.ishaAlert}" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="@{() -> viewModel.save()}"
+                android:text="@string/save" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>

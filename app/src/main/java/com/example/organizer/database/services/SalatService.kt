@@ -54,6 +54,21 @@ class SalatService(
                 sunsetRedzone = 24
             )
         }
+
+        fun getSalatAlertTime(setting: SalatSettings, type: SalatDetailedTime.Companion.Type): Int {
+            if(setting.salatAlert == 1) {
+                return when(type) {
+                    SalatDetailedTime.Companion.Type.ISHA -> if (setting.ishaAlertActive == 1) setting.ishaAlert else 0
+                    SalatDetailedTime.Companion.Type.PREVIOUS_ISHA -> if (setting.ishaAlertActive == 1) setting.ishaAlert else 0
+                    SalatDetailedTime.Companion.Type.FAJR -> if (setting.fajrAlertActive == 1) setting.fajrAlert else 0
+                    SalatDetailedTime.Companion.Type.DHUHR -> if (setting.dhuhrAlertActive == 1) setting.dhuhrAlert else 0
+                    SalatDetailedTime.Companion.Type.ASR -> if (setting.asrAlertActive == 1) setting.asrAlert else 0
+                    SalatDetailedTime.Companion.Type.MAGHRIB -> if (setting.maghribAlertActive == 1) setting.maghribAlert else 0
+                    else -> 0
+                }
+            }
+            return 0
+        }
     }
 
     suspend fun getCurrentAndNextEvent(validNext: Boolean = false): Pair<Pair<SalatDetailedTime.Companion.Event?, SalatDetailedTime.Companion.Event?>, String> {

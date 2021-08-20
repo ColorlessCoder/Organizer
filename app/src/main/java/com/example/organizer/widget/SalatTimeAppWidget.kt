@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.util.*
 import android.app.PendingIntent
 import android.net.Uri
+import com.example.organizer.utils.IntentRequestCode
 
 
 /**
@@ -30,7 +31,7 @@ class SalatTimeAppWidget : AppWidgetProvider() {
             intent.data = Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME))
             return PendingIntent.getBroadcast(
                 context,
-                0,
+                IntentRequestCode.WidgetRefreshIntent.requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )

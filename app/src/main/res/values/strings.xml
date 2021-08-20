@@ -78,4 +78,11 @@
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">This is an app widget description</string>
+    <string name="show_salat_alerts">Show Salat Alerts</string>
+    <string name="show_alert_for_fajr">Show Alert for Fajr</string>
+    <string name="show_alert_for_dhuhr">Show Alert for Dhuhr</string>
+    <string name="show_alert_for_asr">Show Alert for Asr</string>
+    <string name="show_alert_for_maghrib">Show Alert for Maghrib</string>
+    <string name="show_alert_for_isha">Show Alert for Isha</string>
+    <string name="minutes_before_end"> (+) minutes after start/ (-) minutes before end</string>
 </resources>

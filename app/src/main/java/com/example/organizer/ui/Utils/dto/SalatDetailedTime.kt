@@ -3,6 +3,7 @@ package com.example.organizer.ui.Utils.dto
 import com.example.organizer.R
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.entity.SalatTime
+import com.example.organizer.database.enums.ChartXType
 import com.example.organizer.ui.Utils.DateUtils
 import java.util.*
 
@@ -141,7 +142,11 @@ class SalatDetailedTime(
             SUNSET(R.string.sunset),
             MAGHRIB(R.string.maghrib),
             ISHA(R.string.isha),
-            TAHAJJUD(R.string.tahajjud)
+            TAHAJJUD(R.string.tahajjud),
+            NONE(0);
+            companion object {
+                fun fromName(search: String): Type =  requireNotNull(Type.values().find { it.name == search }) { "No Salat Type with value $search" }
+            }
         }
 
         enum class Status(val labelKey: Int) {

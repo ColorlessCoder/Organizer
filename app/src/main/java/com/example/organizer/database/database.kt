@@ -26,7 +26,7 @@ import java.util.*
         TransactionChartToCategory::class,
         SalatTime::class,
         SalatSettings::class
-    ], version = 14 ,
+    ], version = 15 ,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -66,7 +66,8 @@ abstract class AppDatabase : RoomDatabase() {
                         MIGRATION_10_11,
                         MIGRATION_11_12,
                         MIGRATION_12_13,
-                        MIGRATION_13_14
+                        MIGRATION_13_14,
+                        MIGRATION_14_15
                     )
                     .build()
             }
@@ -300,6 +301,15 @@ abstract class AppDatabase : RoomDatabase() {
                         "sunset_redzone)" +
                         " VALUES " +
                         " ( ? " + ", ?".repeat(17) + ")", args.toTypedArray())
+            }
+        }
+        private val MIGRATION_14_15 = object : Migration(14, 15) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE `salat_settings` ADD COLUMN fajr_alert_active INTEGER NOT NULL default 0")
+                database.execSQL("ALTER TABLE `salat_settings` ADD COLUMN dhuhr_alert_active INTEGER NOT NULL default 0")
+                database.execSQL("ALTER TABLE `salat_settings` ADD COLUMN asr_alert_active INTEGER NOT NULL default 0")
+                database.execSQL("ALTER TABLE `salat_settings` ADD COLUMN maghrib_alert_active INTEGER NOT NULL default 0")
+                database.execSQL("ALTER TABLE `salat_settings` ADD COLUMN isha_alert_active INTEGER NOT NULL default 0")
             }
         }
 

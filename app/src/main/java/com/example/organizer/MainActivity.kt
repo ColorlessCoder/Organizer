@@ -1,10 +1,7 @@
 package com.example.organizer
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.Menu
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -17,7 +14,7 @@ import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.lifecycleScope
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.SalatService
-import com.example.organizer.utils.AlarmUtils
+import com.example.organizer.utils.SalatAlarmUtils
 import kotlinx.coroutines.launch
 
 //import com.example.organizer.database.AppDatabase
@@ -47,9 +44,9 @@ class MainActivity : AppCompatActivity() {
         val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
         lifecycleScope.launch {
             if ( salatService.downloadAndUploadSalatTimes() ) {
-                AlarmUtils.startAlarmScheduler(context)
+                SalatAlarmUtils.startAlarmScheduler(context)
             } else {
-                AlarmUtils.stopAlarmScheduler(context)
+                SalatAlarmUtils.stopAlarmScheduler(context)
             }
         }
 

@@ -12,6 +12,6 @@ class AlarmSchedulerReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         PrefUtils.setAlarmSchedulerLastMessage(context, "Received: ${DateUtils.dateToString(Date())}")
         SalatTimeAppWidget.getRefreshWidgetPendingIntent(context)?.send()
-        AlarmUtils.setAlarmForNextSalat(context)
+        SalatAlarmUtils.setAlarmForNextSalat(context)
     }
 }
