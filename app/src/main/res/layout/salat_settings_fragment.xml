@@ -52,8 +52,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2"
+                    android:inputType="numberSigned"
+                    android:maxLength="3"
                     android:text="@={viewModel.fajrAlert}" />
             </com.google.android.material.textfield.TextInputLayout>
             <CheckBox
@@ -71,8 +71,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2"
+                    android:inputType="numberSigned"
+                    android:maxLength="3"
                     android:text="@={viewModel.dhuhrAlert}" />
             </com.google.android.material.textfield.TextInputLayout>
             <CheckBox
@@ -90,8 +90,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2"
+                    android:inputType="numberSigned"
+                    android:maxLength="3"
                     android:text="@={viewModel.asrAlert}" />
             </com.google.android.material.textfield.TextInputLayout>
             <CheckBox
@@ -109,8 +109,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2"
+                    android:inputType="numberSigned"
+                    android:maxLength="3"
                     android:text="@={viewModel.maghribAlert}" />
             </com.google.android.material.textfield.TextInputLayout>
             <CheckBox
@@ -128,8 +128,8 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:maxLength="2"
+                    android:inputType="numberSigned"
+                    android:maxLength="3"
                     android:text="@={viewModel.ishaAlert}" />
             </com.google.android.material.textfield.TextInputLayout>
 
