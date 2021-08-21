@@ -56,6 +56,7 @@
     <string name="tahajjud_message">Tahajjud prayer is an optional/supererogatory prayer performed during the night after waking up from sleep</string>
     <string name="start_at">Start at</string>
     <string name="end_at">End at</string>
+    <string name="end_col">End :</string>
     <string name="ongoing">Ongoing</string>
     <string name="up_next">Up Next</string>
     <string name="sahari_end">Sahari End</string>

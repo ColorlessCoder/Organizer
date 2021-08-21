@@ -4,9 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.3223684210526316" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_baseline_notifications_active_24.xml" value="0.13596491228070176" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_baseline_schedule_24.xml" value="0.3223684210526316" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_baseline_storage_24.xml" value="0.3223684210526316" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_baseline_sync_24.xml" value="0.23991228070175438" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_list_header_background.xml" value="0.18640350877192982" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_outline_notifications_24.xml" value="0.13596491228070176" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_round_background.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_round_sd_storage_24.xml" value="0.18640350877192982" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/drawable/ic_sum_sign.xml" value="0.18640350877192982" />
@@ -22,7 +25,7 @@
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_event_row.xml" value="0.33" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_events_by_date.xml" value="0.25" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_settings_fragment.xml" value="0.25" />
-        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_time_app_widget.xml" value="0.67" />
+        <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_time_app_widget.xml" value="0.33" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_time_banner.xml" value="0.33" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/salat_times_fragment.xml" value="0.17280701754385966" />
         <entry key="..\:/Projects/Own/Organizer/app/src/main/res/layout/scheduler_nav_fragment.xml" value="0.2866847826086957" />
