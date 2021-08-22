@@ -18,6 +18,7 @@ class SalatAlertReceiver : BroadcastReceiver() {
         )
         if(extra.type != SalatDetailedTime.Companion.Type.NONE) {
             NotificationUtils.showSalatAlert(context, extra)
+            SalatTimeAppWidget.getRefreshWidgetPendingIntent(context, true)?.send()
         }
     }
 }

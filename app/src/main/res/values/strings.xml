@@ -86,4 +86,6 @@
     <string name="show_alert_for_maghrib">Show Alert for Maghrib</string>
     <string name="show_alert_for_isha">Show Alert for Isha</string>
     <string name="minutes_before_end"> (+) minutes after start/ (-) minutes before end</string>
+    <string name="minutes_before_waqt_end"> minute/s before salat time ends</string>
+    <string name="minutes_after_waqt_start"> minute/s after salat time starts</string>
 </resources>

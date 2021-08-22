@@ -1,6 +1,7 @@
 package com.example.organizer.utils
 
 import android.annotation.TargetApi
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -37,9 +38,14 @@ class NotificationUtils {
             val eventName = context.getString(extra.type.labelKey)
             val message =
                 if (extra.remainTime > 0) "Waqt for $eventName started ${extra.remainTime} minutes ago."
-                else "Waqt for $eventName will end soon. Only ${extra.remainTime} minutes remain."
+                else "Waqt for $eventName will end soon. Only ${-extra.remainTime} minutes remain."
+
+            val bigStyle: NotificationCompat.BigTextStyle = NotificationCompat
+                .BigTextStyle()
+                .bigText(message)
+
             nBuilder.setContentTitle("Salat Alert!")
-                .setContentText(message)
+                .setStyle(bigStyle)
 
             val nManager = getInstance(context)
             nManager.createNotificationChannel(

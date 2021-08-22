@@ -7,6 +7,7 @@ import androidx.navigation.NavController
 import com.example.organizer.database.services.SalatService
 import com.example.organizer.utils.SalatAlarmUtils
 import kotlinx.coroutines.launch
+import kotlin.math.absoluteValue
 
 class SalatSettingsViewModel : ViewModel() {
     lateinit var salatService: SalatService
@@ -18,6 +19,11 @@ class SalatSettingsViewModel : ViewModel() {
     val asrAlert = MutableLiveData("0")
     val maghribAlert = MutableLiveData("0")
     val ishaAlert = MutableLiveData("0")
+    val fajrAlertAfter = MutableLiveData(true)
+    val dhuhrAlertAfter = MutableLiveData(true)
+    val asrAlertAfter = MutableLiveData(true)
+    val maghribAlertAfter = MutableLiveData(true)
+    val ishaAlertAfter = MutableLiveData(true)
     val salatAlert = MutableLiveData(false)
     val fajrAlertActive = MutableLiveData(false)
     val dhuhrAlertActive = MutableLiveData(false)
@@ -34,19 +40,35 @@ class SalatSettingsViewModel : ViewModel() {
         asrAlertActive.value = settings2.asrAlertActive == 1
         maghribAlertActive.value = settings2.maghribAlertActive == 1
         ishaAlertActive.value = settings2.ishaAlertActive == 1
-        fajrAlert.value = settings2.fajrAlert.toString()
-        dhuhrAlert.value = settings2.dhuhrAlert.toString()
-        asrAlert.value = settings2.asrAlert.toString()
-        maghribAlert.value = settings2.maghribAlert.toString()
-        ishaAlert.value = settings2.ishaAlert.toString()
+        fajrAlertAfter.value = settings2.fajrAlert >= 0
+        dhuhrAlertAfter.value = settings2.dhuhrAlert >= 0
+        asrAlertAfter.value = settings2.asrAlert >= 0
+        maghribAlertAfter.value = settings2.maghribAlert >= 0
+        ishaAlertAfter.value = settings2.ishaAlert >= 0
+        fajrAlert.value = settings2.fajrAlert.absoluteValue.toString()
+        dhuhrAlert.value = settings2.dhuhrAlert.absoluteValue.toString()
+        asrAlert.value = settings2.asrAlert.absoluteValue.toString()
+        maghribAlert.value = settings2.maghribAlert.absoluteValue.toString()
+        ishaAlert.value = settings2.ishaAlert.absoluteValue.toString()
     }
 
-    private fun convertStringToInt(str: String?): Int {
-        return if (str.isNullOrEmpty()) 0 else str.toInt()
+    private fun convertStringToInt(str: String?, positive: Boolean?): Int {
+        val intValue = if (str.isNullOrEmpty()) 0 else str.toInt()
+        return if(positive != false) intValue else -intValue
     }
 
     private fun convertBooleanToInt(value: Boolean?): Int {
         return if (value == true) 1 else 0
+    }
+
+    fun toggleAlertAfterBefore(type: String) {
+        when (type) {
+            "fajr" -> fajrAlertAfter.value = fajrAlertAfter.value != true
+            "dhuhr" -> dhuhrAlertAfter.value = dhuhrAlertAfter.value != true
+            "asr" -> asrAlertAfter.value = asrAlertAfter.value != true
+            "maghrib" -> maghribAlertAfter.value = maghribAlertAfter.value != true
+            "isha" -> ishaAlertAfter.value = ishaAlertAfter.value != true
+        }
     }
 
     fun save() {
@@ -67,11 +89,11 @@ class SalatSettingsViewModel : ViewModel() {
             settings!!.asrAlertActive = convertBooleanToInt(asrAlertActive.value)
             settings!!.maghribAlertActive = convertBooleanToInt(maghribAlertActive.value)
             settings!!.ishaAlertActive = convertBooleanToInt(ishaAlertActive.value)
-            settings!!.fajrAlert = convertStringToInt(fajrAlert.value)
-            settings!!.dhuhrAlert = convertStringToInt(dhuhrAlert.value)
-            settings!!.asrAlert = convertStringToInt(asrAlert.value)
-            settings!!.maghribAlert = convertStringToInt(maghribAlert.value)
-            settings!!.ishaAlert = convertStringToInt(ishaAlert.value)
+            settings!!.fajrAlert = convertStringToInt(fajrAlert.value, fajrAlertAfter.value)
+            settings!!.dhuhrAlert = convertStringToInt(dhuhrAlert.value, dhuhrAlertAfter.value)
+            settings!!.asrAlert = convertStringToInt(asrAlert.value, asrAlertAfter.value)
+            settings!!.maghribAlert = convertStringToInt(maghribAlert.value, maghribAlertAfter.value)
+            settings!!.ishaAlert = convertStringToInt(ishaAlert.value, ishaAlertAfter.value)
 
             viewModelScope.launch {
                 if (insert) {
