@@ -65,10 +65,7 @@ class EditTemplateTransactionViewModel : ViewModel() {
 
     fun isTheAmountAllowed(): Boolean {
         val value = if (amount.value != null) amount.value!!.toDouble() else 0.0
-        return value.compareTo(0.0) > 0 && (
-                fromAccount.value == null
-                        || fromAccount.value!!.balance.compareTo(value) >= 0
-                )
+        return value.compareTo(0.0) > 0
     }
 
     fun saveTransaction() {
