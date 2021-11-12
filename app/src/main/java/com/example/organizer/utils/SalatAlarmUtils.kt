@@ -1,10 +1,8 @@
 package com.example.organizer.utils
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.services.SalatService
@@ -18,6 +16,16 @@ import java.util.*
 
 class SalatAlarmUtils {
     companion object {
+        fun startSchedulerAfterBoot(context: Context) {
+            if (PrefUtils.isAlarmSchedulerActive(context)) {
+                PrefUtils.setAlarmSchedulerLastMessage(
+                    context,
+                    "Starting scheduler after boot."
+                )
+                startAlarmScheduler(context, true)
+            }
+        }
+
         fun startAlarmScheduler(context: Context, force: Boolean = false) {
             if (force || !PrefUtils.isAlarmSchedulerActive(context)) {
                 if (force) {
