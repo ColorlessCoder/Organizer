@@ -30,3 +30,8 @@ Selecting a debt record will provide some options below the row. + button will a
 
 ### Charts
 The 1st icon in Money Manager is for Charts. User can create chart and see the expense, transfer, income by date. Currently the chart points need to be created (super) manually.
+
+## Backup
+Before opening this module, the permission of read write files needs to be provided manually. Go to App Infor> Permissions> Accept the Files and Media.
+
+The app is not storing the data online. For that reason, user have to manually backup the data. Click export button and select a folder, applicaiton will ask for a filename and the backup will be stored at that location. The same backup file can be imported with import option.
