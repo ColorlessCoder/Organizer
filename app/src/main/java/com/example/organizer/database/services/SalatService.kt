@@ -1,13 +1,12 @@
 package com.example.organizer.database.services
 
 import android.content.Context
-import androidx.lifecycle.MutableLiveData
 import com.android.volley.Request
-import com.android.volley.Response
 import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.example.organizer.database.dao.SalatSettingsDAO
 import com.example.organizer.database.dao.SalatTimesDAO
+import com.example.organizer.database.dto.OrganizerException
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.entity.SalatTime
 import com.example.organizer.database.enums.DbBoolValue
@@ -16,8 +15,6 @@ import com.example.organizer.ui.Utils.dto.HourMin
 import com.example.organizer.ui.Utils.dto.SalatDetailedTime
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
@@ -71,10 +68,19 @@ class SalatService(
         }
     }
 
+    suspend fun getActiveSalatSettings(): SalatSettings {
+        var setting = salatSettingsDAO.getActiveSalatSettings()
+        if (setting == null) {
+            setting = defaultBdSalatSettings()
+            salatSettingsDAO.insert(setting)
+        }
+        return setting
+    }
+
     suspend fun getCurrentAndNextEvent(validNext: Boolean = false): Pair<Pair<SalatDetailedTime.Companion.Event?, SalatDetailedTime.Companion.Event?>, String> {
         val cal = Calendar.getInstance()
         cal.add(Calendar.DAY_OF_MONTH, -1)
-        val setting = salatSettingsDAO.getActiveSalatSettings()
+        var setting = getActiveSalatSettings()
         if(setting.address != null) {
             val address = setting.address!!
             val yesterday = salatTimeDao.getByDateAddress(
@@ -104,15 +110,15 @@ class SalatService(
                             validNext
                         )
                     } else {
-                        throw Exception("Please consider download salat times data first. Go to Backup menu.")
+                        throw OrganizerException("Please restart the App.")
                     }
                 }
                 return Pair(curNext, address)
             } else {
-                throw Exception("Please consider download salat times data first. Go to Backup menu.")
+                throw OrganizerException("Please restart the App.")
             }
         } else {
-            throw Exception("Please set an address in Prayer Settings")
+            throw OrganizerException("Please set an address in Prayer Settings")
         }
     }
 
@@ -120,7 +126,7 @@ class SalatService(
         startDate: Date,
         numberOfDays: Int
     ): List<SalatDetailedTime>? {
-        val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
+        val salatSettings: SalatSettings = getActiveSalatSettings()
         val cal: Calendar = Calendar.getInstance()
         cal.time = startDate
         cal.add(Calendar.DAY_OF_MONTH, -1)
@@ -170,7 +176,7 @@ class SalatService(
         val cal = Calendar.getInstance()
         var result = true
         try {
-            val salatSettings: SalatSettings = salatSettingsDAO.getActiveSalatSettings()
+            val salatSettings: SalatSettings = getActiveSalatSettings()
             cal.add(Calendar.DAY_OF_MONTH, -1)
             downloadAndUploadTimeForMonthIfNotExists(cal, salatSettings.address!!)
             cal.add(Calendar.DAY_OF_MONTH, 1)

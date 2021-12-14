@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.dto.OrganizerException
 import com.example.organizer.database.entity.SalatSettings
 import com.example.organizer.database.services.SalatService
 import com.example.organizer.ui.Utils.DateUtils
@@ -136,32 +137,40 @@ class SalatAlarmUtils {
             coroutineScope.launch {
                 val now = Date()
                 val nowMs = now.time
-                val curNext = salatService.getCurrentAndNextEvent(true)
-                val next = curNext.first.second
-                var message =
-                    "Now: ${DateUtils.dateToStringSafe(now)}, Current Type: ${curNext.first.first.toString()}, Next Type: ${curNext.first.second.toString()}"
-                if (next?.range?.first != null && nowMs < next.range.first!!.time) {
-                    val delay = next.range.first!!.time - nowMs
-                    PrefUtils.setAlarmSchedulerLastMessage(
-                        context,
-                        "Scheduler is running. Next time will be ${DateUtils.dateToStringSafe(next.range.first)} after. $message"
-                    )
-                    setAlarmForScheduler(context, nowMs, delay)
-                    if(curNext.first.first != null) {
-                        val settings = salatService.salatSettingsDAO.getActiveSalatSettings()
-                        resetAlertForCurrentSalat(context, curNext.first.first!!, settings)
-                    }
-                } else {
-                    if (next?.range?.first != null) {
-                        if (nowMs >= next.range.first!!.time) {
-                            message = "(nowMs >= next.range.first!!.time) is true. $message"
+                try {
+                    val curNext = salatService.getCurrentAndNextEvent(true)
+                    val next = curNext.first.second
+                    var message =
+                        "Now: ${DateUtils.dateToStringSafe(now)}, Current Type: ${curNext.first.first.toString()}, Next Type: ${curNext.first.second.toString()}"
+                    if (next?.range?.first != null && nowMs < next.range.first!!.time) {
+                        val delay = next.range.first!!.time - nowMs
+                        PrefUtils.setAlarmSchedulerLastMessage(
+                            context,
+                            "Scheduler is running. Next time will be ${
+                                DateUtils.dateToStringSafe(
+                                    next.range.first
+                                )
+                            } after. $message"
+                        )
+                        setAlarmForScheduler(context, nowMs, delay)
+                        if (curNext.first.first != null) {
+                            val settings = salatService.getActiveSalatSettings()
+                            resetAlertForCurrentSalat(context, curNext.first.first!!, settings)
                         }
+                    } else {
+                        if (next?.range?.first != null) {
+                            if (nowMs >= next.range.first!!.time) {
+                                message = "(nowMs >= next.range.first!!.time) is true. $message"
+                            }
+                        }
+                        PrefUtils.setAlarmSchedulerLastMessage(
+                            context,
+                            "Scheduler is stopped. $message"
+                        )
+                        stopAlarmScheduler(context)
                     }
-                    PrefUtils.setAlarmSchedulerLastMessage(
-                        context,
-                        "Scheduler is stopped. $message"
-                    )
-                    stopAlarmScheduler(context)
+                } catch (ex: OrganizerException) {
+                    // TODO: wait and restart
                 }
             }
         }

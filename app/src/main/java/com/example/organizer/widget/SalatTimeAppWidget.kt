@@ -19,6 +19,7 @@ import android.app.PendingIntent
 import android.net.Uri
 import android.view.View
 import android.widget.Toast
+import com.example.organizer.database.dto.OrganizerException
 import com.example.organizer.utils.IntentRequestCode
 import com.example.organizer.utils.SalatAlarmUtils
 
@@ -98,75 +99,79 @@ internal fun updateAppWidget(
     val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
     val coroutineScope = CoroutineScope(Dispatchers.Main.immediate)
     coroutineScope.launch {
-        val curNext = salatService.getCurrentAndNextEvent()
-        val current = curNext.first.first
-        val next = curNext.first.second
-        val alertCal = Calendar.getInstance()
-        if (current != null) {
-            views.setTextViewText(R.id.current_event, context.getString(current.type.labelKey))
-            views.setTextViewText(
-                R.id.current_event_start,
-                if (current.range.first == null) "" else DateUtils.salatDisplayTime(current.range.first!!)
-            )
-            views.setTextViewText(
-                R.id.current_event_end,
-                context.getString(R.string.end_col) + "  " + if (current.range.second == null) "" else DateUtils.salatDisplayTime(
-                    current.range.second!!
+        try {
+            val curNext = salatService.getCurrentAndNextEvent()
+            val current = curNext.first.first
+            val next = curNext.first.second
+            val alertCal = Calendar.getInstance()
+            if (current != null) {
+                views.setTextViewText(R.id.current_event, context.getString(current.type.labelKey))
+                views.setTextViewText(
+                    R.id.current_event_start,
+                    if (current.range.first == null) "" else DateUtils.salatDisplayTime(current.range.first!!)
                 )
-            )
-        }
-        if (next != null) {
-            views.setTextViewText(R.id.next_event, context.getString(next.type.labelKey))
-            views.setTextViewText(
-                R.id.next_event_start,
-                if (next.range.first == null) "" else DateUtils.salatDisplayTime(next.range.first!!)
-            )
-            views.setTextViewText(
-                R.id.next_event_end,
-                context.getString(R.string.end_col) + "  " + if (next.range.second == null) "" else DateUtils.salatDisplayTime(
-                    next.range.second!!
+                views.setTextViewText(
+                    R.id.current_event_end,
+                    context.getString(R.string.end_col) + "  " + if (current.range.second == null) "" else DateUtils.salatDisplayTime(
+                        current.range.second!!
+                    )
                 )
-            )
-        }
-        var skipNotificationButton: Int? = null
-        if (!skipNotification && current?.range?.first != null && current.range.second != null) {
-            val salatSettings = salatService.salatSettingsDAO.getActiveSalatSettings()
-            val diff = SalatService.getSalatAlertTime(salatSettings, current.type)
-            if (diff > 0) {
-                views.setTextViewText(R.id.skip_notification_start_min, "+$diff m")
-                skipNotificationButton = R.id.skip_notification_start
-                alertCal.time = current.range.first!!
-                alertCal.add(Calendar.MINUTE, diff)
-            } else if (diff < 0) {
-                views.setTextViewText(R.id.skip_notification_end_min, "$diff m")
-                skipNotificationButton = R.id.skip_notification_end
-                alertCal.time = current.range.second!!
-                alertCal.add(Calendar.MINUTE, diff)
             }
-        }
+            if (next != null) {
+                views.setTextViewText(R.id.next_event, context.getString(next.type.labelKey))
+                views.setTextViewText(
+                    R.id.next_event_start,
+                    if (next.range.first == null) "" else DateUtils.salatDisplayTime(next.range.first!!)
+                )
+                views.setTextViewText(
+                    R.id.next_event_end,
+                    context.getString(R.string.end_col) + "  " + if (next.range.second == null) "" else DateUtils.salatDisplayTime(
+                        next.range.second!!
+                    )
+                )
+            }
+            var skipNotificationButton: Int? = null
+            if (!skipNotification && current?.range?.first != null && current.range.second != null) {
+                val salatSettings = salatService.getActiveSalatSettings()
+                val diff = SalatService.getSalatAlertTime(salatSettings, current.type)
+                if (diff > 0) {
+                    views.setTextViewText(R.id.skip_notification_start_min, "+$diff m")
+                    skipNotificationButton = R.id.skip_notification_start
+                    alertCal.time = current.range.first!!
+                    alertCal.add(Calendar.MINUTE, diff)
+                } else if (diff < 0) {
+                    views.setTextViewText(R.id.skip_notification_end_min, "$diff m")
+                    skipNotificationButton = R.id.skip_notification_end
+                    alertCal.time = current.range.second!!
+                    alertCal.add(Calendar.MINUTE, diff)
+                }
+            }
 
-        val before = alertCal.time.before(Date())
+            val before = alertCal.time.before(Date())
 
-        views.setViewVisibility(
-            R.id.skip_notification_end_section,
-            if (skipNotificationButton != R.id.skip_notification_end || before) View.GONE else View.VISIBLE
-        )
-        views.setViewVisibility(
-            R.id.skip_notification_start_section,
-            if (skipNotificationButton != R.id.skip_notification_start || before) View.GONE else View.VISIBLE
-        )
-
-        if (skipNotificationButton != null && !before) {
-            views.setOnClickPendingIntent(
-                skipNotificationButton,
-                SalatTimeAppWidget.getRefreshWidgetPendingIntent(context, true)
+            views.setViewVisibility(
+                R.id.skip_notification_end_section,
+                if (skipNotificationButton != R.id.skip_notification_end || before) View.GONE else View.VISIBLE
             )
+            views.setViewVisibility(
+                R.id.skip_notification_start_section,
+                if (skipNotificationButton != R.id.skip_notification_start || before) View.GONE else View.VISIBLE
+            )
+
+            if (skipNotificationButton != null && !before) {
+                views.setOnClickPendingIntent(
+                    skipNotificationButton,
+                    SalatTimeAppWidget.getRefreshWidgetPendingIntent(context, true)
+                )
+            }
+            views.setOnClickPendingIntent(
+                R.id.reload_button,
+                SalatTimeAppWidget.getRefreshWidgetPendingIntent(context, skipNotification)
+            )
+            appWidgetManager.updateAppWidget(appWidgetId, views)
+        } catch (ex: OrganizerException) {
+            //TODO: WAIT and restart
         }
-        views.setOnClickPendingIntent(
-            R.id.reload_button,
-            SalatTimeAppWidget.getRefreshWidgetPendingIntent(context, skipNotification)
-        )
-        appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 }
 

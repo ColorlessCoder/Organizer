@@ -19,7 +19,7 @@ interface SalatSettingsDAO:BaseDAO {
     suspend fun deleteById(vararg id: String)
 
     @Query("Select * From salat_settings where active = 1")
-    suspend fun getActiveSalatSettings(): SalatSettings
+    suspend fun getActiveSalatSettings(): SalatSettings?
 
     @Query("Select * From salat_settings where active = 1")
     fun getActiveSalatSettingsLive(): LiveData<SalatSettings>

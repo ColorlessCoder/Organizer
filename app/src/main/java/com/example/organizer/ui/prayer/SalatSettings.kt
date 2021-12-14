@@ -7,12 +7,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.organizer.R
 import com.example.organizer.database.AppDatabase
 import com.example.organizer.database.services.SalatService
 import com.example.organizer.databinding.SalatSettingsFragmentBinding
 import com.example.organizer.databinding.SalatTimesFragmentBinding
+import kotlinx.coroutines.launch
 
 class SalatSettings : Fragment() {
 
@@ -46,6 +48,9 @@ class SalatSettings : Fragment() {
         )
         viewModel.navController = findNavController()
         viewModel.salatService = salatService
+        lifecycleScope.launch {
+            salatService.getActiveSalatSettings()
+        }
         salatService.salatSettingsDAO
             .getActiveSalatSettingsLive()
             .observe(this.viewLifecycleOwner, {

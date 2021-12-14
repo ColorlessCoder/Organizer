@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.organizer.database.AppDatabase
+import com.example.organizer.database.dto.OrganizerException
 import com.example.organizer.database.services.SalatService
 import com.example.organizer.databinding.PrayerFragmentBinding
 import com.example.organizer.ui.Utils.DateUtils
@@ -89,8 +91,12 @@ class Prayer : Fragment() {
         val db = AppDatabase.getInstance(context)
         val salatService = SalatService(db.salatTimesDao(), db.salatSettingsDao(), context)
         lifecycleScope.launch {
-            val curNext = salatService.getCurrentAndNextEvent()
-            setBanner(curNext)
+            try {
+                val curNext = salatService.getCurrentAndNextEvent()
+                setBanner(curNext)
+            } catch (ex: OrganizerException) {
+                Toast.makeText(requireContext(), ex.message, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
