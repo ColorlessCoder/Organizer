@@ -1,8 +1,13 @@
 # Organizer (Pre-Alpha)
 
-An android application to organize daily life modules. Currently, the application only manage "Money" module.
+An android application to organize daily life modules. Currently, the application only manage "Money Manager" module.
 
-## Money Module
+## Install
+
+- Download the apk file from the link: https://github.com/ColorlessCoder/Organizer/tree/master/app/release
+- Install the app giving trusted source permission
+
+## Money Manager
 
 Soul purpose of this module is to keep track of daily expenses and balance.
 ### Account:
